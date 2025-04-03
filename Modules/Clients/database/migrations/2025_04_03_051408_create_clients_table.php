@@ -72,11 +72,11 @@ return new class extends Migration
             $table->index(['status', 'is_deleted'], 'clients_status_deleted_index');
 
             // Foreign key with named constraint
-            $table->foreign('lead_id', 'fk_clients_lead_id')
-                ->references('id')
-                ->on('leads')
-                ->onDelete('set null')
-                ->onUpdate('cascade');
+            // $table->foreign('lead_id', 'fk_clients_lead_id')
+            //     ->references('id')
+            //     ->on('leads')
+            //     ->onDelete('set null')
+            //     ->onUpdate('cascade');
         });
 
         // Optional: Add table comment

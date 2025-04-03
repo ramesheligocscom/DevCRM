@@ -7,7 +7,7 @@ const isLoading = ref(false)
 const defaultItem = ref({
   id: -1,
   avatar: '',
-  fullName: '',
+  name: '',
   post: '',
   email: '',
   city: '',
@@ -20,7 +20,7 @@ const defaultItem = ref({
 
 const editedItem = ref({...defaultItem.value})
 const editedIndex = ref(-1)
-const userList = ref([])
+const leadList = ref([])
 
 // status options
 const selectedOptions = [
@@ -33,7 +33,7 @@ const selectedOptions = [
 
 // headers
 const headers = [
-  { title: 'NAME', key: 'fullName' },
+  { title: 'NAME', key: 'name' },
   { title: 'EMAIL', key: 'email' },
   { title: 'DATE', key: 'startDate' },
   { title: 'SALARY', key: 'salary' },
@@ -51,26 +51,26 @@ const resolveStatusVariant = status => {
 }
 
 // API Actions
-const fetchUsers = async () => {
+const fetchLeads = async () => {
   try {
     isLoading.value = true
-    const { data } = await $api('/users')
-    userList.value = data
+    const { data } = await $api('/leads')
+    leadList.value = data
   } catch (error) {
-    console.error('Error fetching users:', error)
+    console.error('Error fetching leads:', error)
   } finally {
     isLoading.value = false
   }
 }
 
 const editItem = item => {
-  editedIndex.value = userList.value.findIndex(user => user.id === item.id)
+  editedIndex.value = leadList.value.findIndex(lead => lead.id === item.id)
   editedItem.value = { ...item }
   editDialog.value = true
 }
 
 const deleteItem = item => {
-  editedIndex.value = userList.value.findIndex(user => user.id === item.id)
+  editedIndex.value = leadList.value.findIndex(lead => lead.id === item.id)
   editedItem.value = { ...item }
   deleteDialog.value = true
 }
@@ -98,17 +98,17 @@ const save = async () => {
   try {
     isLoading.value = true
     if (editedIndex.value > -1) {
-      // Update existing user
-      const { data } = await $api.put(`/users/${editedItem.value.id}`, editedItem.value)
-      userList.value[editedIndex.value] = data
+      // Update existing lead
+      const { data } = await $api.put(`/leads/${editedItem.value.id}`, editedItem.value)
+      leadList.value[editedIndex.value] = data
     } else {
-      // Create new user
-      const { data } = await $api.post('/users', editedItem.value)
-      userList.value.push(data)
+      // Create new lead
+      const { data } = await $api.post('/leads', editedItem.value)
+      leadList.value.push(data)
     }
     close()
   } catch (error) {
-    console.error('Error saving user:', error)
+    console.error('Error saving lead:', error)
   } finally {
     isLoading.value = false
   }
@@ -117,11 +117,11 @@ const save = async () => {
 const deleteItemConfirm = async () => {
   try {
     isLoading.value = true
-    await $api.delete(`/users/${editedItem.value.id}`)
-    userList.value.splice(editedIndex.value, 1)
+    await $api.delete(`/leads/${editedItem.value.id}`)
+    leadList.value.splice(editedIndex.value, 1)
     closeDelete()
   } catch (error) {
-    console.error('Error deleting user:', error)
+    console.error('Error deleting lead:', error)
   } finally {
     isLoading.value = false
   }
@@ -129,7 +129,7 @@ const deleteItemConfirm = async () => {
 
 // Initialize data
 onMounted(() => {
-  fetchUsers()
+  fetchLeads()
 })
 </script>
 
@@ -137,11 +137,11 @@ onMounted(() => {
   <!-- 👉 Datatable  -->
   <VDataTable
     :headers="headers"
-    :items="userList"
+    :items="leadList"
     :items-per-page="5"
   >
     <!-- full name -->
-    <template #item.fullName="{ item }">
+    <template #item.name="{ item }">
       <div class="d-flex align-center">
         <!-- avatar -->
         <VAvatar
@@ -154,11 +154,11 @@ onMounted(() => {
             v-if="item.avatar"
             :src="item.avatar"
           />
-          <span v-else>{{ avatarText(item.fullName) }}</span>
+          <span v-else>{{ avatarText(item.name) }}</span>
         </VAvatar>
 
         <div class="d-flex flex-column ms-3">
-          <span class="d-block font-weight-medium text-high-emphasis text-truncate">{{ item.fullName }}</span>
+          <span class="d-block font-weight-medium text-high-emphasis text-truncate">{{ item.name }}</span>
           <small>{{ item.post }}</small>
         </div>
       </div>
@@ -195,17 +195,17 @@ onMounted(() => {
     <VCard title="Edit Item">
       <VCardText>
         <div class="text-body-1 mb-6">
-          Name: <span class="text-h6">{{ editedItem?.fullName }}</span>
+          Name: <span class="text-h6">{{ editedItem?.name }}</span>
         </div>
         <VRow>
-          <!-- fullName -->
+          <!-- name -->
           <VCol
             cols="12"
             sm="6"
           >
             <AppTextField
-              v-model="editedItem.fullName"
-              label="User name"
+              v-model="editedItem.name"
+              label="Lead name"
             />
           </VCol>
 

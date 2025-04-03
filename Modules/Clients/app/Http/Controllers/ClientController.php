@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\{JsonResponse, Request};
 use Modules\Clients\app\Models\Client;
 use Modules\Clients\Http\Requests\{ClientStoreRequest, ClientUpdateRequest};
-use Modules\Clients\app\Transformers\ClientResource;
+use Modules\Clients\Transformers\ClientResource;
 use Symfony\Component\HttpFoundation\Response;
 
 class ClientController extends Controller

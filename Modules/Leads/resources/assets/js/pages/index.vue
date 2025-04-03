@@ -11,9 +11,9 @@ const defaultItem = ref({
   post: '',
   email: '',
   city: '',
-  startDate: '',
-  salary: -1,
-  age: '',
+  contact_person: '',
+  source: -1,
+  phone: '',
   experience: '',
   status: -1,
 })
@@ -35,9 +35,9 @@ const selectedOptions = [
 const headers = [
   { title: 'NAME', key: 'name' },
   { title: 'EMAIL', key: 'email' },
-  { title: 'DATE', key: 'startDate' },
-  { title: 'SALARY', key: 'salary' },
-  { title: 'AGE', key: 'age' },
+  { title: 'CONTACT PERSON', key: 'contact_person' },
+  { title: 'SOURCE', key: 'source' },
+  { title: 'PHONE', key: 'phone' },
   { title: 'STATUS', key: 'status' },
   { title: 'ACTIONS', key: 'actions', sortable: false },
 ]
@@ -54,7 +54,7 @@ const resolveStatusVariant = status => {
 const fetchLeads = async () => {
   try {
     isLoading.value = true
-    const { data } = await $api('/leads')
+    const { data } = await $api('/v1/leads')
     leadList.value = data
   } catch (error) {
     console.error('Error fetching leads:', error)
@@ -99,11 +99,11 @@ const save = async () => {
     isLoading.value = true
     if (editedIndex.value > -1) {
       // Update existing lead
-      const { data } = await $api.put(`/leads/${editedItem.value.id}`, editedItem.value)
+      const { data } = await $api.put(`/v1/leads/${editedItem.value.id}`, editedItem.value)
       leadList.value[editedIndex.value] = data
     } else {
       // Create new lead
-      const { data } = await $api.post('/leads', editedItem.value)
+      const { data } = await $api.post('/v1/leads', editedItem.value)
       leadList.value.push(data)
     }
     close()
@@ -117,7 +117,7 @@ const save = async () => {
 const deleteItemConfirm = async () => {
   try {
     isLoading.value = true
-    await $api.delete(`/leads/${editedItem.value.id}`)
+    await $api.delete(`/v1/leads/${editedItem.value.id}`)
     leadList.value.splice(editedIndex.value, 1)
     closeDelete()
   } catch (error) {
@@ -220,39 +220,38 @@ onMounted(() => {
             />
           </VCol>
 
-          <!-- salary -->
+          <!-- source -->
           <VCol
             cols="12"
             sm="6"
           >
             <AppTextField
-              v-model="editedItem.salary"
-              label="Salary"
+              v-model="editedItem.source"
+              label="Source"
               prefix="$"
               type="number"
             />
           </VCol>
 
-          <!-- age -->
+          <!-- phone -->
           <VCol
             cols="12"
             sm="6"
           >
             <AppTextField
-              v-model="editedItem.age"
-              label="Age"
-              type="number"
+              v-model="editedItem.phone"
+              label="Phone"
             />
           </VCol>
 
-          <!-- start date -->
+          <!-- Contact person -->
           <VCol
             cols="12"
             sm="6"
           >
             <AppTextField
-              v-model="editedItem.startDate"
-              label="Date"
+              v-model="editedItem.contact_person"
+              label="Contact person"
             />
           </VCol>
 

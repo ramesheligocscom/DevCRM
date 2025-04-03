@@ -7,3 +7,6 @@ import others from './others';
 import uiElements from './ui-elements';
 
 export default [...crm, ...dashboard, ...appsAndPages, ...uiElements, ...forms, ...charts, ...others]
+
+// import crm from './crm';
+// export default [...crm]

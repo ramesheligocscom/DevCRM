@@ -1,4 +1,4 @@
-import LeadList from '../pages/lead/list/index.vue'
+import LeadList from '../pages/index.vue'
 
 export default [
   {

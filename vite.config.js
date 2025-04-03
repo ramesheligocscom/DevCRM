@@ -29,11 +29,11 @@ export default defineConfig({
         root.insert('/apps/email/:label', '/resources/js/pages/apps/email/index.vue')
       },
 
-      // routesFolder: 'resources/js/pages',
-      routesFolder: [
-        'resources/js/pages', 
-        'Modules/*/resources/assets/js/pages' // Include module routes
-      ],
+      routesFolder: 'resources/js/pages',
+      // routesFolder: [
+      //   'resources/js/pages', 
+      //   'Modules/*/resources/assets/js/pages' // Include module routes
+      // ],
       
     }),
     vue({

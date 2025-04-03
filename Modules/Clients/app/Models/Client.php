@@ -12,10 +12,6 @@ class Client extends Model
 {
     use HasFactory, SoftDeletes, HasUuids;
 
-    protected $primaryKey = 'id';
-    public $incrementing = false;
-    protected $keyType = 'string';
-
     protected $fillable = [
         'lead_id',
         'name',

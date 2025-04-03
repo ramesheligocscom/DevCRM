@@ -1,4 +1,5 @@
 {
     "Leads": true,
-    "Clients": true
+    "Clients": true,
+    "SiteVisit": true
 }

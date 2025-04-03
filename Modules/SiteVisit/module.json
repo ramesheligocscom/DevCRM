@@ -1,0 +1,11 @@
+{
+    "name": "SiteVisit",
+    "alias": "sitevisit",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\SiteVisit\\Providers\\SiteVisitServiceProvider"
+    ],
+    "files": []
+}

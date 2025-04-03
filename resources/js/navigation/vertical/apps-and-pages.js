@@ -1,10 +1,5 @@
 export default [
   { heading: 'Apps & Pages' },
-  // {
-  //   title: 'Leads',
-  //   icon: { icon: 'tabler-circle-check' },
-  //   to: '/leads', // Should match the route path defined in the router
-  // },
   {
     title: 'Ecommerce',
     icon: { icon: 'tabler-shopping-cart' },

@@ -1,7 +1,6 @@
-import LeadList from '@modules/Leads/resources/assets/js/pages/lead/'
-import { createRouter, createWebHistory } from 'vue-router'
+import LeadList from '../pages/lead/list/index.vue'
 
-const routes = [
+export default [
   {
     path: '/leads',
     name: 'lead-list',
@@ -10,9 +9,3 @@ const routes = [
   },
 ]
 
-const router = createRouter({
-  history: createWebHistory(),
-  routes,
-})
-
-export default router

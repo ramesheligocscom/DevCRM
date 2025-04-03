@@ -3,31 +3,56 @@
 namespace Modules\Clients\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ClientStoreRequest extends FormRequest
 {
-    /**
-     * Get the validation rules that apply to the request.
-     */
+    public function authorize(): bool
+    {
+        return true; // Or implement proper authorization logic
+    }
+
     public function rules(): array
     {
         return [
             'name' => 'required|string|max:255',
             'contact_person' => 'required|string|max:255',
             'contact_person_role' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'phone' => 'required|string|max:20',
-            'status' => 'required|string|max:50',
-            'assigned_user' => 'required|string|max:255',
-            'lead_id' => 'nullable|uuid|exists:leads,id'
+            'email' => [
+                'required',
+                'email',
+                'max:255',
+                Rule::unique('clients')->whereNull('deleted_at')
+            ],
+            'phone' => 'required|string|max:20|phone:AUTO',
+            'status' => [
+                'required',
+                'string',
+                'max:50',
+                Rule::in(['active', 'inactive', 'prospect', 'archived'])
+            ],
+            'assigned_user' => 'required|uuid|exists:users,id',
+            'lead_id' => [
+                'nullable',
+                'uuid',
+                Rule::exists('leads', 'id')->whereNull('deleted_at')
+            ]
         ];
     }
 
-    /**
-     * Determine if the user is authorized to make this request.
-     */
-    public function authorize(): bool
+    public function messages(): array
     {
-        return true;
+        return [
+            'email.unique' => 'This email is already associated with another client',
+            'assigned_user.exists' => 'The selected user does not exist',
+            'lead_id.exists' => 'The referenced lead does not exist or was deleted'
+        ];
+    }
+
+    public function prepareForValidation()
+    {
+        if ($this->has('phone')) {
+            $this->merge(['phone' => preg_replace('/[^0-9+]/', '', $this->phone)]);
+        }
     }
 }

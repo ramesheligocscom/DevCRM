@@ -63,3 +63,5 @@ public/mockServiceWorker.js
 !.env.example
 
 .early.coverage
+package-lock.json
+typed-router.d.ts

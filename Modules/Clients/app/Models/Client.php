@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Clients\app\Models;
+namespace Modules\Clients\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 class Client extends Model
 {
     use HasFactory, SoftDeletes, HasUuids;
+
 
     protected $fillable = [
         'lead_id',

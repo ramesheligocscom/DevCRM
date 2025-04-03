@@ -68,6 +68,8 @@ return new class extends Migration
                 ->index()
                 ->comment('Soft delete flag');
 
+            $table->softDeletes(); // Adds a `deleted_at` column
+
             // Composite index for common queries
             $table->index(['status', 'is_deleted'], 'clients_status_deleted_index');
 
@@ -89,6 +91,11 @@ return new class extends Migration
         Schema::table('clients', function (Blueprint $table) {
             $table->dropForeign('fk_clients_lead_id');
         });
+
+        Schema::table('clients', function (Blueprint $table) {
+            $table->dropSoftDeletes(); // Drop `deleted_at` column
+        });
+
 
         Schema::dropIfExists('clients');
 

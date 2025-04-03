@@ -43,6 +43,9 @@ return new class extends Migration
             // Soft delete flag
             $table->boolean('is_deleted')->default(false)->comment('Whether this record is marked as deleted');
 
+
+            $table->softDeletes(); // Adds a `deleted_at` column
+
             // Foreign key constraints
             $table->foreign('lead_id')
                 ->references('id')
@@ -68,6 +71,11 @@ return new class extends Migration
      */
     public function down()
     {
+
+        Schema::table('follow_ups', function (Blueprint $table) {
+            $table->dropSoftDeletes(); // Drop `deleted_at` column
+        });
+
         Schema::dropIfExists('follow_ups');
     }
 };

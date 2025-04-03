@@ -1,10 +1,10 @@
 <?php
 
-namespace Modules\Clients\Database\Seeders;
+namespace Modules\SiteVisit\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 
-class ClientsTableSeeder extends Seeder
+class SiteVisitDatabaseSeeder extends Seeder
 {
     /**
      * Run the database seeds.

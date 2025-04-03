@@ -38,6 +38,7 @@ return new class extends Migration
 
             // Optional reference to a client (if this visit is for an existing client)
             $table->uuid('client_id')->nullable()->comment('Associated client ID if applicable');
+            $table->softDeletes(); // Adds a `deleted_at` column
 
             // Soft delete flag (preferred over actual deletion for audit purposes)
             $table->boolean('is_deleted')->default(false)->comment('Flag for soft deletion');
@@ -62,6 +63,13 @@ return new class extends Migration
 
     public function down()
     {
+
+        Schema::table('site_visits', function (Blueprint $table) {
+            $table->dropSoftDeletes(); // Drop `deleted_at` column
+        });
+
+
+
         Schema::dropIfExists('site_visits');
     }
 };

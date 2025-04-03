@@ -55,6 +55,9 @@ return new class extends Migration
             $table->index('status');
             $table->index('assigned_user');
             $table->index('client_id');
+
+            $table->softDeletes(); // Adds a `deleted_at` column
+
         });
     }
 
@@ -64,7 +67,14 @@ return new class extends Migration
      * @return void
      */
     public function down()
+
     {
+
+        Schema::table('leads', function (Blueprint $table) {
+            $table->dropSoftDeletes(); // Drop `deleted_at` column
+        });
+
+
         Schema::dropIfExists('leads');
     }
 };

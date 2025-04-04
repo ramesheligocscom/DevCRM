@@ -24,7 +24,7 @@ export const setupGuards = router => {
          */
     if (to.meta.unauthenticatedOnly) {
       if (isLoggedIn)
-        return '/'
+        return '/dashboards/crm'
       else
         return undefined
     }

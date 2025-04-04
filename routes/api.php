@@ -1,8 +1,5 @@
 <?php
 // routes/api.php
+use App\Http\Controllers\Api\AuthController;
 
-Route::group(['prefix' => 'v1'], function () {
-    // Other routes...
-    require __DIR__ . '/../app/Modules/SiteVisits/Routes/api.php';
-    require __DIR__ . '/../app/Modules/FollowUp/Routes/api.php';
-});
+Route::post('/login', [AuthController::class, 'signIn']);

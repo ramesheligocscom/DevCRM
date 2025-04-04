@@ -5,7 +5,7 @@ export default [
     path: '/clients',
     name: 'clients-list',
     component: CustomerList,
-    meta: { title: 'Leads' },
+    meta: { title: 'Client' },
   },
 ]
 

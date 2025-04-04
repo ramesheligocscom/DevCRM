@@ -29,7 +29,7 @@ const tabs = [
   },
 ]
 
-const { data } = await useApi(`/apps/ecommerce/customers/${route.params.id}`)
+const { data } = await useApi(`/leads/${route.params.id}`)
 if (data.value)
   customerData.value = data.value
 const isAddCustomerDrawerOpen = ref(false)

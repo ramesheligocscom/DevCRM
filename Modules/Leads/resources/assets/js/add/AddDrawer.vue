@@ -74,7 +74,7 @@ const submitForm = async () => {
       invoice_id: invoiceId.value,
     }
 
-    const { data: responseData } = await useApi(createUrl('/v1/leads'), {
+    const { data: responseData } = await useApi(createUrl('/leads'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' }, // Ensure JSON headers
       body: JSON.stringify(payload), // Convert to JSON string

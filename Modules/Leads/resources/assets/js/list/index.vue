@@ -46,18 +46,10 @@ const updateOptions = options => {
   orderBy.value = options.sortBy[0]?.order
 }
 
-const { data: responseData } = await useApi(createUrl('/v1/leads', {
-  query: {
-    q: searchQuery,
-    itemsPerPage,
-    page,
-    sortBy,
-    orderBy,
-  },
-}))
+const response = await $api(`/leads?search=${searchQuery.value ?? ""}&page=${page}&sort_key=${sortBy.value ?? ""}&sort_order=${orderBy.value ?? ""}&per_page=${itemsPerPage.value}`);
 
-const dataItems = computed(() => responseData.value.data)
-const totalItems = computed(() => responseData.value.meta.total)
+const dataItems = computed(() => response.data)
+const totalItems = computed(() => response.meta.total)
 </script>
 
 <template>

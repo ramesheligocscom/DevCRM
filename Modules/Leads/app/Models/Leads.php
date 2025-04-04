@@ -81,22 +81,22 @@ class Leads extends Model
 
     public function client()
     {
-        return $this->belongsTo(\Modules\Clients\Client::class);
+        return $this->belongsTo(\Modules\Clients\Models\Client::class);
     }
 
     public function quotation()
     {
-        return $this->belongsTo(\Modules\Quotations\Quotation::class);
+        return $this->belongsTo(\Modules\Clients\Models\Client::class)->withDefault();
     }
-
+    
     public function contract()
     {
-        return $this->belongsTo(\Modules\Contracts\Contract::class);
+        return $this->belongsTo(\Modules\Clients\Models\Client::class)->withDefault();
     }
-
+    
     public function invoice()
     {
-        return $this->belongsTo(\Modules\Invoices\Invoice::class);
+        return $this->belongsTo(\Modules\Clients\Models\Client::class)->withDefault();
     }
 
     public function assignedUser()

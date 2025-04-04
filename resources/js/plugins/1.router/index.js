@@ -1,3 +1,4 @@
+import ClientsRoutes from '@modules/Clients/resources/assets/js/router'; // ✅ Import routes
 import leadsRoutes from '@modules/Leads/resources/assets/js/router'; // ✅ Import routes
 import { setupLayouts } from 'virtual:generated-layouts';
 import { createRouter, createWebHistory } from 'vue-router/auto';
@@ -16,7 +17,7 @@ function recursiveLayouts(route) {
 }
 
 // Merge routes
-const routes2 = [...routes, ...leadsRoutes]
+const routes2 = [...routes, ...leadsRoutes,...ClientsRoutes]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

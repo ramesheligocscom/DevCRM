@@ -3,15 +3,10 @@
 namespace Modules\SiteVisit\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-
 use App\Modules\SiteVisits\Services\SiteVisitService;
-use App\Modules\SiteVisits\Requests\StoreSiteVisitRequest;
-use App\Modules\SiteVisits\Requests\UpdateSiteVisitRequest;
-use App\Modules\SiteVisits\Resources\SiteVisitResource;
 use Illuminate\Http\JsonResponse;
-
-
+use Modules\SiteVisit\Http\Requests\{StoreSiteVisitRequest, UpdateSiteVisitRequest};
+use Modules\SiteVisit\Transformers\SiteVisitResource;
 
 class SiteVisitController extends Controller
 {

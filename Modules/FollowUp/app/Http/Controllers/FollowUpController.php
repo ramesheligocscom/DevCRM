@@ -4,13 +4,11 @@ namespace Modules\FollowUp\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-
-
-use Modules\FollowUp\Requests\FollowUpStoreRequest;
-use Modules\FollowUp\Requests\FollowUpUpdateRequest;
 use Modules\FollowUp\Transformers\FollowUpResource;
 use Illuminate\Http\JsonResponse;
 use Modules\FollowUp\Services\FollowUpService;
+use Modules\FollowUp\Http\Requests\{FollowUpStoreRequest, FollowUpUpdateRequest};
+use Symfony\Component\HttpFoundation\Response;
 
 
 class FollowUpController extends Controller

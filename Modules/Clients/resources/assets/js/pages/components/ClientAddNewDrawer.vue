@@ -117,8 +117,8 @@ const onSubmit = async () => {
 
     const res = await $api(
       props.currentClient
-        ? `/clients/${props.currentClient.id}?_method=PUT`
-        : `/clients`,
+        ? `api/clients/${props.currentClient.id}?_method=PUT`
+        : `api/clients`,
       {
         method: "POST",
         body: payload,
@@ -208,24 +208,49 @@ const statusOptions = [
   // Add more options as needed
 ];
 
+
+const userOptions = ref([
+  {
+    id: '550e8400-e29b-41d4-a716-446655440001',
+    name: 'John Smith',
+    email: 'john@example.com'
+  },
+  {
+    id: '550e8400-e29b-41d4-a716-446655440002',
+    name: 'Sarah Johnson',
+    email: 'sarah@example.com'
+  },
+  {
+    id: '550e8400-e29b-41d4-a716-446655440003',
+    name: 'Michael Brown',
+    email: 'michael@example.com'
+  },
+  {
+    id: '550e8400-e29b-41d4-a716-446655440004',
+    name: 'Emily Davis',
+    email: 'emily@example.com'
+  },
+  {
+    id: '550e8400-e29b-41d4-a716-446655440005',
+    name: 'David Wilson',
+    email: 'david@example.com'
+  }
+])
+
+const users = ref({
+  assigned_user: null // This will store the selected UUID
+})
+
+
 const Status = ref("");
 </script>
 
 <template>
   <div>
     <div v-if="isDrawerOpen" class="backdrop"></div>
-    <VNavigationDrawer
-      permanent
-      :width="500"
-      location="end"
-      class="scrollable-content"
-      :model-value="props.isDrawerOpen"
-      @update:model-value="handleDrawerModelValueUpdate"
-    >
-      <AppDrawerHeaderSection
-        :title="currentClient ? 'Edit Client' : 'Add Client'"
-        @cancel="closeNavigationDrawer"
-      />
+    <VNavigationDrawer permanent :width="500" location="end" class="scrollable-content"
+      :model-value="props.isDrawerOpen" @update:model-value="handleDrawerModelValueUpdate">
+      <AppDrawerHeaderSection :title="currentClient ? 'Edit Client' : 'Add Client'" @cancel="closeNavigationDrawer" />
 
       <VDivider />
 
@@ -234,144 +259,70 @@ const Status = ref("");
           <VForm ref="refForm" v-model="valid" @submit.prevent="onSubmit">
             <VRow>
               <VCol cols="12">
-                <AppTextField
-                  v-model="clientName"
-                  :rules="[...requiredRule]"
-                  label="Name"
-                  placeholder="Name"
-                  autofocus
-                />
+                <AppTextField v-model="clientName" :rules="[...requiredRule]" label="Name" placeholder="Name"
+                  autofocus />
               </VCol>
               <VCol cols="12">
-                <AppTextField
-                  :rules="onlyAlphabetsRule"
-                  v-model="client.contact_person"
-                  label="Contact Person *"
-                  placeholder="Contact Person"
-                />
+                <AppTextField :rules="onlyAlphabetsRule" v-model="client.contact_person" label="Contact Person *"
+                  placeholder="Contact Person" />
               </VCol>
               <VCol cols="12">
-                <AppTextField
-                  v-model="contactPersonRole"
-                  label="Contact Person Role"
-                  placeholder="Contact Person Role"
-                  autofocus
-                />
+                <AppTextField v-model="client.contact_person_role" label="Contact Person Role"
+                  placeholder="Contact Person Role" autofocus />
               </VCol>
               <VCol cols="12">
-                <AppTextField
-                  v-model="client.email"
-                  :rules="emailRule"
-                  @input="convertToLowerCase"
-                  label="Email"
-                  placeholder="Email"
-                  type="email"
-                />
+                <AppTextField v-model="client.email" :rules="emailRule" @input="convertToLowerCase" label="Email"
+                  placeholder="Email" type="email" />
               </VCol>
               <VCol cols="12">
-                <AppTextField
-                  v-model="client.phone"
-                  :rules="[optionalRequiredRule, ...validateMobileNumber]"
-                  @input="handleMobileInput"
-                  label="Phone *"
-                  placeholder="Phone"
-                />
+                <AppTextField v-model="client.phone" :rules="[optionalRequiredRule, ...validateMobileNumber]"
+                  @input="handleMobileInput" label="Phone *" placeholder="Phone" />
               </VCol>
               <VCol cols="12">
-                <VSelect
-                  v-model="Status"
-                  :items="statusOptions"
-                  :rules="requiredRule"
-                  label="Status"
-                  placeholder="Select Status *"
-                  item-title="text"
-                  item-value="value"
-                  clearable
-                />
+                <VSelect v-model="client.status" :items="statusOptions" :rules="requiredRule" label="Status"
+                  placeholder="Select Status *" item-title="text" item-value="value" clearable />
               </VCol>
               <VCol cols="12">
-                <VSelect
-                  v-model="Assigned"
-                  :items="statusOptions"
-                  :rules="requiredRule"
-                  label="Assigned User"
-                  placeholder="Assigned User *"
-                  item-title="text"
-                  item-value="value"
-                  clearable
-                />
+                <VSelect v-model="client.assigned_user" :items="userOptions" :rules="requiredRule" label="Assigned User"
+                  placeholder="Select Assigned User *" item-title="name" item-value="id" clearable>
+                  <template #selection="{ item }">
+                    <span>{{ item.title }}</span>
+                  </template>
+                  <template #item="{ props, item }">
+                    <VListItem v-bind="props" :title="item.raw.name" :subtitle="item.raw.email"></VListItem>
+                  </template>
+                </VSelect>
               </VCol>
               <VCol cols="12">
-                <div
-                  v-for="(address, index) in customer.addresses"
-                  :key="index"
-                  class="mb-4 d-flex align-center"
-                >
-                  <app-textarea
-                    v-model="customer.addresses[index].address"
-                    label="Address *"
-                    :rules="requiredRule"
-                    rows="1"
-                    auto-grow
-                    class="small-textarea"
-                    placeholder="Address"
-                  />
-                  <v-btn
-                    icon
-                    @click="addAddress"
-                    v-if="index === customer.addresses.length - 1"
-                    class="mt-5 ml-2"
-                    variant="tonal"
-                    size="small"
-                  >
+                <div v-for="(address, index) in customer.addresses" :key="index" class="mb-4 d-flex align-center">
+                  <app-textarea v-model="customer.addresses[index].address" label="Address *" :rules="requiredRule"
+                    rows="1" auto-grow class="small-textarea" placeholder="Address" />
+                  <v-btn icon @click="addAddress" v-if="index === customer.addresses.length - 1" class="mt-5 ml-2"
+                    variant="tonal" size="small">
                     <v-icon icon="tabler-plus" />
                   </v-btn>
-                  <v-btn
-                    icon
-                    @click="removeAddress(index)"
-                    v-if="customer.addresses.length > 1"
-                    class="mt-5 mx-3"
-                    variant="tonal"
-                    size="small"
-                  >
+                  <v-btn icon @click="removeAddress(index)" v-if="customer.addresses.length > 1" class="mt-5 mx-3"
+                    variant="tonal" size="small">
                     <v-icon icon="tabler-minus" />
                   </v-btn>
                 </div>
-
-                <!-- <div class="d-flex">
-                  <app-textarea v-model="client.address" @input="formatAddress" :rules="requiredRule" label="Address *"
-                    rows="1" auto-grow class="small-textarea" placeholder="Address" />
-                  <span class="addresAdd">
-                    <VIcon icon="tabler-plus" />
-                  </span>
-                </div> -->
               </VCol>
               <VCol cols="12">
-                <VBtn
-                  v-if="
-                    ((!currentClient && $can('client', 'create-client')) ||
-                      (currentClient && $can('client', 'edit-client'))) &&
-                    !isLoading
-                  "
-                  type="submit"
-                  class="me-3"
-                >
+                <VBtn type="submit" class="me-3">
                   {{ currentClient ? "Update" : "Submit" }}
                 </VBtn>
-                <VBtn class="me-3" v-else>
-                  <v-progress-circular
-                    color="light"
-                    :width="4"
-                    :size="20"
-                    indeterminate
-                    class="mr-2"
-                  ></v-progress-circular
-                  >{{ currentClient ? "Update" : "Submit" }}
-                </VBtn>
 
-                <!-- <VBtn
-                                    v-if="(!currentClient && $can('client', 'create-client')) || (currentClient && $can('client', 'edit-client'))"
-                                    type="submit" class="me-3"> {{ currentClient ? "Update" : "Submit" }} </VBtn> -->
+                <!-- <VBtn v-if="
+                  ((!currentClient && $can('client', 'create-client')) ||
+                    (currentClient && $can('client', 'edit-client'))) &&
+                  !isLoading
+                " type="submit" class="me-3">
+                  {{ currentClient ? "Update" : "Submit" }}
+                </VBtn> -->
+                <!-- <VBtn class="me-3" v-else>
+                  <v-progress-circular color="light" :width="4" :size="20" indeterminate
+                    class="mr-2"></v-progress-circular>{{ currentClient ? "Update" : "Submit" }}
+                </VBtn> -->
               </VCol>
             </VRow>
           </VForm>

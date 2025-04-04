@@ -16,7 +16,7 @@ class ClientController extends Controller
         $clients = Client::query()
             ->when($request->boolean('with_trashed'), fn($q) => $q->withTrashed())
             ->when($request->has('status'), fn($q) => $q->filterByStatus($request->status))
-            ->when($request->has('assigned_user'), fn($q) => $q->whereAssignedUser($request->assigned_user))
+            // ->when($request->has('assigned_user'), fn($q) => $q->whereAssignedUser($request->assigned_user))
             ->latest()
             ->paginate($request->integer('per_page', 15));
 
@@ -30,7 +30,7 @@ class ClientController extends Controller
     {
         $client = Client::createWithAttributes([
             ...$request->validated(),
-            'created_by' => auth()->id()
+            'created_by' => auth()->user()->id
         ]);
 
         return response()->json([
@@ -50,7 +50,7 @@ class ClientController extends Controller
     {
         $client->updateWithAttributes([
             ...$request->validated(),
-            'last_updated_by' => auth()->id()
+            'last_updated_by' => auth()->user()->id
         ]);
 
         return response()->json([

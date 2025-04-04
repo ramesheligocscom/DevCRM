@@ -3,7 +3,7 @@
 namespace Modules\Clients\Services;
 
 // use Illuminate\Support\Facades\Auth;
-use Modules\Clients\app\Models\Client;
+use Modules\Clients\Models\Client;
 
 class ClientService
 {

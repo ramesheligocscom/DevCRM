@@ -24,14 +24,8 @@ class Client extends Model
         'assigned_user',
         'created_by',
         'last_updated_by',
-        'is_deleted'
     ];
 
-    protected $casts = [
-        'is_deleted' => 'boolean',
-        'created_at' => 'datetime',
-        'last_updated_at' => 'datetime'
-    ];
 
     // Custom query scopes
     public function scopeFilterByStatus($query, $status)
@@ -49,7 +43,6 @@ class Client extends Model
     {
         return static::create(array_merge([
             'id' => Str::orderedUuid(), // More efficient for DB indexing
-            'is_deleted' => false,
             'created_at' => now(),
         ], $attributes));
     }
@@ -66,7 +59,6 @@ class Client extends Model
     public function softDelete()
     {
         return $this->update([
-            'is_deleted' => true,
             'last_updated_by' => auth()->id(),
             'last_updated_at' => now(),
         ]);

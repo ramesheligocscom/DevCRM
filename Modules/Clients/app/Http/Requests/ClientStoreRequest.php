@@ -4,6 +4,7 @@ namespace Modules\Clients\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Propaganistas\LaravelPhone\Rules\Phone;
 
 class ClientStoreRequest extends FormRequest
 {
@@ -17,21 +18,27 @@ class ClientStoreRequest extends FormRequest
         return [
             'name' => 'required|string|max:255',
             'contact_person' => 'required|string|max:255',
-            'contact_person_role' => 'required|string|max:255',
+            'contact_person_role' => 'nullable|string|max:255',
             'email' => [
-                'required',
+                'nullable',
                 'email',
                 'max:255',
                 Rule::unique('clients')->whereNull('deleted_at')
             ],
-            'phone' => 'required|string|max:20|phone:AUTO',
-            'status' => [
+            'phone' => [
                 'required',
+                'string',
+                'max:20',
+                // (new Phone)->international()
+            ],
+            'status' => [
+                'nullable',
                 'string',
                 'max:50',
                 Rule::in(['active', 'inactive', 'prospect', 'archived'])
             ],
-            'assigned_user' => 'required|uuid|exists:users,id',
+            'assigned_user' => 'nullable',
+            // 'assigned_user' => 'required|uuid|exists:users,id',
             'lead_id' => [
                 'nullable',
                 'uuid',

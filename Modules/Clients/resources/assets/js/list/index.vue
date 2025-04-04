@@ -1,15 +1,14 @@
 <script setup>
 import "@vuepic/vue-datepicker/dist/main.css";
 import dayjs from "dayjs";
-import { debounce } from "lodash";
 import Swal from "sweetalert2";
-import { getCurrentInstance, ref } from "vue";
-import AddClientFilterDrawer from './components/AddClientFilterDrawer.vue';
-import ClientAddNewDrawer from './components/ClientAddNewDrawer.vue';
+import { computed, getCurrentInstance, ref } from "vue";
+import AddDrawer from '../add/AddDrawer.vue';
 
 const instance = getCurrentInstance();
 const $can = instance?.proxy?.$can;
 
+// State
 const searchQuery = ref("");
 const clients = ref([]);
 const currentClient = ref(null);
@@ -27,44 +26,7 @@ const selectedClient = ref([]);
 const action_bulk = ref(null);
 const selectedCard = ref(0);
 
-// =================================================== Pagination and Search code =============================================================>
-const pagination = ref({
-  current_page: 1,
-  per_page: 10,
-  total: 0,
-  last_page: 1,
-});
-
-watch(itemsPerPage, () => {
-  fetchClients();
-});
-
-const paginate = (page) => {
-  pagination.value.current_page = page;
-  fetchClients();
-};
-
-const updateOptions = (options) => {
-  sortBy.value = options.sortBy[0]?.key;
-  orderBy.value = options.sortBy[0]?.order;
-};
-
-
-const debouncedFetchClients = debounce(() => {
-  fetchClients();
-}, 500);
-
-watch(searchQuery, (newValue) => {
-  if (newValue || newValue === "") {
-    debouncedFetchClients();
-  }
-});
-
-watch(() => pagination.value.current_page, () => {
-  fetchClients();
-});
-
-// ======================================================== Client header ==================================================>
+// Table headers configuration
 const defaultHeaders = [
   {
     title: "Name",
@@ -107,23 +69,44 @@ const defaultHeaders = [
 
 const headers = ref(JSON.parse(localStorage.getItem("clientsTableHeaders")) || defaultHeaders);
 
+// Computed properties
+const searchedClients = computed(() => {
+  if (!searchQuery.value) return filteredClients.value;
+
+  const query = searchQuery.value.toLowerCase();
+  return filteredClients.value.filter(client => {
+    return (
+      (client.name && client.name.toLowerCase().includes(query)) ||
+      (client.email && client.email.toLowerCase().includes(query)) ||
+      (client.contact_person && client.contact_person.toLowerCase().includes(query)) ||
+      (client.phone && client.phone.toLowerCase().includes(query))
+    );
+  });
+});
+
+// Pagination
+const pagination = ref({
+  current_page: 1,
+  per_page: 10,
+  total: 0,
+  last_page: 1,
+});
+
+// Methods
 const toggleHeaderVisibility = (updatedHeaders) => {
   headers.value = [...updatedHeaders];
   localStorage.setItem("clientsTableHeaders", JSON.stringify(headers.value));
 };
-// ======================================================== Fetching Client  ==================================================>
-
 
 const fetchClients = async () => {
   loading.value = true;
 
   try {
-    const response = await $api(`/api/clients?search=${searchQuery.value ?? ""}&status=${statusFilter.value ?? ""}&page=${pagination.value.current_page}&sort_key=${sortBy.value ?? ""}&sort_order=${orderBy.value ?? ""}&per_page=${itemsPerPage.value}`);
+    const response = await $api(`/api/clients?status=${statusFilter.value ?? ""}&per_page=${itemsPerPage.value}`);
 
-    // Set clients data
     filteredClients.value = response.data;
+    clients.value = response.data; // Store all clients for reference
 
-    // Update pagination
     pagination.value = {
       current_page: response.meta.current_page,
       per_page: response.meta.per_page,
@@ -131,18 +114,13 @@ const fetchClients = async () => {
       last_page: response.meta.last_page,
     };
 
-    console.log('Fetched clients:', filteredClients.value);
-
-    // Update cards - you'll need to adjust these based on actual API response
     clientCards.value = [
       {
-        title: response.meta.total ?? 0, // Using total count from pagination
+        title: response.meta.total ?? 0,
         text: "Total Clients",
         color: "primary",
         icon: "tabler-users",
       },
-      // These would need to come from your API response
-      // You might need to filter the data to get active/inactive counts
       {
         title: response.data.filter(client => client.status === 'active').length ?? 0,
         text: "Active",
@@ -160,16 +138,13 @@ const fetchClients = async () => {
     console.error('Error fetching clients:', error);
   } finally {
     loading.value = false;
-    openClientModal.value = false;
-    openClientFilterModal.value = false;
   }
 };
-// ======================================================== Edit Client  ==================================================>
+
 const editBranch = (item) => {
   currentClient.value = JSON.parse(JSON.stringify(item));
   openClientModal.value = true;
 };
-
 
 const resolveStatusVariant = (status) => {
   if (status === "Active") return { color: "success", text: "Active" };
@@ -177,18 +152,17 @@ const resolveStatusVariant = (status) => {
   else return { color: "success", text: "Active" };
 };
 
-// ======================================================== Delete Client  ==================================================>
 const deleteClient = async (id) => {
   try {
     const { value: inputValue, isConfirmed } = await Swal.fire({
       title: `Delete Client Info?`,
       html: `<p style="color: #333; font-size: 14px; margin-top: -10px; margin-bottom: 15px;">
-                 Are you sure you want to permanently delete <strong>record</strong>?
-               </p>
-               <label for="swal-input" >
-                 Type in <strong>"DELETE"</strong> to confirm
-               </label>
-               <input id="swal-input" class="swal2-input" placeholder="Type 'DELETE' to confirm" required />`,
+               Are you sure you want to permanently delete <strong>record</strong>?
+             </p>
+             <label for="swal-input">
+               Type in <strong>"DELETE"</strong> to confirm
+             </label>
+             <input id="swal-input" class="swal2-input" placeholder="Type 'DELETE' to confirm" required />`,
       focusConfirm: false,
       showCancelButton: true,
       confirmButtonText: 'Delete',
@@ -216,7 +190,6 @@ const deleteClient = async (id) => {
     if (!isConfirmed) return;
 
     const response = await $api(`/api/clients/${id}`, { method: "DELETE" });
-    console.log("Delete response:", response);
     await Swal.fire({
       title: response.message || "Deleted!",
       text: "Client has been deleted.",
@@ -234,27 +207,13 @@ const deleteClient = async (id) => {
   }
 };
 
+// Initial fetch
 fetchClients();
-
 </script>
 
 <template>
   <section>
-    <!-- <section v-if="$can('client', 'view-client')"> -->
-
-    <VRow class="mb-3">
-      <!-- <VCol v-for="(item, index) in clientCards" :keys="index" cols="12" lg="4" md="3">
-        <VCard :title="item.title" :subtitle="item.text" @click="filterdCardData(item.text, index)"
-          :class="{ 'highlighted-card': selectedCard === index }">
-          <template #append>
-            <VAvatar variant="tonal" rounded="" :color="item.color" :icon="item.icon" />
-          </template>
-</VCard>
-</VCol> -->
-    </VRow>
-
     <VCard class="mb-6">
-      <!-- <template #append> -->
       <div class="d-flex justify-lg-space-between" style="margin: 20px">
         <div>
           <div class="text-h5">Client</div>
@@ -283,23 +242,20 @@ fetchClients();
           </VBtn>
 
           <FilterBtn :menu-list="headers" @update:menuList="toggleHeaderVisibility" />
-          <VBtn rounded="" icon="tabler-plus" @click="
-            (openClientModal = !openClientModal), (currentClient = null)
-            " class=""></VBtn>
+          <VBtn rounded icon="tabler-plus" @click="openClientModal = true; currentClient = null" />
         </div>
       </div>
-      <!-- </template> -->
 
       <VDivider />
 
-      <!-- SECTION datatable -->
+      <!-- Loading spinner -->
       <BaseSpinner class="d-flex" v-if="loading" />
 
-      <VDataTable :items="filteredClients" :items-length="filteredClients.length"
+      <!-- Client Data Table -->
+      <VDataTable v-else :items="searchedClients" :items-length="searchedClients.length"
         :headers="headers.filter((header) => header.checked)" class="text-no-wrap" @update:options="updateOptions"
-        :key="filteredClients.length" v-model:items-per-page="itemsPerPage" v-model:page="page" show-select
-        v-model="selectedClient" v-else>
-        <!---------- name ---------------->
+        v-model:items-per-page="itemsPerPage" v-model:page="page" show-select v-model="selectedClient">
+        <!-- Name Column -->
         <template #item.name="{ item }">
           <v-tooltip location="top">
             <template v-slot:activator="{ props }">
@@ -319,7 +275,7 @@ fetchClients();
               <VList class="card-list" v-else>
                 <VListItem>
                   <VListItemTitle class="font-weight-medium me-4">
-                    <u>{{ (item.name) }}</u>
+                    <u>{{ item.name }}</u>
                   </VListItemTitle>
                   <VListItemSubtitle class="me-4">
                     {{ item.email }}
@@ -331,17 +287,17 @@ fetchClients();
           </v-tooltip>
         </template>
 
-        <!---------- contact_person ---------------->
+        <!-- Contact Person Column -->
         <template #item.contact_person="{ item }">
-          {{ item.contact_person || "Not Availlable" }}
+          {{ item.contact_person || "Not Available" }}
         </template>
 
-        <!---------- Phone ---------------->
+        <!-- Phone Column -->
         <template #item.phone="{ item }">
-          {{ item.phone.substring(0, 5) + "-" + item.phone.substring(5) }}
+          {{ item.phone ? item.phone.substring(0, 5) + "-" + item.phone.substring(5) : "" }}
         </template>
 
-        <!---------- Client Assign ---------------->
+        <!-- Assign To Column -->
         <template #item.assigned_to="{ item }">
           <VSelect v-if="item.assigned_to == null && $can('client', 'assign-to')" :items="assignedToArray"
             v-model="item.assigned_to" item-title="name" item-value="id"
@@ -354,7 +310,7 @@ fetchClients();
           </span>
         </template>
 
-        <!---------- Client Status ---------------->
+        <!-- Status Column -->
         <template #item.status="{ item }">
           <VSelect v-if="item.status == null && $can('client', 'status-update')" :items="status"
             v-model="leadStatusUpdate[item.id]" @update:modelValue="(value) => onStatusChange(item, value)"
@@ -369,30 +325,31 @@ fetchClients();
           </VChip>
         </template>
 
-        <!---------- Date Created ---------------->
+        <!-- Date Column -->
         <template #item.created_at="{ item }">
           {{ dayjs(item.created_at).format("DD/MM/YYYY") }}
         </template>
 
-        <!-------------- Actions -------------------->
+        <!-- Actions Column -->
         <template #item.actions="{ item }">
           <IconBtn @click="editBranch(item)">
-            <VIcon icon="tabler-pencil" />
+            <VIcon icon="tabler-pencil" />x
           </IconBtn>
 
-          <Router-link v-if="$can('client', 'show-client')" :to="{
-            name: 'admin-clients-view-id',
+          <RouterLink :to="{
+            name: 'clients-view',
             params: { id: item.id },
           }">
+
             <VIcon color="secondary" icon="tabler-eye" />
-          </Router-link>
+          </RouterLink>
 
           <IconBtn @click="deleteClient(item.id)">
             <VIcon icon="tabler-trash" />
           </IconBtn>
         </template>
 
-        <!-- pagination -->
+        <!-- Pagination -->
         <template #bottom>
           <Pagination :pagination="pagination" :itemsPerPage="itemsPerPage" @update:itemsPerPage="itemsPerPage = $event"
             @paginate="paginate" />
@@ -400,10 +357,11 @@ fetchClients();
       </VDataTable>
     </VCard>
 
-    <ClientAddNewDrawer v-model:isDrawerOpen="openClientModal" :currentClient="currentClient" @submit="fetchClients"
+    <!-- Client Add/Edit Drawer -->
+    <AddDrawer v-model:isDrawerOpen="openClientModal" :currentClient="currentClient" @submit="fetchClients"
       v-if="openClientModal" :clients="clients" />
-    <AddClientFilterDrawer v-model:isDrawerOpen="openClientFilterModal" @updatebranches="updateFilteredBranches"
-      v-if="openClientFilterModal" :clients="clients" @filterdValue="getFilteredValue" />
+
+
   </section>
 </template>
 

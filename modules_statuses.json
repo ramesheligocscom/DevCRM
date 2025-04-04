@@ -1,0 +1,6 @@
+{
+    "Leads": true,
+    "Clients": true,
+    "SiteVisit": true,
+    "FollowUp": true
+}

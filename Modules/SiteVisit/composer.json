@@ -1,0 +1,30 @@
+{
+    "name": "nwidart/sitevisit",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\SiteVisit\\": "app/",
+            "Modules\\SiteVisit\\Database\\Factories\\": "database/factories/",
+            "Modules\\SiteVisit\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\SiteVisit\\Tests\\": "tests/"
+        }
+    }
+}

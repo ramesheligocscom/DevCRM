@@ -1,10 +1,12 @@
-import apps from './apps'
-import charts from './charts'
-import dashboard from './dashboard'
-import forms from './forms'
-import misc from './misc'
-import pages from './pages'
-import tables from './tables'
-import uiElements from './ui-elements'
+// import appsAndPages from './apps-and-pages';
+// import charts from './charts';
+// import crm from './crm';
+// import dashboard from './dashboard';
+// import forms from './forms';
+// import others from './others';
+// import uiElements from './ui-elements';
 
-export default [...dashboard, ...apps, ...pages, ...uiElements, ...forms, ...tables, ...charts, ...misc]
+// export default [...crm, ...dashboard, ...appsAndPages, ...uiElements, ...forms, ...charts, ...others]
+
+import crm from './crm';
+export default [...crm]

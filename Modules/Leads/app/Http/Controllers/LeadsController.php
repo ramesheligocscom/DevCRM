@@ -3,54 +3,79 @@
 namespace Modules\Leads\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
+use Illuminate\Http\{JsonResponse, Request};
+use Modules\Leads\Models\Leads;
+use Modules\Leads\Http\Requests\{LeadStoreRequest, LeadUpdateRequest};
+use Modules\Leads\Transformers\LeadResource;
+use Symfony\Component\HttpFoundation\Response;
 
 class LeadsController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(Request $request): JsonResponse
     {
-        return view('leads::index');
+        $leads = Leads::query()
+            ->when($request->boolean('with_trashed'), fn($q) => $q->withTrashed())
+            ->when($request->has('status'), fn($q) => $q->filterByStatus($request->status))
+            ->when($request->has('assigned_user'), fn($q) => $q->whereAssignedUser($request->assigned_user))
+            ->when($request->has('source'), fn($q) => $q->where('source', $request->source))
+            ->latest()
+            ->paginate($request->integer('per_page', 15));
+
+        return response()->json([
+            'data' => LeadResource::collection($leads),
+            'meta' => $this->buildPaginationMeta($leads)
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
+    public function store(LeadStoreRequest $request): JsonResponse
     {
-        return view('leads::create');
+        $lead = Leads::createWithAttributes([
+            ...$request->validated(),
+            'created_by' => auth()->id()
+        ]);
+
+        return response()->json([
+            'message' => __('Lead created successfully'),
+            'data' => new LeadResource($lead)
+        ], Response::HTTP_CREATED);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request) {}
-
-    /**
-     * Show the specified resource.
-     */
-    public function show($id)
+    public function show(Lead $lead): JsonResponse
     {
-        return view('leads::show');
+        return response()->json([
+            'data' => new LeadResource($lead->loadRelations())
+        ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit($id)
+    public function update(LeadUpdateRequest $request, Lead $lead): JsonResponse
     {
-        return view('leads::edit');
+        $lead->updateWithAttributes([
+            ...$request->validated(),
+            'last_updated_by' => auth()->id()
+        ]);
+
+        return response()->json([
+            'message' => __('Lead updated successfully'),
+            'data' => new LeadResource($lead->fresh())
+        ]);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, $id) {}
+    public function destroy(Lead $lead): JsonResponse
+    {
+        $lead->softDelete();
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy($id) {}
+        return response()->json([
+            'message' => __('Lead marked as deleted successfully')
+        ]);
+    }
+
+    protected function buildPaginationMeta($paginator): array
+    {
+        return [
+            'current_page' => $paginator->currentPage(),
+            'per_page' => $paginator->perPage(),
+            'total' => $paginator->total(),
+            'last_page' => $paginator->lastPage(),
+        ];
+    }
 }

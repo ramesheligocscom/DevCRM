@@ -37,9 +37,7 @@ return new class extends Migration
             $table->timestampTz('visit_time')->nullable()->comment('Scheduled time for site visit');
 
             // Timestamps
-            $table->timestampTz('created_at')->useCurrent()->comment('When the lead was created');
             $table->string('created_by', 32)->nullable()->comment('User who created the lead');
-            $table->timestampTz('last_updated_at')->nullable()->comment('When the lead was last updated');
             $table->string('last_updated_by', 32)->nullable()->comment('User who last updated the lead');
 
             // Relationship references (as UUIDs)
@@ -48,16 +46,13 @@ return new class extends Migration
             $table->uuid('contract_id')->nullable()->comment('Reference to contracts table');
             $table->uuid('invoice_id')->nullable()->comment('Reference to invoices table');
 
-            // Soft delete flag
-            $table->boolean('is_deleted')->default(false)->comment('Whether the lead is soft deleted');
-
             // Indexes
             $table->index('status');
             $table->index('assigned_user');
             $table->index('client_id');
 
             $table->softDeletes(); // Adds a `deleted_at` column
-
+            $table->timestamps();
         });
     }
 

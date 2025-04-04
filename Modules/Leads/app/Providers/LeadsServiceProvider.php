@@ -26,7 +26,22 @@ class LeadsServiceProvider extends ServiceProvider
         $this->registerTranslations();
         $this->registerConfig();
         $this->registerViews();
+        $this->register();
+        $this->register2();
         $this->loadMigrationsFrom(module_path($this->name, 'database/migrations'));
+    }
+
+    public function register2()
+    {
+        $this->app->bind(
+            \Modules\Leads\Services\LeadService::class,
+            \Modules\Leads\Services\LeadService::class
+        );
+        
+        $this->app->bind(
+            \Modules\Leads\Repositories\LeadRepository::class,
+            \Modules\Leads\Repositories\LeadRepository::class
+        );
     }
 
     /**

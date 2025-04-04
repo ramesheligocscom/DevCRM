@@ -48,7 +48,7 @@ const rememberMe = ref(false)
 const login = async () => {
     loading.value = true;
     try {
-        const response = await $api(`/login`, { method: 'POST', body: { email: credentials.value.email, password: credentials.value.password, remember_me: rememberMe.value }, });
+        const response = await $api(`api/login`, { method: 'POST', body: { email: credentials.value.email, password: credentials.value.password, remember_me: rememberMe.value }, });
         if (response.status) {
             useCookie('userData').value = response.data.user
             useCookie('accessToken').value = response.data.access_token

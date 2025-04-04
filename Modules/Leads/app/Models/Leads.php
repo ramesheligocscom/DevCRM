@@ -31,14 +31,12 @@ class Leads extends Model
         'quotation_id',
         'contract_id',
         'invoice_id',
-        'is_deleted'
     ];
 
     protected $casts = [
         'visit_time' => 'datetime',
-        'is_deleted' => 'boolean',
         'created_at' => 'datetime',
-        'last_updated_at' => 'datetime'
+        'updated_at' => 'datetime',
     ];
 
     public function scopeFilterByStatus($query, $status)

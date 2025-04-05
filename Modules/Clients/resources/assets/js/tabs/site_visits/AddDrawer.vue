@@ -6,16 +6,22 @@ import { PerfectScrollbar } from "vue3-perfect-scrollbar";
 import { toast } from "vue3-toastify";
 import { VForm } from "vuetify/components/VForm";
 import { VBtn } from "vuetify/lib/components/index.mjs";
-import {
-  emailRule,
-  inputNumberRestrict,
-  onlyAlphabetsRule,
-  optionalRequiredRule,
-  requiredRule,
-  validateMobileNumber,
-} from "../validations/validationRules";
 const valid = ref(true);
 const refForm = ref(false);
+
+import dayjs from 'dayjs';
+import { watch } from 'vue';
+
+const visit_time = ref('')
+const menu = ref(false)
+
+// Optional: watch and format the value when date changes
+watch(visit_time, (val) => {
+  if (val) {
+    visit_time.value = dayjs(val).format('YYYY-MM-DD')
+  }
+})
+
 
 const props = defineProps({
   isDrawerOpen: {
@@ -49,35 +55,6 @@ onMounted(() => {
     client.value = _.cloneDeep(props.currentClient);
   }
 });
-
-const fetchMultipleAddress = async (id) => {
-  const data = await $api(`/clients/multiple-address/${id}`);
-  console.log(data.data);
-  if (data?.data) {
-    customer.value.addresses = Object.values(data.data).map((addr) => ({
-      address: addr,
-    }));
-  }
-};
-watch(
-  () => props.currentClient,
-  async (newValue) => {
-    if (newValue) {
-      console.log(newValue.id);
-      client.value = _.cloneDeep(newValue);
-      await fetchMultipleAddress(newValue.id);
-      // console.log(response);
-      // if (response) {
-      //   customer.value.addresses = Object.values(response).map(addr => ({ address: addr }));
-      // }
-    } else {
-      client.value = {
-        name: "",
-      };
-    }
-  },
-  { immediate: true } // Trigger immediately on mount
-);
 
 const emit = defineEmits(["update:isDrawerOpen", "submit"]);
 
@@ -168,38 +145,6 @@ const onSubmit = async () => {
   isSubmitting = false;
 };
 
-const handleMobileInput = (event) => {
-  client.value.phone = inputNumberRestrict(event.target.value, 10);
-};
-
-const convertToLowerCase = (event) => {
-  client.value.email = event.target.value.toLowerCase();
-};
-
-const clientName = computed({
-  get: () => (client.value.name ? client.value.name.split(" - (")[0] : ""), // Extract company name safely
-  set: (newValue) => (client.value.name = newValue), // Allow editing and updating client.name
-});
-
-const formatAddress = () => {
-  if (client.value.address != "") {
-    const words = client.value?.address?.split(/\s+/);
-    const lines = [];
-
-    for (let i = 0; i < words?.length; i += 4) {
-      lines.push(words.slice(i, i + 4).join(" "));
-    }
-    client.value.address = lines.join("\n");
-  }
-};
-
-const addAddress = () => {
-  customer.value.addresses.push({ address: "" });
-};
-
-const removeAddress = (index) => {
-  customer.value.addresses.splice(index, 1);
-};
 
 const statusOptions = [
   { text: "Active", value: "active" },
@@ -250,41 +195,27 @@ const Status = ref("");
     <div v-if="isDrawerOpen" class="backdrop"></div>
     <VNavigationDrawer permanent :width="500" location="end" class="scrollable-content"
       :model-value="props.isDrawerOpen" @update:model-value="handleDrawerModelValueUpdate">
-      <AppDrawerHeaderSection :title="currentClient ? 'Edit Client' : 'Add Client'" @cancel="closeNavigationDrawer" />
-
+      <AppDrawerHeaderSection :title="currentClient ? 'Edit Sites Visit' : 'Add Sites Visit'"
+        @cancel="closeNavigationDrawer" />
       <VDivider />
-
       <PerfectScrollbar :options="{ wheelPropagation: false }">
         <VCard class="department_card">
           <VForm ref="refForm" v-model="valid" @submit.prevent="onSubmit">
             <VRow>
               <VCol cols="12">
-                <AppTextField v-model="clientName" :rules="[...requiredRule]" label="Name" placeholder="Name"
-                  autofocus />
+                <VMenu v-model="menu" :close-on-content-click="false" transition="scale-transition" offset-y
+                  min-width="auto">
+                  <template #activator="{ props }">
+                    <AppTextField v-model="visit_time" label="Visit Time" placeholder="Visit Time" v-bind="props"
+                      readonly prepend-inner-icon="tabler-calendar" />
+                  </template>
+
+                  <VDatePicker v-model="visit_time" @input="menu = false" />
+                </VMenu>
               </VCol>
               <VCol cols="12">
-                <AppTextField :rules="onlyAlphabetsRule" v-model="client.contact_person" label="Contact Person *"
-                  placeholder="Contact Person" />
-              </VCol>
-              <VCol cols="12">
-                <AppTextField v-model="client.contact_person_role" label="Contact Person Role"
-                  placeholder="Contact Person Role" autofocus />
-              </VCol>
-              <VCol cols="12">
-                <AppTextField v-model="client.email" :rules="emailRule" @input="convertToLowerCase" label="Email"
-                  placeholder="Email" type="email" />
-              </VCol>
-              <VCol cols="12">
-                <AppTextField v-model="client.phone" :rules="[optionalRequiredRule, ...validateMobileNumber]"
-                  @input="handleMobileInput" label="Phone *" placeholder="Phone" />
-              </VCol>
-              <VCol cols="12">
-                <VSelect v-model="client.status" :items="statusOptions" :rules="requiredRule" label="Status"
-                  placeholder="Select Status *" item-title="text" item-value="value" clearable />
-              </VCol>
-              <VCol cols="12">
-                <VSelect v-model="client.assigned_user" :items="userOptions" :rules="requiredRule" label="Assigned User"
-                  placeholder="Select Assigned User *" item-title="name" item-value="id" clearable>
+                <VSelect v-model="client.visit_assignee" :items="userOptions" label="Visit Assignee"
+                  placeholder="visit_assignee *" item-title="name" item-value="id" clearable>
                   <template #selection="{ item }">
                     <span>{{ item.title }}</span>
                   </template>
@@ -294,35 +225,50 @@ const Status = ref("");
                 </VSelect>
               </VCol>
               <VCol cols="12">
-                <div v-for="(address, index) in customer.addresses" :key="index" class="mb-4 d-flex align-center">
-                  <app-textarea v-model="customer.addresses[index].address" label="Address *" :rules="requiredRule"
-                    rows="1" auto-grow class="small-textarea" placeholder="Address" />
-                  <v-btn icon @click="addAddress" v-if="index === customer.addresses.length - 1" class="mt-5 ml-2"
-                    variant="tonal" size="small">
-                    <v-icon icon="tabler-plus" />
-                  </v-btn>
-                  <v-btn icon @click="removeAddress(index)" v-if="customer.addresses.length > 1" class="mt-5 mx-3"
-                    variant="tonal" size="small">
-                    <v-icon icon="tabler-minus" />
-                  </v-btn>
-                </div>
+                <VSelect v-model="client.status" :items="statusOptions" label="Status" placeholder="Select Status *"
+                  item-title="text" item-value="value" clearable />
               </VCol>
+              <VCol cols="12">
+                <AppTextField v-model="visit_time" label="Visit Notes" placeholder=" Visit Notes" autofocus />
+              </VCol>
+              <VCol cols="12">
+                <VSelect v-model="client.client_id" :items="userOptions" label="Client" placeholder="Select Client"
+                  item-title="name" item-value="id" clearable>
+                  <!-- Simplified item template -->
+                  <template #item="{ item }">
+                    <VListItem :title="item.raw.name" :subtitle="item.raw.email" />
+                  </template>
+                </VSelect>
+              </VCol>
+              <VCol cols="12">
+                <VSelect v-model="client.lead_id" :items="userOptions" label="Lead" placeholder="Select Lead"
+                  item-title="name" item-value="id" clearable>
+                  <template #selection="{ item }">
+                    <span>{{ item.title }}</span>
+                  </template>
+                  <template #item="{ props, item }">
+                    <VListItem v-bind="props" :title="item.raw.name" :subtitle="item.raw.email"></VListItem>
+                  </template>
+                </VSelect>
+              </VCol>
+
+
+              <!-- <VCol cols="12">
+                <VSelect v-model="client.assigned_user" :items="userOptions" label="Assigned User"
+                  placeholder="Select Assigned User *" item-title="name" item-value="id" clearable>
+                  <template #selection="{ item }">
+                    <span>{{ item.title }}</span>
+                  </template>
+                  <template #item="{ props, item }">
+                    <VListItem v-bind="props" :title="item.raw.name" :subtitle="item.raw.email"></VListItem>
+                  </template>
+                </VSelect>
+              </VCol> -->
+
               <VCol cols="12">
                 <VBtn type="submit" class="me-3">
                   {{ currentClient ? "Update" : "Submit" }}
                 </VBtn>
-
-                <!-- <VBtn v-if="
-                  ((!currentClient && $can('client', 'create-client')) ||
-                    (currentClient && $can('client', 'edit-client'))) &&
-                  !isLoading
-                " type="submit" class="me-3">
-                  {{ currentClient ? "Update" : "Submit" }}
-                </VBtn> -->
-                <!-- <VBtn class="me-3" v-else>
-                  <v-progress-circular color="light" :width="4" :size="20" indeterminate
-                    class="mr-2"></v-progress-circular>{{ currentClient ? "Update" : "Submit" }}
-                </VBtn> -->
               </VCol>
             </VRow>
           </VForm>
@@ -342,7 +288,7 @@ const Status = ref("");
 }
 
 .addresAdd {
-  padding: 4px;
   cursor: pointer;
+  padding: 4px;
 }
 </style>

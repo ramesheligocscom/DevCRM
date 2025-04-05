@@ -4,7 +4,9 @@ namespace Modules\Leads\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\{JsonResponse, Request};
-use Modules\Leads\Models\Leads;
+use Modules\Leads\Models\Leads as Lead;
+use Modules\Clients\Models\Client;
+
 use Modules\Leads\Http\Requests\{LeadStoreRequest, LeadUpdateRequest};
 use Modules\Leads\Transformers\LeadResource;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,7 +15,7 @@ class LeadsController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $leads = Leads::query()
+        $leads = Lead::query()
             ->when($request->boolean('with_trashed'), fn($q) => $q->withTrashed())
             ->when($request->has('status'), fn($q) => $q->filterByStatus($request->status))
             ->when($request->has('assigned_user'), fn($q) => $q->whereAssignedUser($request->assigned_user))
@@ -29,7 +31,7 @@ class LeadsController extends Controller
 
     public function store(LeadStoreRequest $request): JsonResponse
     {
-        $lead = Leads::createWithAttributes([
+        $lead = Lead::createWithAttributes([
             ...$request->validated(),
             'created_by' => auth()->id()
         ]);
@@ -78,4 +80,31 @@ class LeadsController extends Controller
             'last_page' => $paginator->lastPage(),
         ];
     }
+
+    public function clientsByLead($leadId, Request $request)
+    {
+        $query = Client::where('lead_id', $leadId);
+
+        if ($search = $request->input('search')) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%$search%")
+                ->orWhere('email', 'like', "%$search%")
+                ->orWhere('phone', 'like', "%$search%");
+            });
+        }
+
+        if ($request->filled('sort_key')) {
+            $query->orderBy($request->input('sort_key'), $request->input('sort_order', 'asc'));
+        }
+
+        $clients = $query->latest()
+        ->paginate($request->integer('per_page', 15));
+
+        return response()->json([
+            'data' => $clients->items(),
+            'meta' => $this->buildPaginationMeta($clients)
+        ]);
+
+    }
+
 }

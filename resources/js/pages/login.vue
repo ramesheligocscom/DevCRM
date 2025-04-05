@@ -29,8 +29,8 @@ const refVForm = ref()
 const loading = ref(false)
 const errors = ref({})
 const credentials = ref({
-    email: 'test@example.com',
-    password: 'password',
+    email: 'admin@eligocs.com',
+    password: 'qwerty123',
 })
 
 const routeList = ref([
@@ -48,7 +48,7 @@ const rememberMe = ref(false)
 const login = async () => {
     loading.value = true;
     try {
-        const response = await $api(`api/login`, { method: 'POST', body: { email: credentials.value.email, password: credentials.value.password, remember_me: rememberMe.value }, });
+        const response = await $api(`/login`, { method: 'POST', body: { email: credentials.value.email, password: credentials.value.password, remember_me: rememberMe.value }, });
         if (response.status) {
             useCookie('userData').value = response.data.user
             useCookie('accessToken').value = response.data.access_token
@@ -97,8 +97,8 @@ const login = async () => {
             loading.value = false;
         }
     } catch (error) {
-    loading.value = false;
-    toast.error(error?.response?._data?.message || error?.data?.message || error?.message || 'An error occurred.');
+        loading.value = false;
+        toast.error(error?.response?._data?.message || error?.data?.message || error?.message || 'An error occurred.');
     }
 }
 

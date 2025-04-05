@@ -21,4 +21,10 @@ class AppServiceProvider extends ServiceProvider
     {
         //
     }
+
+    function module_exists(string $moduleName): bool
+    {
+        return \Module::has($moduleName) && \Module::isEnabled($moduleName);
+    }
+    
 }

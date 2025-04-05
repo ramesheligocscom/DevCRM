@@ -36,7 +36,7 @@ class AuthController extends Controller
             $user = User::where('email', $request->email)
                 ->first();
 
-            if (!$user || !Hash::check($request->password, $user->password)) {
+                if (!$user || !Hash::check($request->password, $user->password)) {
                 return $this->actionFailure('Invalid credentials. Please check your email or password.');
             }
 

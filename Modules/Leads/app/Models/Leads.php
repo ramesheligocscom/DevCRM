@@ -61,7 +61,7 @@ class Leads extends Model
     public function updateWithAttributes(array $attributes)
     {
         return $this->update(array_merge($attributes, [
-            'last_updated_at' => now(),
+            'updated_at' => now(),
         ]));
     }
 
@@ -70,7 +70,7 @@ class Leads extends Model
         return $this->update([
             'is_deleted' => true,
             'last_updated_by' => auth()->id(),
-            'last_updated_at' => now(),
+            'updated_at' => now(),
         ]);
     }
 

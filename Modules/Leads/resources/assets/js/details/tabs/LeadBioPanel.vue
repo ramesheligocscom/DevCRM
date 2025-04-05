@@ -7,30 +7,6 @@ const props = defineProps({
   },
 })
 
-const isUserInfoEditDialogVisible = ref(false)
-
-// Prepare lead data for editing
-const LeadData = {
-  name: props.LeadData.name,
-  contact_person: props.LeadData.contact_person || '',
-  contact_person_role: props.LeadData.contact_person_role || '',
-  email: props.LeadData.email,
-  phone: props.LeadData.phone || '',
-  address: props.LeadData.address || '',
-  status: props.LeadData.status,
-  source: props.LeadData.source || '',
-  assigned_user: props.LeadData.assigned_user || '',
-  note: props.LeadData.note || '',
-  visit_assignee: props.LeadData.visit_assignee || '',
-  visit_time: props.LeadData.visit_time || '',
-  created_by: props.LeadData.created_by || '',
-  last_updated_by: props.LeadData.last_updated_by || '',
-  client_id: props.LeadData.client_id || null,
-  quotation_id: props.LeadData.quotation_id || null,
-  contract_id: props.LeadData.contract_id || null,
-  invoice_id: props.LeadData.invoice_id || null,
-}
-
 const clientName = computed(() => props.LeadData.client?.name || `ID: ${props.LeadData.client_id || 'N/A'}`)
 const quotationName = computed(() => props.LeadData.quotation?.name || `ID: ${props.LeadData.quotation_id || 'N/A'}`)
 const contractName = computed(() => props.LeadData.contract?.name || `ID: ${props.LeadData.contract_id || 'N/A'}`)
@@ -199,17 +175,12 @@ const invoiceName = computed(() => props.LeadData.invoice?.name || `ID: ${props.
 
         </VCardText>
 
-        <VCardText class="text-center">
-          <VBtn block @click="isUserInfoEditDialogVisible = !isUserInfoEditDialogVisible">
-            Edit Details
-          </VBtn>
-        </VCardText>
+
       </VCard>
     </VCol>
     <!-- !SECTION -->
 
   </VRow>
-  <UserInfoEditDialog v-model:isDialogVisible="isUserInfoEditDialogVisible" :user-data="LeadData" />
 </template>
 
 <style lang="scss" scoped>

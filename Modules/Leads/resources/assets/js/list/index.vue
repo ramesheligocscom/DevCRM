@@ -1,14 +1,16 @@
 <script setup>
-import AddDrawer from '../add/AddDrawer.vue'
-
+import AddEditDrawer from '../add/AddEditDrawer.vue'
+import ConfirmDialog from '../dialog/ConfirmDialog.vue'
 const searchQuery = ref('')
-const isAddDrawerOpen = ref(false)
+const isAddEditDrawerOpen = ref(false)
+const isDeleteDialogOpen = ref(false)
 
 // Data table options
 const itemsPerPage = ref(10)
 const page = ref(1)
 const sortBy = ref()
 const orderBy = ref()
+const currentLead = ref(null);
 
 // Data table Headers
 const headers = [
@@ -31,7 +33,13 @@ const headers = [
   // { title: 'CONTRACT ID', key: 'contract_id' },
   // { title: 'INVOICE ID', key: 'invoice_id' },
   // { title: 'IS DELETED', key: 'is_deleted' },
+  { title: 'ACTIONS', key: 'actions' }
 ]
+
+const editBranch = (item) => {
+  currentLead.value = JSON.parse(JSON.stringify(item));
+  isAddEditDrawerOpen.value = true;
+};
 
 const resolveStatusVariant = status => {
   if (status === 1) return { color: 'primary', text: 'Current' }
@@ -44,12 +52,38 @@ const resolveStatusVariant = status => {
 const updateOptions = options => {
   sortBy.value = options.sortBy[0]?.key
   orderBy.value = options.sortBy[0]?.order
+  fetchLeads();
+}
+const dataItems = ref([])
+const totalItems = ref(0)
+
+const fetchLeads = async () => {
+  try {
+    const response = await $api(
+      `/leads?search=${searchQuery.value ?? ""}&page=${page.value}&sort_key=${sortBy.value ?? ""}&sort_order=${orderBy.value ?? ""}&per_page=${itemsPerPage.value}`
+    )
+
+    dataItems.value = response.data
+    totalItems.value = response.meta.total
+  } catch (err) {
+    console.error('Failed to fetch leads:', err)
+    // Optionally show a toast
+    toast.error('Failed to load leads')
+  }
 }
 
-const response = await $api(`/leads?search=${searchQuery.value ?? ""}&page=${page}&sort_key=${sortBy.value ?? ""}&sort_order=${orderBy.value ?? ""}&per_page=${itemsPerPage.value}`);
+const addLead = (item) => {
+  currentLead.value = null;
+  isAddEditDrawerOpen.value = true;
+}
 
-const dataItems = computed(() => response.data)
-const totalItems = computed(() => response.meta.total)
+const openDeleteDialog = (item) => {
+  currentLead.value = JSON.parse(JSON.stringify(item));
+  isDeleteDialogOpen.value = true;
+}
+
+fetchLeads();
+
 </script>
 
 <template>
@@ -65,7 +99,7 @@ const totalItems = computed(() => response.meta.total)
             <VBtn prepend-icon="tabler-upload" variant="tonal" color="secondary">
               Export
             </VBtn>
-            <VBtn prepend-icon="tabler-plus" @click="isAddDrawerOpen = !isAddDrawerOpen">
+            <VBtn prepend-icon="tabler-plus" @click="addLead()">
               Add New
             </VBtn>
           </div>
@@ -92,6 +126,16 @@ const totalItems = computed(() => response.meta.total)
             </div>
           </div>
         </template>
+        <!-- Actions Column -->
+        <template #item.actions="{ item }">
+          <IconBtn @click="editBranch(item)">
+            <VIcon icon="tabler-pencil" />
+          </IconBtn>
+
+          <IconBtn @click="openDeleteDialog(item)">
+            <VIcon icon="tabler-trash" />
+          </IconBtn>
+        </template>
         <!-- status -->
         <template #item.status="{ item }">
           <VChip :color="resolveStatusVariant(item.status).color" size="small">
@@ -104,6 +148,13 @@ const totalItems = computed(() => response.meta.total)
       </VDataTableServer>
     </VCard>
 
-    <AddDrawer v-model:is-drawer-open="isAddDrawerOpen" />
+    <!-- 👉 Confirm Dialog -->
+    <ConfirmDialog v-model:isDialogVisible="isDeleteDialogOpen" cancel-title="Delete" confirm-title="Delete!"
+      confirm-msg="Lead deleted successfully." confirmation-question="Are you sure want to delete lead?"
+      cancel-msg="Lead Deletion Cancelled!!" :currentLead="currentLead" @submit="fetchLeads"
+      @close="isDeleteDialogOpen = false" />
+
+    <AddEditDrawer v-model:is-drawer-open="isAddEditDrawerOpen" :currentLead="currentLead" @submit="fetchLeads"
+      @close="isAddEditDrawerOpen = false" />
   </div>
 </template>

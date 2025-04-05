@@ -342,7 +342,7 @@ const Status = ref("");
 }
 
 .addresAdd {
-  cursor: pointer;
   padding: 4px;
+  cursor: pointer;
 }
 </style>

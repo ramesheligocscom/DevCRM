@@ -2,5 +2,6 @@
     "Leads": true,
     "Clients": true,
     "SiteVisit": true,
-    "FollowUp": true
+    "FollowUp": true,
+    "RolePermission": true
 }

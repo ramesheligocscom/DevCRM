@@ -29,8 +29,8 @@ const refVForm = ref()
 const loading = ref(false)
 const errors = ref({})
 const credentials = ref({
-  email: 'test@example.com',
-  password: 'password',
+  email: 'admin@eligocs.com',
+  password: 'qwerty123',
 })
 
 const routeList = ref([

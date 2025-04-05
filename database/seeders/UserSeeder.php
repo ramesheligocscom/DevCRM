@@ -20,6 +20,13 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+
+         // User::factory(10)->create();
+         User::factory()->create([
+            'name' => 'Test User',
+            'email' => 'test@example.com',
+        ]);
+        return ;
         $roles = RolePermissionConst::ROLE_LIST;
 
         $users = [
@@ -34,9 +41,9 @@ class UserSeeder extends Seeder
                 "roles" => [RolePermissionConst::SLUG_SUPER_ADMIN],
             ],
             [
-                'name' => 'Pankaj Sharma',
-                'email' => 'admin@eligocs.com',
-                'user_name' => 'super_admin',
+                'name' => 'Admin',
+                'email' => 'admin1@eligocs.com',
+                'user_name' => 'admin',
                 'password' => Hash::make('qwerty123'),
                 'avatar' => null,
                 'status' => User::ACTIVE,

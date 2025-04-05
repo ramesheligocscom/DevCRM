@@ -29,8 +29,11 @@ const refVForm = ref()
 const loading = ref(false)
 const errors = ref({})
 const credentials = ref({
-  email: 'admin@eligocs.com',
-  password: 'qwerty123',
+  // email: 'admin@eligocs.com',
+  // password: 'qwerty123',
+  email: 'test@example.com',
+  password: 'password',
+
 })
 
 const routeList = ref([
@@ -90,7 +93,7 @@ const login = async () => {
       if (allowedRoute) {
         window.location.href = allowedRoute.route;
       } else {
-        router.push("/dashboards/crm");
+        router.push("/leads");
       }
     } else {
       toast.error(response.message);

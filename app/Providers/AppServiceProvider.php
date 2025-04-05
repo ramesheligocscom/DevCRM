@@ -59,4 +59,10 @@ class AppServiceProvider extends ServiceProvider
         # Listen to logout event
         Event::listen(Logout::class, fn($event) => $logEvent($event->user->uuid, 'logout', true));
     }
+
+    function module_exists(string $moduleName): bool
+    {
+        return \Module::has($moduleName) && \Module::isEnabled($moduleName);
+    }
+    
 }

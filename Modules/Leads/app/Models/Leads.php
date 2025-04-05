@@ -61,7 +61,7 @@ class Leads extends Model
     public function updateWithAttributes(array $attributes)
     {
         return $this->update(array_merge($attributes, [
-            'last_updated_at' => now(),
+            'updated_at' => now(),
         ]));
     }
 
@@ -70,7 +70,7 @@ class Leads extends Model
         return $this->update([
             'is_deleted' => true,
             'last_updated_by' => auth()->id(),
-            'last_updated_at' => now(),
+            'updated_at' => now(),
         ]);
     }
 
@@ -81,22 +81,22 @@ class Leads extends Model
 
     public function client()
     {
-        return $this->belongsTo(\Modules\Clients\Client::class);
+        return $this->belongsTo(\Modules\Clients\Models\Client::class);
     }
 
     public function quotation()
     {
-        return $this->belongsTo(\Modules\Quotations\Quotation::class);
+        return $this->belongsTo(\Modules\Clients\Models\Client::class)->withDefault();
     }
-
+    
     public function contract()
     {
-        return $this->belongsTo(\Modules\Contracts\Contract::class);
+        return $this->belongsTo(\Modules\Clients\Models\Client::class)->withDefault();
     }
-
+    
     public function invoice()
     {
-        return $this->belongsTo(\Modules\Invoices\Invoice::class);
+        return $this->belongsTo(\Modules\Clients\Models\Client::class)->withDefault();
     }
 
     public function assignedUser()

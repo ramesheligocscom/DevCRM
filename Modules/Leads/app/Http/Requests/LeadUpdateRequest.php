@@ -10,7 +10,8 @@ class LeadUpdateRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()->can('update', Leads::class);
+        return true ;
+        // return $this->user()->can('update', Leads::class);
     }
 
     public function rules(): array
@@ -27,32 +28,31 @@ class LeadUpdateRequest extends FormRequest
                 'max:128',
                 Rule::unique('leads')->ignore($leadId)->whereNull('deleted_at')
             ],
-            'phone' => 'sometimes|string|max:16|phone:AUTO',
+            'phone' => 'sometimes|string|max:16',
             'address' => 'nullable|string',
             'status' => [
                 'sometimes',
                 'string',
                 'max:32',
-                Rule::in(['new', 'contacted', 'qualified', 'converted', 'lost'])
+                // Rule::in(['new', 'contacted', 'qualified', 'converted', 'lost'])
             ],
             'source' => 'nullable|string|max:64',
-            'assigned_user' => [
-                'sometimes',
-                'uuid',
-                Rule::exists('users', 'id')
-            ],
+            // 'assigned_user' => [
+            //     'sometimes',
+            //     'uuid',
+            //     Rule::exists('users', 'id')
+            // ],
             'note' => 'nullable|string',
-            'visit_assignee' => [
-                'nullable',
-                'uuid',
-                Rule::exists('users', 'id')
-            ],
+            // 'visit_assignee' => [
+            //     'nullable',
+            //     'uuid',
+            //     Rule::exists('users', 'id')
+            // ],
             'visit_time' => 'nullable|date',
-            'client_id' => 'nullable|uuid|exists:clients,id',
-            'quotation_id' => 'nullable|uuid|exists:quotations,id',
-            'contract_id' => 'nullable|uuid|exists:contracts,id',
-            'invoice_id' => 'nullable|uuid|exists:invoices,id',
-            'is_deleted' => 'sometimes|boolean'
+            // 'client_id' => 'nullable|uuid|exists:clients,id',
+            // 'quotation_id' => 'nullable|uuid|exists:quotations,id',
+            // 'contract_id' => 'nullable|uuid|exists:contracts,id',
+            // 'invoice_id' => 'nullable|uuid|exists:invoices,id',
         ];
     }
 

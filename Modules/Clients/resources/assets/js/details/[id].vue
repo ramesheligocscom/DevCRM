@@ -1,32 +1,18 @@
 <script setup>
-import ECommerceAddCustomerDrawer from '@/views/apps/ecommerce/ECommerceAddCustomerDrawer.vue'
-import CustomerBioPanel from '@/views/apps/ecommerce/customer/view/CustomerBioPanel.vue'
-import CustomerTabAddressAndBilling from '@/views/apps/ecommerce/customer/view/CustomerTabAddressAndBilling.vue'
-import CustomerTabNotification from '@/views/apps/ecommerce/customer/view/CustomerTabNotification.vue'
-import CustomerTabOverview from '@/views/apps/ecommerce/customer/view/CustomerTabOverview.vue'
-import CustomerTabSecurity from '@/views/apps/ecommerce/customer/view/CustomerTabSecurity.vue'
-
-const route = useRoute('lead-details-id')
+import CustomerTabOverview from '../tabs/site_visits/TabsiteVisits.vue';
+const route = useRoute('clients-view')
 const customerData = ref()
 const userTab = ref(null)
 
 const tabs = [
   {
-    title: 'Overview',
-    icon: 'tabler-user',
-  },
-  {
-    title: 'Security',
-    icon: 'tabler-lock',
-  },
-  {
-    title: 'Address & Billing',
+    title: 'Site visits',
     icon: 'tabler-map-pin',
   },
   {
-    title: 'Notifications',
-    icon: 'tabler-bell',
-  },
+    title: 'FolloW Up',
+    icon: 'tabler-phone-call',
+  }
 ]
 
 const { data } = await useApi(`/apps/ecommerce/customers/${route.params.id}`)
@@ -49,16 +35,16 @@ const isAddCustomerDrawerOpen = ref(false)
       </div>
       <div class="d-flex gap-4">
         <VBtn variant="tonal" color="error">
-          Delete Customer
+          Delete Clients
+        </VBtn>
+        <VBtn variant="tonal" color="primary" @click="isAddCustomerDrawerOpen = true">
+          Edit Clients
         </VBtn>
       </div>
     </div>
     <!-- 👉 Customer Profile  -->
-    <VRow v-if="customerData">
-      <VCol v-if="customerData" cols="12" md="5" lg="4">
-        <CustomerBioPanel :customer-data="customerData" />
-      </VCol>
-      <VCol cols="12" md="7" lg="8">
+    <VRow>
+      <VCol cols="12" md="12" lg="12">
         <VTabs v-model="userTab" class="v-tabs-pill mb-3 disable-tab-transition">
           <VTab v-for="tab in tabs" :key="tab.title">
             <VIcon size="20" start :icon="tab.icon" />
@@ -70,22 +56,10 @@ const isAddCustomerDrawerOpen = ref(false)
             <CustomerTabOverview />
           </VWindowItem>
           <VWindowItem>
-            <CustomerTabSecurity />
-          </VWindowItem>
-          <VWindowItem>
-            <CustomerTabAddressAndBilling />
-          </VWindowItem>
-          <VWindowItem>
-            <CustomerTabNotification />
+            <!-- <CustomerTabSecurity /> -->
           </VWindowItem>
         </VWindow>
       </VCol>
     </VRow>
-    <div v-else>
-      <VAlert type="error" variant="tonal">
-        Invoice with ID {{ route.params.id }} not found!
-      </VAlert>
-    </div>
-    <ECommerceAddCustomerDrawer v-model:is-drawer-open="isAddCustomerDrawerOpen" />
   </div>
 </template>

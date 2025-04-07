@@ -6,6 +6,7 @@ const isAddEditDrawerOpen = ref(false)
 const isDeleteDialogOpen = ref(false)
 
 // Data table options
+
 const itemsPerPage = ref(10)
 const page = ref(1)
 const sortBy = ref()
@@ -13,27 +14,24 @@ const orderBy = ref()
 const currentLead = ref(null);
 
 // Data table Headers
-const headers = [
-  { title: 'NAME', key: 'name' },
-  { title: 'CONTACT PERSON', key: 'contact_person' },
-  { title: 'CONTACT PERSON ROLE', key: 'contact_person_role' },
-  // { title: 'EMAIL', key: 'email' },
-  { title: 'PHONE', key: 'phone' },
-  // { title: 'ADDRESS', key: 'address' },
-  { title: 'STATUS', key: 'status' },
-  { title: 'SOURCE', key: 'source' },
-  { title: 'ASSIGNED USER', key: 'assigned_user' },
-  // { title: 'NOTE', key: 'note' },
-  // { title: 'VISIT ASSIGNEE', key: 'visit_assignee' },
-  // { title: 'VISIT TIME', key: 'visit_time' },
-  // { title: 'CREATED BY', key: 'created_by' },
-  // { title: 'LAST UPDATED BY', key: 'last_updated_by' },
-  // { title: 'CLIENT ID', key: 'client_id' },
-  // { title: 'QUOTATION ID', key: 'quotation_id' },
-  // { title: 'CONTRACT ID', key: 'contract_id' },
-  // { title: 'INVOICE ID', key: 'invoice_id' },
-  { title: 'ACTIONS', key: 'actions' }
-]
+// const headers = [
+//   { title: 'NAME', key: 'name' },
+//   { title: 'CONTACT PERSON', key: 'contact_person' },
+//   { title: 'CONTACT PERSON ROLE', key: 'contact_person_role' },
+//   { title: 'PHONE', key: 'phone' },
+//   { title: 'STATUS', key: 'status' },
+//   { title: 'SOURCE', key: 'source' },
+//   { title: 'ASSIGNED USER', key: 'assigned_user' },
+//   { title: 'ACTIONS', key: 'actions' }
+// ]
+
+const tableHeaderSlug = ref('lead-list');
+const headers = ref([]);
+const getFilteredHeaderValue = async (headerList) => {
+  headers.value = headerList;
+  console.log('headers.value', headers.value);
+};
+ 
 
 const editBranch = (item) => {
   currentLead.value = JSON.parse(JSON.stringify(item));
@@ -101,13 +99,17 @@ fetchLeads();
             <VBtn prepend-icon="tabler-plus" @click="addLead()">
               Add New
             </VBtn>
+
+            <!-- Filter Header Btn FilterHeaderTableBtn -->
+            <FilterHeaderTableBtn :slug="tableHeaderSlug" @filterHeaderValue="getFilteredHeaderValue" />
           </div>
         </div>
       </VCardText>
 
       <VDivider />
       <VDataTableServer v-model:items-per-page="itemsPerPage" v-model:page="page" :items="dataItems" item-value="name"
-        :headers="headers" :items-length="totalItems" show-select class="text-no-wrap" @update:options="updateOptions">
+        :headers="headers.filter((header) => header.checked)" :items-length="totalItems" show-select
+        class="text-no-wrap" @update:options="updateOptions">
         <template #item.name="{ item }">
           <div class="d-flex align-center gap-x-3">
             <VAvatar size="34" :variant="!item.avatar ? 'tonal' : undefined">

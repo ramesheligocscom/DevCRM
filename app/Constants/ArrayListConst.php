@@ -7,6 +7,24 @@ class ArrayListConst
     # TODO: this list Slug Plz make Unique And Change slug to plz Check Vue or js file in change slug 
     const HEADER_MANAGE_LIST = [
         [
+            'title' => 'lead List',
+            'slug' => 'lead-list',
+            'table' => 'leads',
+            'headers' => [
+                ['title' => 'Name', 'key' => 'name', 'sortable' => true, 'align' => 'left', 'minWidth' => '140px', 'checked' => true],
+                ['title' => 'Contact Person', 'key' => 'contact_person', 'sortable' => true, 'align' => 'left', 'checked' => true],
+                ['title' => 'Contact Person Role', 'key' => 'contact_person_role', 'sortable' => true, 'align' => 'left', 'checked' => true],
+                ['title' => 'Phone', 'key' => 'phone', 'sortable' => true, 'align' => 'left', 'checked' => true],
+                ['title' => 'Source', 'key' => 'source', 'sortable' => true, 'align' => 'left', 'checked' => true],
+                ['title' => 'Address', 'key' => 'address', 'sortable' => false, 'align' => 'left', 'checked' => true],
+                ['title' => 'Assigned To', 'key' => 'assigned_user', 'sortable' => true, 'align' => 'left', 'checked' => true],
+                ['title' => 'Lead Status', 'key' => 'status', 'sortable' => true, 'align' => 'left', 'checked' => true],
+                ['title' => 'Created By', 'key' => 'created_by', 'sortable' => true, 'align' => 'left', 'checked' => true],
+                ['title' => 'Last Updated By', 'key' => 'last_updated_by', 'sortable' => true, 'align' => 'left', 'checked' => true],
+                ['title' => 'Action', 'key' => 'action', 'sortable' => false, 'align' => 'center', 'checked' => true],
+            ]
+        ],
+        [
             'title' => 'Notification List',
             'slug' => 'notification-list',
             'table' => 'notifications',
@@ -18,6 +36,7 @@ class ArrayListConst
                 ['title' => 'Is Read', 'key' => 'is_read', 'sortable' => false, 'align' => 'left', 'checked' => true],
                 ['title' => 'Message', 'key' => 'message', 'sortable' => true, 'align' => 'left', 'checked' => true],
                 ['title' => 'Created At', 'key' => 'created_at', 'sortable' => true, 'align' => 'left', 'checked' => true],
+                ['title' => 'Created By', 'key' => 'made_by', 'sortable' => false, 'align' => 'left', 'checked' => true],
                 ['title' => 'Action', 'key' => 'action', 'sortable' => false, 'align' => 'center', 'checked' => true],
             ]
         ],

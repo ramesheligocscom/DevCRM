@@ -145,7 +145,7 @@ function createTableHeaderManage($slug)
 
     $header = TableHeaderManage::updateOrCreate(
         [
-            'user_id' => Auth::id(),
+            'user_id' => Auth::user()->uuid,
             'slug' => $slug,
         ],
         [
@@ -153,6 +153,23 @@ function createTableHeaderManage($slug)
             'table' => $info['table'],
             'headers' => json_encode($info['headers'])
         ]
+    );
+
+    return $header;
+}
+
+function syncAllUserTableHeaderManage($slug)
+{
+    $list = ArrayListConst::HEADER_MANAGE_LIST ?? [];
+
+    # Find matching entry
+
+    $info = collect($list)->firstWhere(fn($item) => $item['slug'] === $slug);
+
+    if (!$info) return false;
+
+    $header = TableHeaderManage::where('slug', $slug)->update(
+        ['title' => $info['title'], 'table' => $info['table'], 'headers' => json_encode($info['headers'])]
     );
 
     return $header;
@@ -203,7 +220,7 @@ function statusChangeGoNotification($lead, $quotation, $status)
 
 function createNotification($title, $module_type, $module_id = null, $show_ids = null, $event_ids = null, $message = null)
 {
-    $user_id = Auth::uuid();
+    $user_id = Auth::user()->uuid;
 
     # Ensure show_ids is an array
     $show_ids = is_array($show_ids) ? array_unique($show_ids) : [];

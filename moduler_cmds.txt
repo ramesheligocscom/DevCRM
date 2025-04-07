@@ -7,6 +7,8 @@ php artisan module:make-resource InvoiceResource Invoices
 php artisan module:make-service InvoiceService Invoices
 php artisan module:make-repository InvoiceRepository Invoices
 
+
+# not use this cmd
 php artisan module:make-factory InvoiceFactory Invoices
 php artisan module:make-seed InvoicesTableSeeder Invoices
 php artisan module:migrate Invoices

@@ -156,7 +156,7 @@ const resolveStatusVariant = (status) => {
 </script>
 
 <template>
-  <div v-if="$can('client', 'show-client')">
+  <div v-if="$can('client', 'show')">
     <VContainer>
       <VRow>
         <transition :css="false" @before-enter="beforeEnter" @enter="enter" @leave="leave">

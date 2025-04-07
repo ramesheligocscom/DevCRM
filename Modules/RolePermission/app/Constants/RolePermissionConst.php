@@ -119,10 +119,10 @@ class RolePermissionConst
                 [
                     'name' => 'Manage Roles',
                     "permission_list" => [
+                        ["name" => 'View Role', "action" => "role", "slug" => 'view'],
                         ["name" => 'Add Role', "action" => "role", "slug" => 'create'],
                         ["name" => 'Edit Role', "action" => "role", "slug" => 'edit'],
                         ["name" => 'Delete Role', "action" => "role", "slug" => 'delete'],
-                        ["name" => 'View Role', "action" => "role", "slug" => 'view'],
                     ]
                 ]
             ]

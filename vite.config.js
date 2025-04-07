@@ -79,6 +79,7 @@ export default defineConfig({
         './resources/js/@core/composable/',
         './resources/js/composables/',
         './resources/js/utils/',
+        // './resources/js/validations/',
         './resources/js/plugins/*/composables/*',
       ],
       vueTemplate: true,

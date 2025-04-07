@@ -36,7 +36,7 @@ class AuthController extends Controller
             $user = User::where('email', $request->email)
                 ->first();
 
-                if (!$user || !Hash::check($request->password, $user->password)) {
+            if (!$user || !Hash::check($request->password, $user->password)) {
                 return $this->actionFailure('Invalid credentials. Please check your email or password.');
             }
 
@@ -45,7 +45,7 @@ class AuthController extends Controller
 
             $response = [
                 'access_token' => $token,
-                'permissions' => [], # $user->getPermissionsViaRoles(),
+                'permissions' => $user->getPermissionsViaRoles(),
                 'user' => $user->makeHidden('roles'),
                 'status' => true
             ];

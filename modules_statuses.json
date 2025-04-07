@@ -3,5 +3,8 @@
     "Clients": true,
     "SiteVisit": true,
     "FollowUp": true,
-    "RolePermission": true
+    "RolePermission": true,
+    "Contracts": true,
+    "Quotations": true,
+    "Invoices": true
 }

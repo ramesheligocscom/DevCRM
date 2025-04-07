@@ -9,6 +9,11 @@ export default [
       title: 'Clients',
       icon: { icon: 'tabler-user-circle' },
       to: 'clients-list', // ✅ Use exact name from router
+    },
+    {
+      title: 'Contracts',
+      icon: { icon: 'tabler-user-circle' },
+      to: 'contract-list', // ✅ Use exact name from router
     }
   ]
   

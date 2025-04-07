@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Support\Str;
 
-class Leads extends Model
+class Lead extends Model
 {
     use HasFactory, SoftDeletes, HasUuids;
 

@@ -2,7 +2,7 @@
 
 namespace Modules\Leads\Repositories;
 
-use Modules\Leads\Models\Leads;
+use Modules\Leads\Models\Lead;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -12,7 +12,7 @@ class LeadRepository
 
     public function __construct()
     {
-        $this->query = Leads::query();
+        $this->query = Lead::query();
     }
 
     public function paginate(int $perPage = 15): LengthAwarePaginator

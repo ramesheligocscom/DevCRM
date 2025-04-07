@@ -49,7 +49,7 @@ class Notification extends Model
     public function lead()
     {
         if (Module::has('Leads')) {
-            return $this->hasOne(\Modules\Leads\Models\Leads::class, 'id', 'module_id');
+            return $this->hasOne(\Modules\Leads\Models\Lead::class, 'id', 'module_id');
         } else {
             return null;
         }

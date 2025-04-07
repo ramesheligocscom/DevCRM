@@ -1,0 +1,40 @@
+<?php
+
+namespace Modules\Quotations\Repositories;
+
+use Modules\Quotations\Models\Quotation;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Database\Eloquent\Builder;
+
+class QuotationRepository
+{
+    protected Builder $query;
+
+    public function __construct()
+    {
+        $this->query = Quotation::query();
+    }
+
+    public function paginate(int $perPage = 15): LengthAwarePaginator
+    {
+        return $this->query->latest()->paginate($perPage);
+    }
+
+    public function withTrashed(): self
+    {
+        $this->query->withTrashed();
+        return $this;
+    }
+
+    public function filterByStatus(string $status): self
+    {
+        $this->query->where('status', $status);
+        return $this;
+    }
+
+    public function filterByClient(string $clientId): self
+    {
+        $this->query->where('client_id', $clientId);
+        return $this;
+    }
+}

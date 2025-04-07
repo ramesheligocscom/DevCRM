@@ -4,7 +4,7 @@ namespace Modules\Leads\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
-use Modules\Leads\Models\Leads;
+use Modules\Leads\Models\Lead;
 
 class LeadUpdateRequest extends FormRequest
 {

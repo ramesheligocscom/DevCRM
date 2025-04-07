@@ -56,13 +56,16 @@ class ContractService
 
     public function calculateTotals(array $items): array
     {
-        $subTotal = collect($items)->sum('price');
+        $subTotal = collect($items)->sum('subtotal');
+        $total = collect($items)->sum('total');
+        $discount = collect($items)->sum('discount_amount');
         $tax = $subTotal * 0.15;
-        $total = $subTotal + $tax;
+        
 
         return [
             'sub_total' => $subTotal,
             'tax' => $tax,
+            'discount' => $discount,
             'total' => $total
         ];
     }

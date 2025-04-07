@@ -10,6 +10,7 @@ const sortBy = ref()
 const orderBy = ref()
 const currentContract = ref(null);
 
+
 const tableHeaderSlug = ref('contact-list');
 const headers = ref([]);
 const getFilteredHeaderValue = async (headerList) => { headers.value = headerList; };
@@ -78,30 +79,14 @@ fetchContracts();
 
       <VDivider />
       <VDataTableServer v-model:items-per-page="itemsPerPage" v-model:page="page" :items="dataItems" item-value="name"
-        :headers="headers.filter((header) => header.checked)" :items-length="totalItems" show-select
-        class="text-no-wrap" @update:options="updateOptions">
-
-        <template #item.name="{ item }">
-          <div class="d-flex align-center gap-x-3">
-            <VAvatar size="34" :variant="!item.avatar ? 'tonal' : undefined">
-              <VImg v-if="item.avatar" :src="item.avatar" />
-              <span v-else>{{ avatarText(item.name) }}</span>
-            </VAvatar>
-            <div class="d-flex flex-column">
-              <RouterLink :to="{ name: 'contract-details-id', params: { id: item.id } }"
-                class="text-link font-weight-medium d-inline-block" style="line-height: 1.375rem;">
-                {{ item.name }}
-              </RouterLink>
-              <div class="text-body-2">
-                {{ item.email }}
-              </div>
-            </div>
-          </div>
-        </template>
-
+        :headers="headers.filter((header) => header.checked)" :items-length="totalItems" show-select class="text-no-wrap" @update:options="updateOptions">
         <!-- Actions Column -->
         <template #item.actions="{ item }">
-          <IconBtn v-if="$can('contract', 'edit')" :to="{ name: 'contract-edit', params: { id: item.id } }">
+
+          <IconBtn :to="{ name: 'contract-details-id', params: { id: item.id } }">
+            <VIcon icon="tabler-eye" />
+          </IconBtn>
+          <IconBtn :to="{ name: 'contract-edit', params: { id: item.id } }">
             <VIcon icon="tabler-pencil" />
           </IconBtn>
 
@@ -115,6 +100,32 @@ fetchContracts();
           <VChip :color="resolveStatusVariant(item.status).color" size="small">
             {{ resolveStatusVariant(item.status).text }}
           </VChip>
+        </template>
+ 
+        <!-- sub_total -->
+        <template #item.sub_total="{ item }">
+          ${{ item.sub_total || 0 }}
+        </template>
+        <!-- discount -->
+        <template #item.discount="{ item }">
+          ${{ item.discount || 0 }}
+        </template>
+        <!-- total -->
+        <template #item.tax="{ item }">
+          ${{ item.tax || 0 }}
+        </template>
+        <!-- total -->
+        <template #item.total="{ item }">
+          ${{ item.total || 0 }}
+        </template>
+        <!-- creator -->
+        <template #item.created_by="{ item }">
+          {{ item.creator?.name || '—' }}
+        </template>
+
+        <!-- updater -->
+        <template #item.last_updated_by="{ item }">
+          {{ item.updater?.name || 0 }}
         </template>
 
         <template #bottom>

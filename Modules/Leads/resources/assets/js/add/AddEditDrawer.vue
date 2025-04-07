@@ -189,7 +189,7 @@ const onSubmit = async () => {
               </VCol>
 
               <VCol cols="12">
-                <AppTextField v-model="lead.assigned_user" label="Assigned User*" placeholder="User ID" />
+                <AppSelect v-model="lead.assigned_user" :items="[]" label="Assigned User*" placeholder="User ID" />
               </VCol>
 
               <VCol cols="12">
@@ -197,7 +197,8 @@ const onSubmit = async () => {
               </VCol>
 
               <VCol cols="12">
-                <AppTextField v-model="lead.visit_assignee" label="Visit Assignee*" placeholder="Employee Name" />
+                <AppSelect v-model="lead.visit_assignee" :items="[]" label="Visit Assignee*"
+                  placeholder="Employee Name" />
               </VCol>
 
               <VCol cols="12">
@@ -205,19 +206,21 @@ const onSubmit = async () => {
               </VCol>
 
               <VCol cols="12">
-                <AppTextField v-model="lead.client_id" label="Client ID*" placeholder="Client Identifier" />
+                <AppSelect v-model="lead.client_id" :items="[]" label="Client ID*" placeholder="Client Identifier" />
               </VCol>
 
               <VCol cols="12">
-                <AppTextField v-model="lead.quotation_id" label="Quotation ID" placeholder="Quotation Identifier" />
+                <AppSelect v-model="lead.quotation_id" :items="[]" label="Quotation ID"
+                  placeholder="Quotation Identifier" />
               </VCol>
 
               <VCol cols="12">
-                <AppTextField v-model="lead.contract_id" label="Contract ID" placeholder="Contract Identifier" />
+                <AppSelect v-model="lead.contract_id" :items="[]" label="Contract ID"
+                  placeholder="Contract Identifier" />
               </VCol>
 
               <VCol cols="12">
-                <AppTextField v-model="lead.invoice_id" label="Invoice ID" placeholder="Invoice Identifier" />
+                <AppSelect v-model="lead.invoice_id" :items="[]" label="Invoice ID" placeholder="Invoice Identifier" />
               </VCol>
 
               <VCol cols="12" class="d-flex gap-4 justify-start pb-10">

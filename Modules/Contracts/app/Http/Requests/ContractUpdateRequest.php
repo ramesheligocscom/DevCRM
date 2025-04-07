@@ -20,7 +20,6 @@ class ContractUpdateRequest extends FormRequest
             'items' => 'sometimes|array',
             'start_date' => 'sometimes|date',
             'end_date' => 'sometimes|date|after:start_date',
-            'sub_total' => 'sometimes|numeric|min:0',
             'discount' => 'nullable|numeric|min:0',
             'tax' => 'nullable|numeric|min:0',
             'status' => 'sometimes|string|max:32',  // No enum validation

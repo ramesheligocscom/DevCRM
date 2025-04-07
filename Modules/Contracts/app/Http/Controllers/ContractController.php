@@ -42,7 +42,7 @@ class ContractController extends Controller
     public function store(ContractStoreRequest $request): JsonResponse
     {
         $contract = $this->contractService->createContract(
-            array_merge($request->validated(), ['created_by' => auth()->id()])
+            array_merge($request->validated(), ['created_by' => auth()->user()->uuid])
         );
 
         return response()->json([

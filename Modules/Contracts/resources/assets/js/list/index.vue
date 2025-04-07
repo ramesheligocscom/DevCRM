@@ -1,8 +1,6 @@
 <script setup>
-import AddEditDrawer from '../add/AddEditDrawer.vue'
 import ConfirmDialog from '../dialog/ConfirmDialog.vue'
 const searchQuery = ref('')
-const isAddEditDrawerOpen = ref(false)
 const isDeleteDialogOpen = ref(false)
 
 // Data table options
@@ -13,16 +11,16 @@ const orderBy = ref()
 const currentContract = ref(null);
 
 const headers = [
-  { title: 'ITEMS', key: 'items' },
+  // { title: 'ITEMS', key: 'items' },
   { title: 'START DATE', key: 'start_date' },
   { title: 'END DATE', key: 'end_date' },
   { title: 'SUB TOTAL', key: 'sub_total' },
   { title: 'DISCOUNT', key: 'discount' },
   { title: 'TAX', key: 'tax' },
   { title: 'STATUS', key: 'status' },
-  { title: 'CLIENT ID', key: 'client_id' },
-  { title: 'QUOTATION ID', key: 'quotation_id' },
-  { title: 'INVOICE ID', key: 'invoice_id' },
+  // { title: 'CLIENT ID', key: 'client_id' },
+  // { title: 'QUOTATION ID', key: 'quotation_id' },
+  // { title: 'INVOICE ID', key: 'invoice_id' },
   { title: 'CREATED BY', key: 'created_by' },
   { title: 'LAST UPDATED BY', key: 'last_updated_by' },
   { title: 'ACTIONS', key: 'actions' }
@@ -30,7 +28,6 @@ const headers = [
 
 const editBranch = (item) => {
   currentContract.value = JSON.parse(JSON.stringify(item));
-  isAddEditDrawerOpen.value = true;
 };
 
 const resolveStatusVariant = status => {
@@ -64,11 +61,6 @@ const fetchContracts = async () => {
   }
 }
 
-const addContract = (item) => {
-  currentContract.value = null;
-  isAddEditDrawerOpen.value = true;
-}
-
 const openDeleteDialog = (item) => {
   currentContract.value = JSON.parse(JSON.stringify(item));
   isDeleteDialogOpen.value = true;
@@ -91,7 +83,7 @@ fetchContracts();
             <VBtn prepend-icon="tabler-upload" variant="tonal" color="secondary">
               Export
             </VBtn>
-            <VBtn prepend-icon="tabler-plus" @click="addContract()">
+            <VBtn prepend-icon="tabler-plus" :to="{ name: 'contract-create' }">
               Add New
             </VBtn>
           </div>
@@ -120,7 +112,7 @@ fetchContracts();
         </template>
         <!-- Actions Column -->
         <template #item.actions="{ item }">
-          <IconBtn @click="editBranch(item)">
+          <IconBtn :to="{ name: 'contract-edit', params: { id: item.id } }">
             <VIcon icon="tabler-pencil" />
           </IconBtn>
 
@@ -146,7 +138,5 @@ fetchContracts();
       cancel-msg="Contract Deletion Cancelled!!" :currentContract="currentContract" @submit="fetchContracts"
       @close="isDeleteDialogOpen = false" />
 
-    <AddEditDrawer v-model:is-drawer-open="isAddEditDrawerOpen" :currentContract="currentContract"
-      @submit="fetchContracts" @close="isAddEditDrawerOpen = false" />
   </div>
 </template>

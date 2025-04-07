@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 
 class FollowUp extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes, HasUuids;
 
     /**
      * The attributes that are mass assignable.
@@ -23,12 +23,10 @@ class FollowUp extends Model
         'last_updated_by',
         'lead_id',
         'client_id',
-        'is_deleted'
     ];
 
     protected $casts = [
-        'is_deleted' => 'boolean',
-        'last_updated_at' => 'datetime',
+        'updated_at' => 'datetime',
         'lead_id' => 'string',
         'client_id' => 'string'
     ];
@@ -39,12 +37,12 @@ class FollowUp extends Model
 
         static::creating(function ($model) {
             $model->id = \Illuminate\Support\Str::uuid();
-            $model->created_by = auth()->id();
+            $model->created_by = auth()->user()->uuid;
         });
 
         static::updating(function ($model) {
-            $model->last_updated_by = auth()->id();
-            $model->last_updated_at = now();
+            $model->last_updated_by = auth()->user()->uuid;
+            $model->updated_at = now();
         });
     }
 

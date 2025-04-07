@@ -8,10 +8,10 @@ use Modules\Clients\app\Models\Client;
 
 class ClientUpdateRequest extends FormRequest
 {
-    public function authorize(): bool
-    {
-        return $this->user()->can('update', Client::class);
-    }
+    // public function authorize(): bool
+    // {
+    //     return $this->user()->can('update', Client::class);
+    // }
 
     public function rules(): array
     {
@@ -27,7 +27,7 @@ class ClientUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique('clients')->ignore($clientId)->whereNull('deleted_at')
             ],
-            'phone' => 'sometimes|string|max:20|phone:AUTO',
+            'phone' => 'sometimes|string|max:20',
             'status' => [
                 'sometimes',
                 'string',
@@ -37,14 +37,13 @@ class ClientUpdateRequest extends FormRequest
             'assigned_user' => [
                 'sometimes',
                 'uuid',
-                Rule::exists('users', 'id')
+                // Rule::exists('users', 'id')
             ],
             'lead_id' => [
                 'nullable',
                 'uuid',
                 Rule::exists('leads', 'id')->whereNull('deleted_at')
             ],
-            'is_deleted' => 'sometimes|boolean'
         ];
     }
 

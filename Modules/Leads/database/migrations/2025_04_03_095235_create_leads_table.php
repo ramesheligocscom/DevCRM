@@ -16,7 +16,7 @@ return new class extends Migration
     {
         Schema::create('leads', function (Blueprint $table) {
             // Primary key as UUID
-            $table->uuid('id')->primary()->default(Str::uuid());
+            $table->uuid('id')->primary()->comment('Primary key UUID');
 
             // Lead information
             $table->string('name', 128)->comment('The name of the lead/company');
@@ -37,8 +37,8 @@ return new class extends Migration
             $table->timestampTz('visit_time')->nullable()->comment('Scheduled time for site visit');
 
             // Timestamps
-            $table->string('created_by', 32)->nullable()->comment('User who created the lead');
-            $table->string('last_updated_by', 32)->nullable()->comment('User who last updated the lead');
+            $table->uuid('created_by')->nullable()->comment('User who created the lead');
+            $table->uuid('last_updated_by')->nullable()->comment('User who last updated the lead');
 
             // Relationship references (as UUIDs)
             $table->uuid('client_id')->nullable()->comment('Reference to clients table if converted');

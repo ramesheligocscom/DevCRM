@@ -22,12 +22,10 @@ class SiteVisit extends Model
         'visit_notes',
         'lead_id',
         'client_id',
-        'is_deleted'
     ];
 
     protected $casts = [
         'visit_time' => 'datetime',
-        'is_deleted' => 'boolean',
         'id' => 'string',
         'lead_id' => 'string',
         'client_id' => 'string'

@@ -29,7 +29,6 @@ class SiteVisitResource extends JsonResource
             'client_name' => $this->whenLoaded('client', function () {
                 return $this->client->name;
             }),
-            'is_deleted' => $this->is_deleted,
             'links' => [
                 'self' => route('site-visits.show', $this->id),
                 'assignee' => $this->visit_assignee ? route('users.show', $this->visit_assignee) : null,

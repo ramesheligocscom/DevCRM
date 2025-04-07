@@ -1,0 +1,72 @@
+<?php
+
+namespace Modules\Contracts\Services;
+
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Modules\Contracts\Models\Contract;
+
+class ContractService
+{
+    public function getPaginatedContracts(
+        int $perPage = 15,
+        bool $withTrashed = false,
+        ?string $status = null,
+        ?string $clientId = null
+    ): LengthAwarePaginator {
+        return Contract::query()
+            ->when($withTrashed, fn($q) => $q->withTrashed())
+            ->when($status, fn($q) => $q->where('status', $status))
+            ->when($clientId, fn($q) => $q->where('client_id', $clientId))
+            ->with(['client', 'quotation', 'invoice', 'creator', 'updater'])
+            ->latest()
+            ->paginate($perPage);
+    }
+
+    public function getContractById(string $id): Contract
+    {
+        return Contract::with(['client', 'quotation', 'invoice', 'creator', 'updater'])
+            ->findOrFail($id);
+    }
+
+    public function createContract(array $data): Contract
+    {
+        // Calculate totals before creation
+        $totals = $this->calculateTotals($data['items'] ?? []);
+        $data = array_merge($data, $totals);
+        return Contract::create($data);
+    }
+
+    public function updateContract(string $id, array $data): Contract
+    {
+        $contract = $this->getContractById($id);
+
+        // Calculate totals before update
+        $totals = $this->calculateTotals($data['items'] ?? []);
+        $data = array_merge($data, $totals);
+    
+        $contract->update($data);
+        return $contract->fresh();
+    }
+
+    public function deleteContract(string $id): void
+    {
+        $contract = $this->getContractById($id);
+        $contract->delete();
+    }
+
+    public function calculateTotals(array $items): array
+    {
+        $subTotal = collect($items)->sum('subtotal');
+        $total = collect($items)->sum('total');
+        $discount = collect($items)->sum('discount_amount');
+        $tax = $subTotal * 0.15;
+        
+
+        return [
+            'sub_total' => $subTotal,
+            'tax' => $tax,
+            'discount' => $discount,
+            'total' => $total
+        ];
+    }
+}

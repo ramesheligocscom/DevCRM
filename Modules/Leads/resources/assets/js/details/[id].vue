@@ -1,38 +1,37 @@
 <script setup>
-import ECommerceAddCustomerDrawer from '@/views/apps/ecommerce/ECommerceAddCustomerDrawer.vue'
-import CustomerBioPanel from '@/views/apps/ecommerce/customer/view/CustomerBioPanel.vue'
-import CustomerTabAddressAndBilling from '@/views/apps/ecommerce/customer/view/CustomerTabAddressAndBilling.vue'
-import CustomerTabNotification from '@/views/apps/ecommerce/customer/view/CustomerTabNotification.vue'
-import CustomerTabOverview from '@/views/apps/ecommerce/customer/view/CustomerTabOverview.vue'
-import CustomerTabSecurity from '@/views/apps/ecommerce/customer/view/CustomerTabSecurity.vue'
+import Clients from './tabs/Clients.vue'
+import FollowUps from './tabs/FollowUps.vue'
+import LeadBioPanel from './tabs/LeadBioPanel.vue'
+import Quotations from './tabs/Quotations.vue'
+import SiteVisits from './tabs/SiteVisits.vue'
 
 const route = useRoute('lead-details-id')
-const customerData = ref()
-const userTab = ref(null)
+const LeadData = ref()
+const tab = ref(null)
 
 const tabs = [
   {
-    title: 'Overview',
+    title: 'Clients',
     icon: 'tabler-user',
   },
   {
-    title: 'Security',
+    title: 'Quotations',
     icon: 'tabler-lock',
   },
   {
-    title: 'Address & Billing',
+    title: 'Follow Ups',
     icon: 'tabler-map-pin',
   },
   {
-    title: 'Notifications',
+    title: 'Site Visits',
     icon: 'tabler-bell',
   },
 ]
 
-const { data } = await useApi(`/apps/ecommerce/customers/${route.params.id}`)
+const { data } = await useApi(`/leads/${route.params.id}`)
 if (data.value)
-  customerData.value = data.value
-const isAddCustomerDrawerOpen = ref(false)
+  LeadData.value = data.value.data
+
 </script>
 
 <template>
@@ -41,51 +40,50 @@ const isAddCustomerDrawerOpen = ref(false)
     <div class="d-flex justify-space-between align-center flex-wrap gap-y-4 mb-6">
       <div>
         <h4 class="text-h4 mb-1">
-          Customer ID #{{ route.params.id }}
+          Lead {{ LeadData.name }}
         </h4>
         <div class="text-body-1">
-          Aug 17, 2020, 5:48 (ET)
+          {{ LeadData.created_at }}
         </div>
       </div>
       <div class="d-flex gap-4">
         <VBtn variant="tonal" color="error">
-          Delete Customer
+          Delete Lead
         </VBtn>
       </div>
     </div>
-    <!-- 👉 Customer Profile  -->
-    <VRow v-if="customerData">
-      <VCol v-if="customerData" cols="12" md="5" lg="4">
-        <CustomerBioPanel :customer-data="customerData" />
+    <!-- 👉 Lead Profile  -->
+    <VRow v-if="LeadData">
+      <VCol v-if="LeadData" cols="12" md="5" lg="4">
+        <LeadBioPanel :LeadData="LeadData" />
       </VCol>
       <VCol cols="12" md="7" lg="8">
-        <VTabs v-model="userTab" class="v-tabs-pill mb-3 disable-tab-transition">
+        <VTabs v-model="tab" class="v-tabs-pill mb-3 disable-tab-transition">
           <VTab v-for="tab in tabs" :key="tab.title">
             <VIcon size="20" start :icon="tab.icon" />
             {{ tab.title }}
           </VTab>
         </VTabs>
-        <VWindow v-model="userTab" class="disable-tab-transition" :touch="false">
+        <VWindow v-model="tab" class="disable-tab-transition" :touch="false">
           <VWindowItem>
-            <CustomerTabOverview />
+            <Clients />
           </VWindowItem>
           <VWindowItem>
-            <CustomerTabSecurity />
+            <SiteVisits />
           </VWindowItem>
           <VWindowItem>
-            <CustomerTabAddressAndBilling />
+            <FollowUps />
           </VWindowItem>
           <VWindowItem>
-            <CustomerTabNotification />
+            <Quotations />
           </VWindowItem>
         </VWindow>
       </VCol>
     </VRow>
     <div v-else>
       <VAlert type="error" variant="tonal">
-        Invoice with ID {{ route.params.id }} not found!
+        Lead with ID {{ route.params.id }} not found!
       </VAlert>
     </div>
-    <ECommerceAddCustomerDrawer v-model:is-drawer-open="isAddCustomerDrawerOpen" />
   </div>
 </template>

@@ -2,49 +2,80 @@
 
 namespace Modules\Leads\Services;
 
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
-use Modules\Leads\Models\Leads;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Modules\Leads\Models\Lead;
+use Modules\Clients\Models\Client;
 
 class LeadService
 {
-    public function createLead(array $data): Leads
-    {
-        return Leads::createWithAttributes([
-            ...$data,
-            'created_by' => Auth::id(),
-        ]);
+    public function getPaginatedLeads(
+        int $perPage = 15,
+        bool $withTrashed = false,
+        ?string $status = null,
+        ?string $assignedUser = null
+    ): LengthAwarePaginator {
+        return Lead::query()
+            ->when($withTrashed, fn($q) => $q->withTrashed())
+            ->when($status, fn($q) => $q->where('status', $status))
+            ->when($assignedUser, fn($q) => $q->where('assigned_user', $assignedUser))
+            ->with(['client', 'quotation', 'contract', 'invoice', 'visitAssignee'])
+            ->latest()
+            ->paginate($perPage);
     }
 
-    public function updateLead(Leads $lead, array $data): Lead
+    public function getLeadById(string $id): Lead
     {
-        $lead->updateWithAttributes([
-            ...$data,
-            'last_updated_by' => Auth::id(),
-        ]);
+        return Lead::with(['client', 'quotation', 'contract', 'invoice', 'visitAssignee'])
+            ->findOrFail($id);
+    }
 
+    public function createLead(array $data): Lead
+    {
+        return Lead::create($data);
+    }
+
+    public function updateLead(string $id, array $data): Lead
+    {
+        $lead = $this->getLeadById($id);
+        $lead->update($data);
         return $lead->fresh();
     }
 
-    public function deleteLead(Leads $lead): void
+    public function deleteLead(string $id): void
     {
-        $lead->softDelete();
+        $lead = $this->getLeadById($id);
+        $lead->delete();
     }
 
-    public function convertToClient(Leads $lead, array $clientData): \Modules\Clients\Client
+    public function convertToClient(string $leadId, array $clientData): \Modules\Clients\Models\Client
     {
-        $client = \Modules\Clients\Client::createWithAttributes([
-            ...$clientData,
-            'lead_id' => $lead->id,
-            'created_by' => Auth::id(),
-        ]);
+        $lead = $this->getLeadById($leadId);
+        
+        $client = \Modules\Clients\Models\Client::create(
+            array_merge($clientData, ['lead_id' => $leadId])
+        );
 
-        $lead->updateWithAttributes([
+        $lead->update([
             'status' => 'converted',
             'client_id' => $client->id,
-            'last_updated_by' => Auth::id(),
+            'last_updated_by' => auth()->user()->uuid
         ]);
 
         return $client;
     }
+
+    public function getPaginatedClients(
+        int $perPage = 15,
+        bool $withTrashed = false,
+        ?string $status = null,
+        ?string $leadId = null
+    ): LengthAwarePaginator {
+        return Client::query()
+            ->when($withTrashed, fn($q) => $q->withTrashed())
+            ->when($status, fn($q) => $q->where('status', $status))
+            ->when($leadId, fn($q) => $q->where('lead_id', $leadId))
+            ->latest()
+            ->paginate($perPage);
+    }
 }
+

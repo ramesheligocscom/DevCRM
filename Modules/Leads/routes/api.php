@@ -1,8 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Modules\Leads\Http\Controllers\LeadsController;
+use Modules\Leads\Http\Controllers\LeadController;
 
-Route::middleware(['auth:sanctum'])->prefix('v1')->group(function () {
-    Route::apiResource('leads', LeadsController::class)->names('leads');
+Route::middleware(['auth:sanctum'])->group(function () {
+    Route::apiResource('leads', LeadController::class)->names('leads');
+    Route::get('/leads/{lead}/clients', [LeadController::class, 'clientsByLead']);
+
 });

@@ -39,11 +39,10 @@ class ClientsDatabaseSeeder extends Seeder
                 'phone' => fake()->phoneNumber(),
                 'status' => fake()->randomElement($statuses),
                 'assigned_user' => 'user' . ($i % 5 + 1) . '@example.com',
+                'updated_at' => now()->subYear(),
                 'created_at' => now()->subDays(rand(1, 365)),
-                'last_updated_at' => now()->subDays(rand(0, 30)),
                 'created_by' => 'admin@example.com',
                 'last_updated_by' => rand(0, 1) ? 'admin@example.com' : null,
-                'is_deleted' => rand(0, 9) < 1, // 10% chance of being deleted
             ];
         }
 
@@ -62,11 +61,10 @@ class ClientsDatabaseSeeder extends Seeder
             'phone' => '+1 555-123-4567',
             'status' => 'active',
             'assigned_user' => 'user1@example.com',
+            'updated_at' => now()->subYear(),
             'created_at' => now()->subYear(),
-            'last_updated_at' => now()->subMonth(),
             'created_by' => 'admin@example.com',
             'last_updated_by' => 'user1@example.com',
-            'is_deleted' => false,
         ]);
     }
 }

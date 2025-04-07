@@ -59,14 +59,65 @@ class ClientController extends Controller
         ]);
     }
 
+    // app/Http/Controllers/ClientController.php
     public function destroy(Client $client): JsonResponse
     {
-        $client->softDelete();
+        try {
+            // Check if already soft deleted
+            if ($client->trashed()) {
+                return response()->json([
+                    'message' => __('Client is already deleted')
+                ], 409);
+            }
 
-        return response()->json([
-            'message' => __('Client marked as deleted successfully')
-        ]);
+            $client->delete(); // This performs the soft delete
+
+            return response()->json([
+                'success' => true,
+                'message' => __('Client marked as deleted successfully'),
+                'data' => [
+                    'deleted_at' => $client->deleted_at
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => __('Failed to delete client'),
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
+
+
+
+    // In your ClientController
+    public function restore($id): JsonResponse
+    {
+        try {
+            $client = Client::withTrashed()->findOrFail($id);
+
+            if (!$client->trashed()) {
+                return response()->json([
+                    'message' => __('Client is not deleted')
+                ], 409);
+            }
+
+            $client->restore();
+
+            return response()->json([
+                'success' => true,
+                'message' => __('Client restored successfully'),
+                'data' => $client
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => __('Failed to restore client'),
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
 
     protected function buildPaginationMeta($paginator): array
     {

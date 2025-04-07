@@ -16,6 +16,7 @@ class LeadsDatabaseSeeder extends Seeder
      */
     public function run()
     {
+
         $statuses = ['new', 'contacted', 'qualified', 'proposal_sent', 'negotiation', 'won', 'lost'];
         $sources = ['website', 'referral', 'social_media', 'cold_call', 'event', 'advertisement'];
         $users = ['john.doe', 'jane.smith', 'mike.johnson', 'sarah.williams'];
@@ -43,13 +44,11 @@ class LeadsDatabaseSeeder extends Seeder
                 'visit_time' => $hasVisit ? $now->addDays(rand(1, 30))->format('Y-m-d H:i:s') : null,
                 'created_at' => $now->format('Y-m-d H:i:s'),
                 'created_by' => $users[array_rand($users)],
-                'last_updated_at' => $now->addHours(rand(1, 24))->format('Y-m-d H:i:s'),
                 'last_updated_by' => $users[array_rand($users)],
                 'client_id' => $status === 'won' ? Str::uuid() : null,
                 'quotation_id' => in_array($status, ['qualified', 'proposal_sent', 'negotiation', 'won']) ? Str::uuid() : null,
                 'contract_id' => $status === 'won' ? Str::uuid() : null,
                 'invoice_id' => $status === 'won' && rand(0, 1) ? Str::uuid() : null,
-                'is_deleted' => rand(0, 10) === 0, // 10% chance of being deleted
             ];
         }
 

@@ -64,7 +64,7 @@ class ContractController extends Controller
     {
         $contract = $this->contractService->updateContract(
             $id,
-            array_merge($request->validated(), ['last_updated_by' => auth()->id()])
+            array_merge($request->validated(), ['last_updated_by' => auth()->user()->uuid])
         );
 
         return response()->json([

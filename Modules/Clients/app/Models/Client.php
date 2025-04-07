@@ -51,7 +51,7 @@ class Client extends Model
     public function updateWithAttributes(array $attributes)
     {
         return $this->update(array_merge($attributes, [
-            'last_updated_at' => now(),
+            'updated_at' => now(),
         ]));
     }
 
@@ -59,8 +59,8 @@ class Client extends Model
     public function softDelete()
     {
         return $this->update([
-            'last_updated_by' => auth()->id(),
-            'last_updated_at' => now(),
+            'last_updated_by' => auth()->user()->uuid,
+            'updated_at' => now(),
         ]);
     }
 

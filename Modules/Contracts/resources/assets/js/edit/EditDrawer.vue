@@ -46,18 +46,17 @@ const newItem = () => ({
 const loadContract = async () => {
   try {
     isLoading.value = true
-    const response = await useApi(`/contracts/${contractId}`)
+    const response = await $api(`/contracts/${contractId}`)
 
-    console.log('Fetched contract:', response?.data) // DEBUG THIS
+    console.log('Fetched contract:', response?.data) // Real data is in .value
 
-    const contract = response?.data?.data
+    const contract = response?.data
 
     if (!contract) {
       toast.error('Contract not found.')
       return
     }
 
-    // Safely assign contract data
     record.value = {
       ...record.value,
       ...contract,
@@ -73,7 +72,6 @@ const loadContract = async () => {
     isLoading.value = false
   }
 }
-
 
 // Add item
 const addItem = () => {
@@ -139,9 +137,8 @@ const onSubmit = async () => {
   try {
     isLoading.value = true
 
-    const res = await useApi(`/contracts/${contractId}`, {
+    const res = await $api(`/contracts/${contractId}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(record.value),
     })
 

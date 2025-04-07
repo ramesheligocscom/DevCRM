@@ -133,10 +133,9 @@ fetchContracts();
     </VCard>
 
     <!-- 👉 Confirm Dialog -->
-    <ConfirmDialog v-model:isDialogVisible="isDeleteDialogOpen" cancel-title="Delete" confirm-title="Delete!"
-      confirm-msg="Contract deleted successfully." confirmation-question="Are you sure want to delete contract?"
-      cancel-msg="Contract Deletion Cancelled!!" :currentContract="currentContract" @submit="fetchContracts"
-      @close="isDeleteDialogOpen = false" />
+    <ConfirmDialog v-model:isDialogVisible="isDeleteDialogOpen" confirm-title="Delete!"
+      confirmation-question="Are you sure want to delete contract?" :currentItem="currentContract"
+      @submit="fetchContracts" :endpoint="`/contracts/${currentContract?.id}`" @close="isDeleteDialogOpen = false" />
 
   </div>
 </template>

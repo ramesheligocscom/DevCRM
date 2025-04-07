@@ -57,15 +57,6 @@ class UpdateSiteVisitRequest extends FormRequest
                     return empty($this->lead_id);
                 })
             ],
-            'is_deleted' => [
-                'sometimes',
-                'boolean',
-                function ($attribute, $value, $fail) {
-                    if ($value && !auth()->user()->can('delete site visits')) {
-                        $fail('You do not have permission to delete site visits.');
-                    }
-                }
-            ]
         ];
     }
 

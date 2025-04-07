@@ -42,7 +42,7 @@ class QuotationController extends Controller
     public function store(QuotationStoreRequest $request): JsonResponse
     {
         $quotation = $this->quotationService->createQuotation(
-            array_merge($request->validated(), ['created_by' => auth()->id()])
+            array_merge($request->validated(), ['created_by' => auth()->user()->uuid])
         );
 
         return response()->json([
@@ -64,7 +64,7 @@ class QuotationController extends Controller
     {
         $quotation = $this->quotationService->updateQuotation(
             $id,
-            array_merge($request->validated(), ['last_updated_by' => auth()->id()])
+            array_merge($request->validated(), ['last_updated_by' => auth()->user()->uuid])
         );
 
         return response()->json([

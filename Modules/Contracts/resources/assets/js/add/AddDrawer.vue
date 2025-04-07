@@ -7,6 +7,9 @@ import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { toast } from 'vue3-toastify'
 import { VForm } from 'vuetify/components'
 
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
 
 const refForm = ref()
 const valid = ref(true)
@@ -107,17 +110,15 @@ const onSubmit = async () => {
   try {
     isLoading.value = true
 
-    const res = await useApi('/contracts', {
+    const res = await $api('/contracts', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(record.value),
     })
 
     if (res?.data) {
       toast.success(res?.data?.message || 'Contract created successfully!')
-      emit('submit')
-      emit('update:isDrawerOpen', false)
-      resetForm()
+      // ✅ Redirect to contract list
+      router.push({ name: 'contract-list' })
     }
   } catch (err) {
     console.error(err)
@@ -226,7 +227,7 @@ const onSubmit = async () => {
               <VBtn type="submit" color="primary" :loading="isLoading">
                 Add
               </VBtn>
-              <VBtn color="error" variant="tonal" @click="resetForm">
+              <VBtn color="error" variant="tonal" :to="{ name: 'contract-list' }">
                 Discard
               </VBtn>
             </VCol>

@@ -53,7 +53,7 @@ class Quotation extends Model
     public function updateWithAttributes(array $attributes)
     {
         return $this->update(array_merge($attributes, [
-            'last_updated_by' => auth()->id(),
+            'last_updated_by' => auth()->user()->uuid,
         ]));
     }
 

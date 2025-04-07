@@ -53,7 +53,6 @@ class Lead extends Model
     {
         return static::create(array_merge([
             'id' => Str::orderedUuid(),
-            'is_deleted' => false,
             'created_at' => now(),
         ], $attributes));
     }
@@ -68,8 +67,7 @@ class Lead extends Model
     public function softDelete()
     {
         return $this->update([
-            'is_deleted' => true,
-            'last_updated_by' => auth()->id(),
+            'last_updated_by' => auth()->user()->uuid,
             'updated_at' => now(),
         ]);
     }

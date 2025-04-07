@@ -20,10 +20,9 @@ class FollowUpResource extends JsonResource
             'created_by' => $this->created_by,
             'created_at' => $this->created_at->toDateTimeString(),
             'last_updated_by' => $this->last_updated_by,
-            'last_updated_at' => $this->last_updated_at?->toDateTimeString(),
+            'updated_at' => $this->updated_at?->toDateTimeString(),
             'lead_id' => $this->lead_id,
             'client_id' => $this->client_id,
-            'is_deleted' => $this->is_deleted,
             'relationships' => [
                 'lead' => $this->whenLoaded('lead'),
                 'client' => $this->whenLoaded('client'),

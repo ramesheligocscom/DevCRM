@@ -21,7 +21,7 @@ class ClientService
         $Client->update([
             ...$data,
             'last_updated_by' => Auth::id(),
-            'last_updated_at' => now(),
+            'updated_at' => now(),
         ]);
 
         return $Client->fresh();
@@ -30,9 +30,8 @@ class ClientService
     public function deleteClient(Client $Client): void
     {
         $Client->update([
-            'is_deleted' => true,
             'last_updated_by' => Auth::id(),
-            'last_updated_at' => now(),
+            'updated_at' => now(),
         ]);
     }
 }

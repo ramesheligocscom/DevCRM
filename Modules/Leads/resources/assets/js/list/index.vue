@@ -32,7 +32,6 @@ const headers = [
   // { title: 'QUOTATION ID', key: 'quotation_id' },
   // { title: 'CONTRACT ID', key: 'contract_id' },
   // { title: 'INVOICE ID', key: 'invoice_id' },
-  // { title: 'IS DELETED', key: 'is_deleted' },
   { title: 'ACTIONS', key: 'actions' }
 ]
 

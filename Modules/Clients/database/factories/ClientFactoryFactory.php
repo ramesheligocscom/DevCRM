@@ -25,9 +25,8 @@ class ClientFactory extends Factory
             'assigned_user' => Str::uuid(),
             'created_by' => Str::uuid(),
             'last_updated_by' => rand(0, 1) ? Str::uuid() : null,
-            'is_deleted' => false,
             'created_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
-            'last_updated_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
+            'updated_at' => $this->faker->dateTimeBetween('-1 year', 'now'),
         ];
     }
 }

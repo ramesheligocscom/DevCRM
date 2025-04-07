@@ -10,7 +10,6 @@ class SiteVisitService
     public function getAllVisits(): Collection
     {
         return SiteVisit::with(['assignee', 'lead', 'client'])
-            ->where('is_deleted', false)
             ->get();
     }
 
@@ -18,7 +17,6 @@ class SiteVisitService
     {
         return SiteVisit::with(['assignee', 'lead', 'client'])
             ->where('id', $id)
-            ->where('is_deleted', false)
             ->firstOrFail();
     }
 
@@ -37,6 +35,6 @@ class SiteVisitService
     public function deleteVisit(string $id): bool
     {
         $visit = $this->getVisitById($id);
-        return $visit->update(['is_deleted' => true]);
+        return $visit->delete();
     }
 }

@@ -1,8 +1,6 @@
 <script setup>
-import AddEditDrawer from '../add/AddEditDrawer.vue'
 import ConfirmDialog from '../dialog/ConfirmDialog.vue'
 const searchQuery = ref('')
-const isAddEditDrawerOpen = ref(false)
 const isDeleteDialogOpen = ref(false)
 
 // Data table options
@@ -12,30 +10,9 @@ const sortBy = ref()
 const orderBy = ref()
 const currentContract = ref(null);
 
-// const headers = [
-//   { title: 'ITEMS', key: 'items' },
-//   { title: 'START DATE', key: 'start_date' },
-//   { title: 'END DATE', key: 'end_date' },
-//   { title: 'SUB TOTAL', key: 'sub_total' },
-//   { title: 'DISCOUNT', key: 'discount' },
-//   { title: 'TAX', key: 'tax' },
-//   { title: 'STATUS', key: 'status' },
-//   { title: 'CLIENT ID', key: 'client_id' },
-//   { title: 'QUOTATION ID', key: 'quotation_id' },
-//   { title: 'INVOICE ID', key: 'invoice_id' },
-//   { title: 'CREATED BY', key: 'created_by' },
-//   { title: 'LAST UPDATED BY', key: 'last_updated_by' },
-//   { title: 'ACTIONS', key: 'actions' }
-// ];
-// Data table Headers
 const tableHeaderSlug = ref('contact-list');
 const headers = ref([]);
 const getFilteredHeaderValue = async (headerList) => { headers.value = headerList; };
-
-const editBranch = (item) => {
-  currentContract.value = JSON.parse(JSON.stringify(item));
-  isAddEditDrawerOpen.value = true;
-};
 
 const resolveStatusVariant = status => {
   if (status === 1) return { color: 'primary', text: 'Current' }
@@ -68,11 +45,6 @@ const fetchContracts = async () => {
   }
 }
 
-const addContract = (item) => {
-  currentContract.value = null;
-  isAddEditDrawerOpen.value = true;
-}
-
 const openDeleteDialog = (item) => {
   currentContract.value = JSON.parse(JSON.stringify(item));
   isDeleteDialogOpen.value = true;
@@ -95,7 +67,7 @@ fetchContracts();
             <VBtn v-if="$can('contract', 'export-list')" prepend-icon="tabler-upload" variant="tonal" color="secondary">
               Export
             </VBtn>
-            <VBtn v-if="$can('contract', 'create')" prepend-icon="tabler-plus" @click="addContract()">
+            <VBtn v-if="$can('contract', 'create')" :to="{ name: 'contract-create' }" prepend-icon="tabler-plus">
               Add New
             </VBtn>
             <!-- Filter Header Btn FilterHeaderTableBtn -->
@@ -129,7 +101,7 @@ fetchContracts();
 
         <!-- Actions Column -->
         <template #item.actions="{ item }">
-          <IconBtn v-if="$can('contract', 'edit')" @click="editBranch(item)">
+          <IconBtn v-if="$can('contract', 'edit')" :to="{ name: 'contract-edit', params: { id: item.id } }">
             <VIcon icon="tabler-pencil" />
           </IconBtn>
 
@@ -152,12 +124,9 @@ fetchContracts();
     </VCard>
 
     <!-- 👉 Confirm Dialog -->
-    <ConfirmDialog v-model:isDialogVisible="isDeleteDialogOpen" cancel-title="Delete" confirm-title="Delete!"
-      confirm-msg="Contract deleted successfully." confirmation-question="Are you sure want to delete contract?"
-      cancel-msg="Contract Deletion Cancelled!!" :currentContract="currentContract" @submit="fetchContracts"
-      @close="isDeleteDialogOpen = false" />
+    <ConfirmDialog v-model:isDialogVisible="isDeleteDialogOpen" confirm-title="Delete!"
+      confirmation-question="Are you sure want to delete contract?" :currentItem="currentContract"
+      @submit="fetchContracts" :endpoint="`/contracts/${currentContract?.id}`" @close="isDeleteDialogOpen = false" />
 
-    <AddEditDrawer v-model:is-drawer-open="isAddEditDrawerOpen" :currentContract="currentContract"
-      @submit="fetchContracts" @close="isAddEditDrawerOpen = false" />
   </div>
 </template>

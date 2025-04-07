@@ -30,12 +30,20 @@ class ContractService
 
     public function createContract(array $data): Contract
     {
+        // Calculate totals before creation
+        $totals = $this->calculateTotals($data['items'] ?? []);
+        $data = array_merge($data, $totals);
         return Contract::create($data);
     }
 
     public function updateContract(string $id, array $data): Contract
     {
         $contract = $this->getContractById($id);
+
+        // Calculate totals before update
+        $totals = $this->calculateTotals($data['items'] ?? []);
+        $data = array_merge($data, $totals);
+    
         $contract->update($data);
         return $contract->fresh();
     }

@@ -27,7 +27,6 @@ class ContractResource extends JsonResource
             'created_at' => $this->created_at->toDateTimeString(),
             'updated_at' => $this->updated_at->toDateTimeString(),
             'last_updated_by' => $this->last_updated_by,
-            // Changed: Removed is_deleted (using soft deletes)
             'client' => $this->whenLoaded('client'),
             'quotation' => $this->whenLoaded('quotation'),
             'invoice' => $this->whenLoaded('invoice'),

@@ -11,7 +11,6 @@ class Contract extends Model
 {
     use SoftDeletes, HasUuids;
 
-    // Changed: Removed is_deleted from fillable
     protected $fillable = [
         'items',
         'start_date',
@@ -49,7 +48,6 @@ class Contract extends Model
         return $query->where('client_id', $clientId);
     }
 
-    // Changed: Removed is_deleted from default attributes
     public static function createWithAttributes(array $attributes)
     {
         return static::create(array_merge([
@@ -60,7 +58,7 @@ class Contract extends Model
     public function updateWithAttributes(array $attributes)
     {
         return $this->update(array_merge($attributes, [
-            'last_updated_by' => auth()->id(),
+            'last_updated_by' => auth()->user()->uuid,
         ]));
     }
 

@@ -42,7 +42,7 @@ class InvoiceController extends Controller
     public function store(InvoiceStoreRequest $request): JsonResponse
     {
         $invoice = $this->invoiceService->createInvoice(
-            array_merge($request->validated(), ['created_by' => auth()->id()])
+            array_merge($request->validated(), ['created_by' => auth()->user()->uuid])
         );
 
         return response()->json([
@@ -64,7 +64,7 @@ class InvoiceController extends Controller
     {
         $invoice = $this->invoiceService->updateInvoice(
             $id,
-            array_merge($request->validated(), ['last_updated_by' => auth()->id()])
+            array_merge($request->validated(), ['last_updated_by' => auth()->user()->uuid])
         );
 
         return response()->json([

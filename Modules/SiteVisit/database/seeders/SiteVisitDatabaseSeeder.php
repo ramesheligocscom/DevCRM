@@ -39,7 +39,6 @@ class SiteVisitDatabaseSeeder extends Seeder
                 'visit_notes' => $this->generateVisitNotes($status, $visitTime),
                 'lead_id' => $hasLead ? $leadIds[array_rand($leadIds)] : null,
                 'client_id' => $hasClient ? $clientIds[array_rand($clientIds)] : null,
-                'is_deleted' => rand(0, 20) === 0, // 5% chance of being deleted
             ];
         }
 

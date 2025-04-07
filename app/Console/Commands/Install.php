@@ -177,7 +177,7 @@ class Install extends Command
 
         // Prompt before running install
         $this->line('🔧 Installing Reverb...');
-        $this->info('👉 Press Enter to continue...');
+        $this->info('👉 Press Double Enter to continue...');
         fgets(STDIN);
 
         $this->call('reverb:install');

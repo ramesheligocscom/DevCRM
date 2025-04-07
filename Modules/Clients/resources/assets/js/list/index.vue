@@ -27,47 +27,26 @@ const action_bulk = ref(null);
 const selectedCard = ref(0);
 
 // Table headers configuration
-const defaultHeaders = [
-  {
-    title: "Name",
-    key: "name",
-    minWidth: "140px",
-    checked: true,
-  },
-  {
-    title: "Contact Person",
-    key: "contact_person",
-    checked: true,
-  },
-  {
-    title: "Phone No.",
-    key: "phone",
-    checked: true,
-  },
-  {
-    title: "Assign To",
-    key: "assigned_to",
-    checked: true,
-  },
-  {
-    title: "Status",
-    key: "status",
-    checked: true,
-  },
-  {
-    title: "Date",
-    key: "created_at",
-    checked: true,
-  },
-  {
-    title: "Actions",
-    key: "actions",
-    checked: true,
-    sortable: false,
-  },
-];
+const tableHeaderSlug = ref('client-list');
+const headers = ref([]);
+const getFilteredHeaderValue = async (headerList) => { headers.value = headerList; };
 
-const headers = ref(JSON.parse(localStorage.getItem("clientsTableHeaders")) || defaultHeaders);
+const bulkAction = ref([]);
+const assignedToArray = ref([]);
+
+const dropdownUserList = async () => {
+  try {
+    const response = await $api(`/dropdown-user-list`);
+    bulkAction.value = [];
+    const userList = response.data || [];
+    if ($can('client', 'delete')) bulkAction.value.push({ id: "delete", name: "Delete" });
+    if ($can('client', 'assign-to')) bulkAction.value = [...bulkAction.value, ...userList];
+
+    assignedToArray.value = response.data;
+  } catch (error) {
+    console.error("dropdownUserList : " + error);
+  }
+};
 
 // Computed properties
 const searchedClients = computed(() => {
@@ -91,12 +70,6 @@ const pagination = ref({
   total: 0,
   last_page: 1,
 });
-
-// Methods
-const toggleHeaderVisibility = (updatedHeaders) => {
-  headers.value = [...updatedHeaders];
-  localStorage.setItem("clientsTableHeaders", JSON.stringify(headers.value));
-};
 
 const fetchClients = async () => {
   loading.value = true;
@@ -208,11 +181,12 @@ const deleteClient = async (id) => {
 };
 
 // Initial fetch
+dropdownUserList();
 fetchClients();
 </script>
 
 <template>
-  <section>
+  <section v-if="$can('client', 'view')">
     <VCard class="mb-6">
       <div class="d-flex justify-lg-space-between" style="margin: 20px">
         <div>
@@ -241,8 +215,10 @@ fetchClients();
             <VTooltip activator="parent" location="top">Export Client Data</VTooltip>
           </VBtn>
 
-          <FilterBtn :menu-list="headers" @update:menuList="toggleHeaderVisibility" />
-          <VBtn rounded icon="tabler-plus" @click="openClientModal = true; currentClient = null" />
+          <!-- Filter Header Btn FilterHeaderTableBtn -->
+          <FilterHeaderTableBtn :slug="tableHeaderSlug" @filterHeaderValue="getFilteredHeaderValue" />
+          <VBtn v-if="$can('client', 'create')" rounded icon="tabler-plus"
+            @click="openClientModal = true; currentClient = null" />
         </div>
       </div>
 
@@ -259,8 +235,8 @@ fetchClients();
         <template #item.name="{ item }">
           <v-tooltip location="top">
             <template v-slot:activator="{ props }">
-              <RouterLink v-if="$can('client', 'show-client')" :to="`/admin/api/clients/view/${item.id}`"
-                class="custom-link" v-bind="props">
+              <RouterLink v-if="$can('client', 'show')" :to="`/admin/api/clients/view/${item.id}`" class="custom-link"
+                v-bind="props">
                 <VList class="card-list">
                   <VListItem>
                     <VListItemTitle class="font-weight-medium me-4">
@@ -332,11 +308,11 @@ fetchClients();
 
         <!-- Actions Column -->
         <template #item.actions="{ item }">
-          <IconBtn @click="editBranch(item)">
+          <IconBtn @click="editBranch(item)" v-if="$can('client', 'edit')">
             <VIcon icon="tabler-pencil" />x
           </IconBtn>
 
-          <RouterLink :to="{
+          <RouterLink v-if="$can('client', 'show')" :to="{
             name: 'clients-view',
             params: { id: item.id },
           }">
@@ -344,7 +320,7 @@ fetchClients();
             <VIcon color="secondary" icon="tabler-eye" />
           </RouterLink>
 
-          <IconBtn @click="deleteClient(item.id)">
+          <IconBtn v-if="$can('client', 'delete')" @click="deleteClient(item.id)">
             <VIcon icon="tabler-trash" />
           </IconBtn>
         </template>

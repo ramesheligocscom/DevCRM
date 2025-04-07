@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/login', [AuthController::class, 'signIn']);
 Route::post('/log-unauthenticated-access', [AuthController::class, 'logUnauthenticatedAccess']);
+Route::get('/dropdown-user-list', [UserController::class, 'dropdownUserList'])->name('dropdown.user.list');
 
 Route::middleware(['auth:sanctum'])->group(function () {
     # Table Header Manage Api

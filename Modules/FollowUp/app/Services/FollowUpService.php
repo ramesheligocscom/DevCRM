@@ -9,7 +9,6 @@ class FollowUpService
     public function getAllFollowUps()
     {
         return FollowUp::with(['lead', 'client', 'creator', 'updater'])
-            ->where('is_deleted', false)
             ->latest()
             ->get();
     }
@@ -18,7 +17,6 @@ class FollowUpService
     {
         return FollowUp::with(['lead', 'client', 'creator', 'updater'])
             ->where('id', $id)
-            ->where('is_deleted', false)
             ->firstOrFail();
     }
 
@@ -37,7 +35,7 @@ class FollowUpService
     public function deleteFollowUp(string $id)
     {
         $followUp = $this->getFollowUpById($id);
-        $followUp->update(['is_deleted' => true]);
+        $followUp->delete();
         return $followUp;
     }
 }

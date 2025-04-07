@@ -18,7 +18,6 @@ class ContractStoreRequest extends FormRequest
             'items' => 'nullable|array',
             'start_date' => 'required|date|after_or_equal:today',
             'end_date' => 'required|date|after:start_date',
-            'sub_total' => 'required|numeric|min:0',
             'discount' => 'nullable|numeric|min:0',
             'tax' => 'nullable|numeric|min:0',
             'status' => 'required|string|max:32',  // Simplified validation

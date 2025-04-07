@@ -58,7 +58,7 @@ class LeadService
         $lead->update([
             'status' => 'converted',
             'client_id' => $client->id,
-            'last_updated_by' => auth()->id()
+            'last_updated_by' => auth()->user()->uuid
         ]);
 
         return $client;

@@ -42,7 +42,7 @@ class LeadController extends Controller
     public function store(LeadStoreRequest $request): JsonResponse
     {
         $lead = $this->leadService->createLead(
-            array_merge($request->validated(), ['created_by' => auth()->id()])
+            array_merge($request->validated(), ['created_by' => auth()->user()->uuid])
         );
 
         return response()->json([
@@ -64,7 +64,7 @@ class LeadController extends Controller
     {
         $lead = $this->leadService->updateLead(
             $id,
-            array_merge($request->validated(), ['last_updated_by' => auth()->id()])
+            array_merge($request->validated(), ['last_updated_by' => auth()->user()->uuid])
         );
 
         return response()->json([

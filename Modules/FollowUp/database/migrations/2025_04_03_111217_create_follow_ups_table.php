@@ -31,20 +31,15 @@ return new class extends Migration
             $table->text('call_summary')->nullable()->comment('Detailed summary of the call');
 
             // Audit fields
-            $table->string('created_by')->comment('User who created this follow-up record');
-            $table->timestamp('created_at')->useCurrent()->comment('When this record was created');
-            $table->timestamp('last_updated_at')->useCurrent()->comment('When this record was last updated');
-            $table->string('last_updated_by')->nullable()->comment('User who last updated this record');
+            $table->uuid('created_by')->comment('User who created this follow-up record');
+            $table->uuid('last_updated_by')->nullable()->comment('User who last updated this record');
 
             // Relationship references
             $table->uuid('lead_id')->nullable()->comment('Reference to associated lead if applicable');
             $table->uuid('client_id')->nullable()->comment('Reference to associated client if applicable');
 
-            // Soft delete flag
-            $table->boolean('is_deleted')->default(false)->comment('Whether this record is marked as deleted');
-
-
             $table->softDeletes(); // Adds a `deleted_at` column
+            $table->timestamps(); 
 
             // Foreign key constraints
             $table->foreign('lead_id')

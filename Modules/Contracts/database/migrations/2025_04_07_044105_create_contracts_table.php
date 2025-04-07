@@ -10,8 +10,9 @@ return new class extends Migration
     public function up()
     {
         Schema::create('contracts', function (Blueprint $table) {
-            // Changed: Added comments to all columns
-            $table->uuid('id')->primary()->default(Str::uuid())->comment('Primary key UUID');
+            // Primary key as UUID
+            $table->uuid('id')->primary()->comment('Primary key UUID');
+            
             $table->json('items')->nullable()->comment('Contract line items in JSON format');
             $table->date('start_date')->comment('Effective start date of contract');
             $table->date('end_date')->comment('Expiration date of contract');
@@ -25,10 +26,9 @@ return new class extends Migration
             $table->uuid('quotation_id')->nullable()->comment('Optional reference to quotation');
             $table->uuid('invoice_id')->nullable()->comment('Optional reference to invoice');
             
-            $table->string('created_by', 32)->comment('User who created the record');
-            $table->string('last_updated_by', 32)->nullable()->comment('User who last updated');
+            $table->uuid('created_by')->comment('User who created the record');
+            $table->uuid('last_updated_by')->nullable()->comment('User who last updated');
             
-            // Changed: Removed is_deleted (using soft deletes)
             $table->timestamps();
             $table->softDeletes()->comment('Timestamp when record was deleted');
 

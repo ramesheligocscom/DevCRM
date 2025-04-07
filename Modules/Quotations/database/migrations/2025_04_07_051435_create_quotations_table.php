@@ -10,7 +10,9 @@ return new class extends Migration
     public function up()
     {
         Schema::create('quotations', function (Blueprint $table) {
-            $table->uuid('id')->primary()->default(Str::uuid())->comment('Primary key UUID');
+            // Primary key as UUID
+            $table->uuid('id')->primary()->comment('Primary key UUID');
+
             $table->string('quotation_number', 64)->unique()->comment('Unique quotation identifier');
             $table->date('valid_uptil')->comment('Date until quotation is valid');
             $table->string('quotation_type', 32)->comment('Type of quotation');
@@ -27,8 +29,8 @@ return new class extends Migration
             $table->uuid('lead_id')->nullable()->comment('Reference to lead if applicable');
             $table->uuid('client_id')->nullable()->comment('Reference to client if applicable');
             $table->uuid('contract_id')->nullable()->comment('Reference to contract if applicable');
-            $table->string('created_by', 32)->comment('User who created the quotation');
-            $table->string('last_updated_by', 32)->nullable()->comment('User who last updated');
+            $table->uuid('created_by')->comment('User who created the quotation');
+            $table->uuid('last_updated_by')->nullable()->comment('User who last updated');
             $table->timestamps();
             $table->softDeletes()->comment('Timestamp when quotation was deleted');
 

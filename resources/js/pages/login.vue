@@ -31,19 +31,20 @@ const errors = ref({})
 const credentials = ref({
   // email: 'admin@eligocs.com',
   // password: 'qwerty123',
-  email: 'test@example.com',
-  password: 'password',
+  email: 'admin@eligocs.com',
+  password: 'qwerty123',
 
 })
 
 const routeList = ref([
-  { route: '/admin/dashboard', action: 'dashboard', slug: 'view-dashboard' },
-  { route: '/admin/clients', action: 'client', slug: 'view-client' },
-  { route: '/admin/calendar', action: 'calendar', slug: 'view-calendar' },
-  { route: '/admin/quotations', action: 'quotation', slug: 'view-quotations' },
-  { route: '/admin/contracts', action: 'contract', slug: 'view-contract' },
-  { route: '/admin/invoices-list', action: 'invoice', slug: 'view-invoice' },
-  { route: '/admin/contract-schedulings', action: 'schedule', slug: 'view-schedule' },
+  // { route: '/dashboards/crm', action: 'dashboard', slug: 'view' },
+  { route: '/leads', action: 'leads', slug: 'view' },
+  { route: '/clients', action: 'client', slug: 'view' },
+  { route: '/RolePermission', action: 'role', slug: 'view' },
+  // { route: '/admin/quotations', action: 'quotation', slug: 'view' },
+  // { route: '/admin/contracts', action: 'contract', slug: 'view' },
+  // { route: '/admin/invoices-list', action: 'invoice', slug: 'view' },
+  // { route: '/admin/contract-schedulings', action: 'schedule', slug: 'view' },
 ]);
 
 const rememberMe = ref(false)

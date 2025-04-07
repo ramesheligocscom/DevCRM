@@ -3,166 +3,193 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 use Nwidart\Modules\Facades\Module;
 
 class Install extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-
     protected $signature = 'module:install {db=refresh}';
+    protected $description = 'Migrates Database, Seeds Database, Generates Keys, Sets Environment, Configures Reverb, and more.';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Migrates Database , Seeds Database , Sets in env';
-
-    /**
-     * Create a new command instance.
-     *
-     * @return void
-     */
     public function __construct()
     {
         parent::__construct();
     }
 
-    /**
-     * Execute the console command.
-     *
-     * @return int
-     */
     public function handle()
     {
         $type = $this->argument('db');
         $acceptedArgs = ['fresh', 'refresh'];
 
-        if (in_array($type, $acceptedArgs)) {
-            $this->line('Received Type' . $this->argument('db'));
-            $this->generateAppKey();
-            if ($type == "fresh") $this->clearExportsFolder();
-            $this->setupDatabase($type);
-            $this->seedDatabase();
-            $this->storageLink();
-            # $this->setupCountry();
-            $this->clearCache();
-            $this->envUpdateCmd();
-            $this->info('Installation Complete');
-        } else {
-            $this->error('Invalid Argument ' . $type);
+        if (!in_array($type, $acceptedArgs)) {
+            return $this->error('Invalid Argument: ' . $type);
         }
+
+        $this->line('📦 Starting Project Installation with DB Mode: ' . strtoupper($type));
+
+        # STEP 1: Generate Application Key
+        $this->generateAppKey();
+
+        # STEP 2: Optional - Clear Export Folder (if fresh)
+        if ($type === "fresh") {
+            $this->clearExportsFolder();
+        }
+
+        # STEP 3: Migrate Database
+        $this->setupDatabase($type);
+
+        # STEP 4: Seed the Database
+        $this->seedDatabase();
+
+        # STEP 5: Import Country, State, City
+        # $this->setupCountry();
+
+        # STEP 6: Create Storage Symlink
+        $this->storageLink();
+
+        # STEP 7: Clear Config Cache
+        $this->clearCache();
+
+        # STEP 8: Reverb Setup (Real-time Server)
+        $this->reverbInstall();
+
+        # STEP 9: Run env:up Command
+        $this->envUpdateCmd();
+
+        $this->info('🎉 Project Installation Complete!');
     }
 
-    /**
-     * Clears all files and folders inside exports directory.
-     */
+    # 1. Generate Application Key
+    protected function generateAppKey()
+    {
+        $this->line('🔐 Generating Application Key...');
+        $this->call('key:generate', ['--force' => true]);
+        $this->info('✅ App Key generated');
+    }
+
+    # 2. Optional - Clear Export Folder (if fresh)
     protected function clearExportsFolder()
     {
         $exportPath = storage_path('app/public/exports');
 
         if (File::exists($exportPath)) {
             File::cleanDirectory($exportPath);
-            $this->info('Exports folder cleared successfully.');
+            $this->info('🧹 Exports folder cleared successfully.');
         } else {
-            $this->warn('Exports folder does not exist, skipping...');
+            $this->warn('⚠️ Exports folder does not exist, skipping...');
         }
     }
 
-    /*
-Clears Config Cache after updating env file
-*/
-    protected function clearCache()
+    # 3. Migrate Database
+    protected function setupDatabase($type)
     {
-        $this->info('Clear Config Cache');
-        $this->call('config:clear');
+        $this->line('🛠️ Running database migration: ' . strtoupper($type));
+
+        if ($type === "fresh") {
+            $this->call('migrate:fresh', ['--force' => true]);
+        } else {
+            $this->call('migrate:refresh');
+        }
+
+        $this->info('✅ Database migration complete');
     }
 
-    /**
-     * Run all the seeders.
-     *
-     * @return void
-     */
+    # 4: Seed the Database
     protected function seedDatabase()
     {
-        $this->line('Seeding Database ==');
+        $this->line('🌱 Seeding Database...');
 
-        # List of modules to seed
-        $modules = ['Leads', 'Clients', 'RolePermission',];
-
+        $modules = ['Leads', 'Clients', 'RolePermission'];
         foreach ($modules as $module) {
             if (Module::has($module)) {
-                $this->info("Seeding module: $module");
+                $this->info("🔧 Seeding module: $module");
                 $this->call("module:seed", ['module' => $module]);
             } else {
-                $this->warn("Module '$module' not found, skipping seeder...");
+                $this->warn("⚠️ Module '$module' not found, skipping...");
             }
         }
 
         $this->call('db:seed');
-
-        $this->info('Database Seeding successful');
+        $this->info('✅ Database Seeding completed');
     }
 
     /**
-     * Generate private application key.
+     * Imports Country, State, and City data using custom Artisan commands.
+     *
+     * This is useful to pre-fill geographical data for forms, user addresses, etc.
+     * Make sure `import:country`, `import:state`, and `import:city` commands exist and are registered.
      *
      * @return void
      */
-    protected function generateAppKey()
-    {
-        $this->line('Generating application key..');
-
-        $this->call('key:generate', ['--force' => true]);
-
-        $this->info('Application key generated successfully.');
-    }
-
-    /**
-     * Setup the database.
-     *
-     * @return void
-     */
-    protected function setupDatabase($type)
-    {
-        $this->line('Received Type ' . $type);
-        $this->line('Installing the database...');
-        if ($type == "fresh") {
-            $this->info('Running Fresh Database Migration');
-            $this->call('migrate:fresh', ['--force' => true]);
-        } else {
-            $this->info('Running  Database Refresh');
-            $this->call('migrate:refresh');
-        }
-        $this->info('Database installed successfully.');
-    }
-
-    /**
-     * Create Storage Link.
-     *
-     * @return void
-     */
-    protected function storageLink()
-    {
-        $this->call('storage:link');
-        $this->line(' Storage Linked Successfully...');
-    }
-
-    protected function envUpdateCmd()
-    {
-        $this->call('env:up');
-        $this->line('Env Up date Successfully...');
-    }
-
     protected function setupCountry()
     {
+        $this->info('🌍 Importing Country, State, and City data...');
+
         $this->call('import:country');
         $this->call('import:state');
         $this->call('import:city');
+
+        $this->info('✅ Country, State, and City data imported.');
+    }
+
+    # 6: Seed the Database
+    protected function storageLink()
+    {
+        $this->call('storage:link');
+        $this->info('🔗 Storage linked successfully');
+    }
+
+    # 7. Clear Config Cache
+    protected function clearCache()
+    {
+        $this->info('🧼 Clearing config cache...');
+        $this->call('config:clear');
+        $this->call('config:cache');
+        $this->call('optimize:clear');
+    }
+
+
+
+    # 8. Reverb Setup (Real-time Server)
+    /**
+     * Install and configure Laravel Reverb for real-time broadcasting.
+     *
+     * This method:
+     * - Publishes Reverb config files (if not already published).
+     * - Prompts the user to hit Enter at steps for better CLI experience.
+     * - Installs Reverb setup.
+     */
+    protected function reverbInstall()
+    {
+        $this->info('⚡ Setting up Laravel Reverb...');
+
+        // Prompt before publishing config
+        $this->line('📄 Publishing Reverb config files...');
+        $this->info('👉 Press Enter to continue...');
+        fgets(STDIN);
+
+        $this->callSilently('vendor:publish', [
+            '--tag' => 'reverb-config',
+            '--force' => true,
+        ]);
+        $this->info('✅ Reverb config published.');
+
+        // Prompt before running install
+        $this->line('🔧 Installing Reverb...');
+        $this->info('👉 Press Enter to continue...');
+        fgets(STDIN);
+
+        $this->call('reverb:install');
+
+        $this->info('✅ Reverb setup complete!');
+    }
+
+
+    # 9. Run env:up Command
+    protected function envUpdateCmd()
+    {
+        $this->call('env:up');
+        $this->info('🌍 .env updated successfully');
     }
 }

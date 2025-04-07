@@ -3,11 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Modules\RolePermission\Constants\RolePermissionConst;
-use App\Models\UserMeta;
 use Illuminate\Support\Facades\DB;
 use Modules\RolePermission\Models\Role;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -21,20 +19,13 @@ class UserSeeder extends Seeder
     public function run(): void
     {
 
-         // User::factory(10)->create();
-         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
-        return ;
         $roles = RolePermissionConst::ROLE_LIST;
-
         $users = [
             [
                 'name' => 'Pankaj Sharma',
                 'email' => 'admin@eligocs.com',
                 'user_name' => 'super_admin',
-                'password' => Hash::make('qwerty123'),
+                'password' =>  'qwerty123',
                 'avatar' => null,
                 'status' => User::ACTIVE,
                 'email_verified_at' => now()->format('Y-m-d H:i:s'),
@@ -44,7 +35,7 @@ class UserSeeder extends Seeder
                 'name' => 'Admin',
                 'email' => 'admin1@eligocs.com',
                 'user_name' => 'admin',
-                'password' => Hash::make('qwerty123'),
+                'password' => 'qwerty123',
                 'avatar' => null,
                 'status' => User::ACTIVE,
                 'email_verified_at' => now()->format('Y-m-d H:i:s'),
@@ -69,7 +60,7 @@ class UserSeeder extends Seeder
                     'name' => $userData['name'],
                     'email' => $userData['email'],
                     'user_name' => $userData['user_name'],
-                    'password' => Hash::make('admin@123'),
+                    'password' => Hash::make($userData['password']),
                     'avatar' => $userData['avatar'] ?? null,
                     'status' => $userData['status'],
                     'email_verified_at' => $userData['email_verified_at'],

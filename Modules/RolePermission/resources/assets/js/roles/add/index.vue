@@ -185,7 +185,7 @@ const onSubmit = async () => {
             refForm.value?.reset();
             refForm.value?.resetValidation();
         });
-        router.push('/admin/roles')
+        router.push('/roles')
     } catch (error) {
         toast.error(error._data.message ?? 'Error occurred while processing the request.');
     } finally {

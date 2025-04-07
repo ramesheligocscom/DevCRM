@@ -5,8 +5,9 @@
                 <div class="d-flex justify-space-between align-center mb-5">
                     <h2>Edit Role Permission </h2>
                     <div class="d-flex gap-2">
-                        <VBtn v-if="$can('roles', 'edit-role') && role_name != 'Super Admin'" color="primary" type="submit">Save</VBtn>
-                        <Router-link to="/admin/roles">
+                        <VBtn v-if="$can('role', 'edit') && role_name != 'Super Admin'" color="primary" type="submit">
+                            Save</VBtn>
+                        <Router-link to="/roles">
                             <VBtn prepend-icon="tabler-arrow-back-up" variant="tonal" color="secondary">Back</VBtn>
                         </Router-link>
                     </div>
@@ -51,7 +52,6 @@
                 <VWindow v-model="currentTab">
                     <VWindowItem v-for="permissionType in permissionList" :value="permissionType.id"
                         :key="permissionType.id">
-                        <!-- <v-container class="px-0"> -->
                         <VRow class="d-flex">
                             <VCol class="pb-0" v-for="permissionCategory in permissionType.permission_category"
                                 :key="permissionCategory.id" cols="12" md="6" lg="6">
@@ -70,7 +70,6 @@
                                 </VCard>
                             </VCol>
                         </VRow>
-                        <!-- </v-container> -->
                     </VWindowItem>
                 </VWindow>
             </div>
@@ -79,11 +78,10 @@
 </template>
 
 <script setup>
-import { VBtn, VCheckbox, VTabs, VWindowItem } from 'vuetify/lib/components/index.mjs';
 import { useRoute } from 'vue-router';
-import { requiredRule } from '@/validations/validationRules';
-import { VForm, VSelect } from 'vuetify/lib/components/index.mjs';
 import { toast } from 'vue3-toastify';
+import { VBtn, VCheckbox, VForm, VSelect, VTabs, VWindowItem } from 'vuetify/lib/components/index.mjs';
+import { requiredRule } from '../../../../../../../resources/js/validations/validationRules';
 
 const route = useRoute();
 const role_id = route.params.id;
@@ -108,9 +106,7 @@ const getRoleInfo = async () => {
     try {
         const params = { role_id: role_id };
         const response = await $api(`/api/role/info`, { method: 'POST', body: params, });
-        //console.log("getRoleInfo : ", response);
         if (response.status === 200) {
-            //console.log("Status is 200");
             role_name.value = response.data ? response.data.name : '';
             description.value = response.data ? response.data.description : '';
             position.value = response.data ? response.data.position : 0;
@@ -118,7 +114,7 @@ const getRoleInfo = async () => {
             role_info.value = response.data;
         }
     } catch (error) {
-        //console.log(JSON.stringify(error));
+        console.log('getRoleInfo error ', JSON.stringify(error));
         toast.error(error?._data?.message ?? "Error occurred while assigning roles.");
     } finally {
     }
@@ -132,7 +128,6 @@ const getPermissionList = async () => {
             search: '',
         };
         const response = await $api('/permission', { params });
-        //console.log(response);
         permissionList.value = response.data.map(obj => ({
             ...obj,
             has_permission_count: obj.permission_category
@@ -140,8 +135,8 @@ const getPermissionList = async () => {
                     count + (category.permissions?.filter(permission => permission.check_permission === true).length || 0),
                     0)
         }));
-        //console.log(permissionList.value);
     } catch (error) {
+        console.log('getPermissionList error ', JSON.stringify(error));
         toast.error(error?._data?.message ?? "Error occurred while assigning roles.");
     } finally {
         loading.value = false;
@@ -205,7 +200,7 @@ const onSubmit = async () => {
             status: status.value,
             permission_list: permission_list,
         };
-        const response = await $api('/api/role/update', { method: 'POST', body: formDataObject },);
+        const response = await $api('/role/update', { method: 'POST', body: formDataObject },);
         toast.success(response.message || 'Operation successful!');
         nextTick(() => {
             refForm.value?.reset();

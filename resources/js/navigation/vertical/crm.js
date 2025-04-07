@@ -11,6 +11,11 @@ export default [
       to: 'clients-list', // ✅ Use exact name from router
     },
     {
+      title: 'Role and Permission',
+      icon: { icon: 'tabler-user-circle' },
+      to: 'role-list',  
+    },
+    {
       title: 'Contracts',
       icon: { icon: 'tabler-user-circle' },
       to: 'contract-list', // ✅ Use exact name from router

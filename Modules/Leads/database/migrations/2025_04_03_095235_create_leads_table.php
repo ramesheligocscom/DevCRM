@@ -16,7 +16,7 @@ return new class extends Migration
     {
         Schema::create('leads', function (Blueprint $table) {
             // Primary key as UUID
-            $table->uuid('id')->primary()->default(Str::uuid());
+            $table->uuid('id')->primary();
 
             // Lead information
             $table->string('name', 128)->comment('The name of the lead/company');

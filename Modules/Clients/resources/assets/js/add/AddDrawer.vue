@@ -313,8 +313,8 @@ const Status = ref("");
                 </VBtn>
 
                 <!-- <VBtn v-if="
-                  ((!currentClient && $can('client', 'create-client')) ||
-                    (currentClient && $can('client', 'edit-client'))) &&
+                  ((!currentClient && $can('client', 'create')) ||
+                    (currentClient && $can('client', 'edit'))) &&
                   !isLoading
                 " type="submit" class="me-3">
                   {{ currentClient ? "Update" : "Submit" }}

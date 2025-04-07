@@ -224,7 +224,7 @@ fetchClients();
         </div>
 
         <div class="d-flex gap-3">
-          <VSelect v-if="$can('client', 'assign-to') || $can('client', 'delete-client')" label="Bulk Action"
+          <VSelect v-if="$can('client', 'assign-to') || $can('client', 'delete')" label="Bulk Action"
             v-model="action_bulk" :items="bulkAction" item-title="name" item-value="id"
             style="max-inline-size: 200px; min-inline-size: 200px; height: 39px"></VSelect>
 

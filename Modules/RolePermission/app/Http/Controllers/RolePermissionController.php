@@ -33,7 +33,7 @@ class RolePermissionController extends Controller
 
     public function getRoleList(Request $request)
     {
-        $this->updateRolePermission();
+        // $this->updateRolePermission();
 
         try {
             $query = Role::query();
@@ -41,7 +41,7 @@ class RolePermissionController extends Controller
 
             # Filter by search query
             if ($search = $request->input('search')) {
-                $query->where('name', 'LIKE', "%{$search}%");
+                $query->where('name', 'ILIKE', '%' . $search . '%'); # is case-insensitive in PostgreSQL.
             }
 
             # Sort results
@@ -139,7 +139,7 @@ class RolePermissionController extends Controller
                     'position' => $role->position,
                     'status' => $role->status,
                     'description' => $role->description,
-                    "created_by" => request()->user()->id ?? null,
+                    "created_by" => request()->user()->uuid ?? null,
                 ]
             );
 
@@ -185,7 +185,7 @@ class RolePermissionController extends Controller
 
         $permissionData = $query->with([
             'permission_category.permissions' => function ($query) use ($role_id) {
-                $query->select('id', 'title', 'slug', 'action', 'permission_category_id', 'permission_type_id', 'permission_subcategory_id');
+                $query->select('id', 'title', 'slug', 'action', 'permission_category_id', 'permission_type_id');
             }
         ])->withCount('permissions')->get(['id', 'name', 'icon']);
 
@@ -244,7 +244,7 @@ class RolePermissionController extends Controller
                     'position' => $request->position,
                     'status' => $request->status,
                     'description' => $request->description,
-                    "created_by" => request()->user()->id ?? null,
+                    "created_by" => request()->user()->uuid ?? null,
                 ]
             );
 
@@ -392,7 +392,6 @@ class RolePermissionController extends Controller
                                     'description' => $permission['name'] . ' description',
                                     'permission_type_id' => $permission_type->id,
                                     'permission_category_id' => $permission_category->id,
-                                    'permission_subcategory_id' => null,
                                 ]
                             );
                         }

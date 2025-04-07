@@ -33,12 +33,20 @@ const loading = ref(false);
 const searchQuery = ref('');
 const pagination = ref({ current_page: 1, last_page: 1, total: 0, per_page: 10, from: 0, to: 0 });
 
-onMounted(() => { getRoleList(); });
+onMounted(async () => {
+    console.log('onMounted getRoleList 1');
+    await getRoleList();
+});
 
 // Watch for changes in pagination or search query
-watch([() => pagination.value.current_page, () => pagination.value.per_page, searchQuery], () => {
-    getRoleList();
-});
+watch([() => pagination.value.current_page, () => pagination.value.per_page, () => searchQuery.value,],
+    (newValues, oldValues) => {
+        const hasChanged = newValues.some((val, index) => val !== oldValues[index]);
+        if (hasChanged) {
+            getRoleList();
+        }
+    }
+);
 
 const rollAssignPermissionList = async () => {
     const response = await $api('/role/roll-assign-permission-list');
@@ -65,10 +73,10 @@ const getRoleList = async () => {
             to: response.data.to,
         };
     } catch (error) {
+        console.log('getRoleList error ', error);
         toast.error(error?._data?.message ?? "Error occurred while assigning roles.");
     } finally {
         loading.value = false;
     }
 };
-
 </script>

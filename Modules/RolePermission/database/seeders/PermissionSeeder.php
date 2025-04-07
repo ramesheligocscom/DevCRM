@@ -24,7 +24,11 @@ class PermissionSeeder extends Seeder
         # Define modules to check (class + constant name)
         $optionalModules = [
             ['class' => \Modules\Leads\Constants\LeadConst::class, 'const' => 'LEAD_PERMISSION_LIST'],
-            ['class' => \Modules\Booking\Constants\BookingConst::class, 'const' => 'BOOKING_PERMISSION_LIST'],
+            ['class' => \Modules\SiteVisit\Constants\SiteVisitConst::class, 'const' => 'SITE_VISIT_PERMISSION_LIST'],
+            ['class' => \Modules\Invoices\Constants\InvoiceConst::class, 'const' => 'INVOICE_PERMISSION_LIST'],
+            ['class' => \Modules\Quotations\Constants\QuotationConst::class, 'const' => 'QUOTATION_PERMISSION_LIST'],
+            ['class' => \Modules\Contracts\Constants\ContractConst::class, 'const' => 'CONTRACT_PERMISSION_LIST'],
+            ['class' => \Modules\Clients\Constants\ClientConst::class, 'const' => 'CLIENT_PERMISSION_LIST'],
         ];
 
         foreach ($optionalModules as $module) {

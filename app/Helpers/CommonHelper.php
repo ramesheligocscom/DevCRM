@@ -2,14 +2,9 @@
 
 use App\Constants\ArrayListConst;
 use App\Events\SendMessage;
-use App\Mail\FollowUpMail;
-use App\Models\ActivityTimeline;
 use App\Models\ExceptionLog;
-use App\Models\FollowUp;
-use App\Models\MessageLog;
 use App\Models\Notification;
 use App\Models\NotificationUser;
-use App\Models\Permission;
 use App\Models\TableHeaderManage;
 use App\Models\User;
 use App\Models\UserRole;
@@ -18,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 use Modules\RolePermission\Constants\RolePermissionConst;
+use Modules\RolePermission\Models\Permission;
 
 const COMMON_HELPER = 'Helper / Common Helper';
 
@@ -80,22 +76,22 @@ function createExceptionError($exception, $type, $function = null)
  */
 function createNewRole($role)
 {
-    // $permissions_ids = Permission::pluck('id')->toArray();
+    $permissions_ids = Permission::pluck('id')->toArray();
 
-    // # remove move old permission assign in $role  
-    // switch ($role->slug) {
-    //     case RolePermissionConst::SLUG_SUPER_ADMIN:
-    //         $permissions_ids = Permission::pluck('id')->toArray();
-    //         break;
-    //     case RolePermissionConst::SLUG_ADMIN:
-    //         $permissions_ids = Permission::whereIn('permission', RolePermissionConst::ADMIN_PERMISSION)->pluck('id')->toArray();
-    //         break;
-    //     default:
-    //         $permissions_ids = [];
-    //         break;
-    // }
-    // $role->permissions()->sync($permissions_ids);
-    // return $role;
+    # remove move old permission assign in $role  
+    switch ($role->slug) {
+        case RolePermissionConst::SLUG_SUPER_ADMIN:
+            $permissions_ids = Permission::pluck('id')->toArray();
+            break;
+        case RolePermissionConst::SLUG_ADMIN:
+            $permissions_ids = Permission::whereIn('permission', RolePermissionConst::ADMIN_PERMISSION)->pluck('id')->toArray();
+            break;
+        default:
+            $permissions_ids = [];
+            break;
+    }
+    $role->permissions()->sync($permissions_ids);
+    return $role;
 }
 
 function customizingResponseData($list)

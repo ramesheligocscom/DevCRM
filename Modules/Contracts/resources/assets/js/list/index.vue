@@ -79,9 +79,10 @@ fetchContracts();
 
       <VDivider />
       <VDataTableServer v-model:items-per-page="itemsPerPage" v-model:page="page" :items="dataItems" item-value="name"
-        :headers="headers.filter((header) => header.checked)" :items-length="totalItems" show-select class="text-no-wrap" @update:options="updateOptions">
+        :headers="headers.filter((header) => header.checked)" :items-length="totalItems" show-select
+        class="text-no-wrap" @update:options="updateOptions">
         <!-- Actions Column -->
-        <template #item.actions="{ item }">
+        <template #item.action="{ item }">
 
           <IconBtn :to="{ name: 'contract-details-id', params: { id: item.id } }">
             <VIcon icon="tabler-eye" />
@@ -101,7 +102,7 @@ fetchContracts();
             {{ resolveStatusVariant(item.status).text }}
           </VChip>
         </template>
- 
+
         <!-- sub_total -->
         <template #item.sub_total="{ item }">
           ${{ item.sub_total || 0 }}
@@ -118,11 +119,22 @@ fetchContracts();
         <template #item.total="{ item }">
           ${{ item.total || 0 }}
         </template>
+        <!-- client -->
+        <template #item.client_id="{ item }">
+          {{ item.client?.name || '—' }}
+        </template>
+        <!-- quotation -->
+        <template #item.quotation_id="{ item }">
+          {{ item.quotation?.quotation_number || '—' }}
+        </template>
+        <!-- invoice -->
+        <template #item.invoice_id="{ item }">
+          {{ item.invoice?.invoice_number || '—' }}
+        </template>
         <!-- creator -->
         <template #item.created_by="{ item }">
           {{ item.creator?.name || '—' }}
         </template>
-
         <!-- updater -->
         <template #item.last_updated_by="{ item }">
           {{ item.updater?.name || 0 }}

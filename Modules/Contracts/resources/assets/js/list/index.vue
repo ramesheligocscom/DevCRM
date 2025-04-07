@@ -17,6 +17,7 @@ const headers = [
   { title: 'SUB TOTAL', key: 'sub_total' },
   { title: 'DISCOUNT', key: 'discount' },
   { title: 'TAX', key: 'tax' },
+  { title: 'TOTAL', key: 'total' },
   { title: 'STATUS', key: 'status' },
   // { title: 'CLIENT ID', key: 'client_id' },
   // { title: 'QUOTATION ID', key: 'quotation_id' },
@@ -25,10 +26,6 @@ const headers = [
   { title: 'LAST UPDATED BY', key: 'last_updated_by' },
   { title: 'ACTIONS', key: 'actions' }
 ];
-
-const editBranch = (item) => {
-  currentContract.value = JSON.parse(JSON.stringify(item));
-};
 
 const resolveStatusVariant = status => {
   if (status === 1) return { color: 'primary', text: 'Current' }
@@ -93,25 +90,12 @@ fetchContracts();
       <VDivider />
       <VDataTableServer v-model:items-per-page="itemsPerPage" v-model:page="page" :items="dataItems" item-value="name"
         :headers="headers" :items-length="totalItems" show-select class="text-no-wrap" @update:options="updateOptions">
-        <template #item.name="{ item }">
-          <div class="d-flex align-center gap-x-3">
-            <VAvatar size="34" :variant="!item.avatar ? 'tonal' : undefined">
-              <VImg v-if="item.avatar" :src="item.avatar" />
-              <span v-else>{{ avatarText(item.name) }}</span>
-            </VAvatar>
-            <div class="d-flex flex-column">
-              <RouterLink :to="{ name: 'contract-details-id', params: { id: item.id } }"
-                class="text-link font-weight-medium d-inline-block" style="line-height: 1.375rem;">
-                {{ item.name }}
-              </RouterLink>
-              <div class="text-body-2">
-                {{ item.email }}
-              </div>
-            </div>
-          </div>
-        </template>
         <!-- Actions Column -->
         <template #item.actions="{ item }">
+
+          <IconBtn :to="{ name: 'contract-details-id', params: { id: item.id } }">
+            <VIcon icon="tabler-eye" />
+          </IconBtn>
           <IconBtn :to="{ name: 'contract-edit', params: { id: item.id } }">
             <VIcon icon="tabler-pencil" />
           </IconBtn>
@@ -126,6 +110,32 @@ fetchContracts();
             {{ resolveStatusVariant(item.status).text }}
           </VChip>
         </template>
+        <!-- sub_total -->
+        <template #item.sub_total="{ item }">
+          ${{ item.sub_total || 0 }}
+        </template>
+        <!-- discount -->
+        <template #item.discount="{ item }">
+          ${{ item.discount || 0 }}
+        </template>
+        <!-- total -->
+        <template #item.tax="{ item }">
+          ${{ item.tax || 0 }}
+        </template>
+        <!-- total -->
+        <template #item.total="{ item }">
+          ${{ item.total || 0 }}
+        </template>
+        <!-- creator -->
+        <template #item.created_by="{ item }">
+          {{ item.creator?.name || '—' }}
+        </template>
+
+        <!-- updater -->
+        <template #item.last_updated_by="{ item }">
+          {{ item.updater?.name || 0 }}
+        </template>
+
         <template #bottom>
           <TablePagination v-model:page="page" :items-per-page="itemsPerPage" :total-items="totalItems" />
         </template>

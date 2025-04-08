@@ -12,6 +12,9 @@ class Invoice extends Model
     use SoftDeletes, HasUuids;
 
     protected $fillable = [
+        'invoice_number',
+        'title',
+        'description',
         'items',
         'sub_total',
         'tax',
@@ -20,6 +23,7 @@ class Invoice extends Model
         'status',
         'client_id',
         'contract_id',
+        'quotation_id',
         'created_by',
         'last_updated_by'
     ];
@@ -61,6 +65,11 @@ class Invoice extends Model
     public function contract()
     {
         return $this->belongsTo(\Modules\Contracts\Models\Contract::class, 'contract_id');
+    }
+
+    public function quotation()
+    {
+        return $this->belongsTo(\Modules\Quotations\Models\Quotation::class, 'quotation_id');
     }
 
     public function creator()

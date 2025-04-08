@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { computed } from 'vue';
 
 const props = defineProps({
   InfoData: {
@@ -8,8 +8,10 @@ const props = defineProps({
   },
 })
 
-const clientName = computed(() => props.InfoData.client?.name || `ID: ${props.InfoData.client_id || 'N/A'}`)
-const invoiceName = computed(() => props.InfoData.invoice?.name || `ID: ${props.InfoData.invoice_id || 'N/A'}`)
+const clientName = computed(() => props.InfoData.client?.name || `-`)
+const contractName = computed(() => props.InfoData.contract?.title || `-`)
+const quotationName = computed(() => props.InfoData.quotation?.quotation_number || `-`)
+
 </script>
 
 <template>
@@ -23,15 +25,8 @@ const invoiceName = computed(() => props.InfoData.invoice?.name || `ID: ${props.
           <VRow dense>
             <VCol cols="12" md="4" lg="4">
               <div class="d-flex align-center gap-x-2 mt-1">
-                <strong>Start Date:</strong>
-                <span>{{ props.InfoData.start_date || 'N/A' }}</span>
-              </div>
-            </VCol>
-
-            <VCol cols="12" md="4" lg="4">
-              <div class="d-flex align-center gap-x-2 mt-1">
-                <strong>End Date:</strong>
-                <span>{{ props.InfoData.end_date || 'N/A' }}</span>
+                <strong>Title:</strong>
+                <span>{{ props.InfoData.title || '-' }}</span>
               </div>
             </VCol>
 
@@ -67,15 +62,15 @@ const invoiceName = computed(() => props.InfoData.invoice?.name || `ID: ${props.
 
             <VCol cols="12" md="4" lg="4">
               <div class="d-flex align-center gap-x-2 mt-1">
-                <strong>Invoice:</strong>
-                <span>{{ invoiceName }}</span>
+                <strong>Contract:</strong>
+                <span>{{ contractName }}</span>
               </div>
             </VCol>
 
             <VCol cols="12" md="4" lg="4">
               <div class="d-flex align-center gap-x-2 mt-1">
-                <strong>Invoice:</strong>
-                <span>{{ invoiceName }}</span>
+                <strong>Quotation:</strong>
+                <span>{{ quotationName }}</span>
               </div>
             </VCol>
           </VRow>
@@ -124,7 +119,7 @@ const invoiceName = computed(() => props.InfoData.invoice?.name || `ID: ${props.
 
 
           <VAlert v-else type="info" variant="tonal" class="mt-4">
-            No items found for this invoice.
+            No items found for this Invoice.
           </VAlert>
         </VCardText>
       </VCard>

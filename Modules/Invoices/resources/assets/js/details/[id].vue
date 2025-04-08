@@ -1,9 +1,10 @@
 <script setup>
-import Clients from './tabs/Clients.vue'
-import Contracts from './tabs/Contracts.vue'
-import Information from './tabs/Information.vue'
+import moment from 'moment';
+import Clients from './tabs/Clients.vue';
+import Contracts from './tabs/Contracts.vue';
+import Information from './tabs/Information.vue';
 
-import { toast } from 'vue3-toastify'
+import { toast } from 'vue3-toastify';
 
 const route = useRoute()
 const InfoData = ref()
@@ -25,18 +26,39 @@ const tabs = [
 ]
 
 try {
-  const { data } = await $api(`/quotations/${route.params.id}`)
+  const { data } = await $api(`/invoices/${route.params.id}`)
   InfoData.value = data
 } catch (error) {
-  console.error('Failed to fetch lead data:', error)
-  toast.error(error?.response?.data?.message || 'Failed to load lead details.')
+  console.error('Failed to fetch invoice data:', error)
+  toast.error(error?.response?.data?.message || 'Failed to load invoice details.')
 }
 
-
+const makeDateFormat = (date , onlyDate = false) => {
+    if(onlyDate)
+    return moment(date).format('DD-MM-Y');
+    else
+    return moment(date).format('LLLL');
+};
 </script>
 
 <template>
   <div>
+    <!-- 👉 Header  -->
+    <div class="d-flex justify-space-between align-center flex-wrap gap-y-4 mb-6">
+      <div>
+        <h5 class="text-h5 mb-1">
+          Invoice Number #{{ InfoData.invoice_number }}
+        </h5>
+        <div class="text-body-1">
+          {{ makeDateFormat(InfoData.created_at) }}
+        </div>
+      </div>
+      <div class="d-flex gap-4">
+        <VBtn variant="tonal" color="success" :to="{ name: 'invoice-list' }">
+          Back
+        </VBtn>
+      </div>
+    </div>
     <VRow v-if="InfoData">
       <VCol cols="12" md="12" lg="12">
         <VTabs v-model="tab" class="v-tabs-pill mb-3 disable-tab-transition">

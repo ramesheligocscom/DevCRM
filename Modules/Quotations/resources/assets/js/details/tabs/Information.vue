@@ -1,5 +1,6 @@
 <script setup>
-import { computed } from 'vue'
+import moment from 'moment';
+import { computed } from 'vue';
 
 const props = defineProps({
   InfoData: {
@@ -8,9 +9,17 @@ const props = defineProps({
   },
 })
 
-const clientName = computed(() => props.InfoData.client?.name || `ID: ${props.InfoData.client_id || 'N/A'}`)
-const quotationName = computed(() => props.InfoData.quotation?.name || `ID: ${props.InfoData.quotation_id || 'N/A'}`)
-const invoiceName = computed(() => props.InfoData.invoice?.name || `ID: ${props.InfoData.invoice_id || 'N/A'}`)
+const clientName = computed(() => props.InfoData.client?.name || `-`)
+const quotationName = computed(() => props.InfoData.quotation?.quotation_number || `-`)
+const invoiceName = computed(() => props.InfoData.invoice?.invoice_number || `-`)
+
+const makeDateFormat = (date , onlyDate = false) => {
+    if(onlyDate)
+    return moment(date).format('DD-MM-Y');
+    else
+    return moment(date).format('LLLL');
+};
+
 </script>
 
 <template>
@@ -24,15 +33,22 @@ const invoiceName = computed(() => props.InfoData.invoice?.name || `ID: ${props.
           <VRow dense>
             <VCol cols="12" md="4" lg="4">
               <div class="d-flex align-center gap-x-2 mt-1">
-                <strong>Start Date:</strong>
-                <span>{{ props.InfoData.start_date || 'N/A' }}</span>
+                <strong>title:</strong>
+                <span>{{ props.InfoData.title || '-' }}</span>
               </div>
             </VCol>
 
             <VCol cols="12" md="4" lg="4">
               <div class="d-flex align-center gap-x-2 mt-1">
-                <strong>End Date:</strong>
-                <span>{{ props.InfoData.end_date || 'N/A' }}</span>
+                <strong>Valid Uptill:</strong>
+                <span>{{ props.InfoData.valid_uptill ? makeDateFormat(props.InfoData.valid_uptill , true) : '-' }}</span>
+              </div>
+            </VCol>
+
+            <VCol cols="12" md="4" lg="4">
+              <div class="d-flex align-center gap-x-2 mt-1">
+                <strong>Quotation Type:</strong>
+                <span>{{ props.InfoData.quotation_type || '-' }}</span>
               </div>
             </VCol>
 
@@ -77,6 +93,24 @@ const invoiceName = computed(() => props.InfoData.invoice?.name || `ID: ${props.
               <div class="d-flex align-center gap-x-2 mt-1">
                 <strong>Invoice:</strong>
                 <span>{{ invoiceName }}</span>
+              </div>
+            </VCol>
+            <VCol cols="12" md="12" lg="12">
+              <div class="d-flex align-center gap-x-2 mt-1">
+                <strong>Custom Header Text:</strong>
+                <span>{{ props.InfoData.custom_header_text }}</span>
+              </div>
+            </VCol>
+            <VCol cols="12" md="12" lg="12">
+              <div class="d-flex align-center gap-x-2 mt-1">
+                <strong>Payment Terms:</strong>
+                <span>{{ props.InfoData.payment_terms }}</span>
+              </div>
+            </VCol>
+            <VCol cols="12" md="12" lg="12">
+              <div class="d-flex align-center gap-x-2 mt-1">
+                <strong>Terms & Conditions:</strong>
+                <span>{{ props.InfoData.terms_conditions }}</span>
               </div>
             </VCol>
           </VRow>
@@ -132,8 +166,8 @@ const invoiceName = computed(() => props.InfoData.invoice?.name || `ID: ${props.
     </VCol>
     <VCol cols="12" md="8">
     </VCol>
-    <!-- Summary Card -->
-    <VCol cols="12" md="4">
+   <!-- Summary Card -->
+   <VCol cols="12" md="4">
       <VCard>
         <VCardText>
           <h5 class="text-h5 mb-4">Summary</h5>

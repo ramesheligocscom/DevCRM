@@ -150,7 +150,7 @@ const onSubmit = async () => {
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppSelect v-model="record.status" :rules="[requiredValidator]" label="Status"
+                  <AppSelect v-model="record.status" :rules="[requiredValidator]" label="Status*"
                     :items="['Pending', 'Approved', 'Rejected']" />
                 </VCol>
 
@@ -159,7 +159,7 @@ const onSubmit = async () => {
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppSelect v-model="record.contract_id" label="Related Contract" :items="[]" />
+                  <AppSelect v-model="record.contract_id" label="Contract" :items="[]" />
                 </VCol>
 
                 <VCol cols="12">

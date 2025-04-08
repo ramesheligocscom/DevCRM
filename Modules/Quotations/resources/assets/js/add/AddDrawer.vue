@@ -151,8 +151,7 @@ const onSubmit = async () => {
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppTextField v-model="record.valid_uptil" :rules="[requiredValidator]" label="Valid Until"
-                    type="date" />
+                  <AppTextField v-model="record.title" :rules="[requiredValidator]" label="Title" />
                 </VCol>
 
                 <VCol cols="12" md="6">
@@ -160,12 +159,13 @@ const onSubmit = async () => {
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppTextField v-model="record.title" :rules="[requiredValidator]" label="Title" />
+                  <AppSelect v-model="record.status" :rules="[requiredValidator]" label="Status"
+                    :items="['Pending', 'Approved', 'Rejected']" />
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppSelect v-model="record.status" :rules="[requiredValidator]" label="Status"
-                    :items="['Pending', 'Approved', 'Rejected']" />
+                  <AppDateTimePicker v-model="record.valid_uptil" :rules="[requiredValidator]" label="Valid Until"
+                    />
                 </VCol>
 
                 <VCol cols="12" md="6">
@@ -177,7 +177,7 @@ const onSubmit = async () => {
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppSelect v-model="record.contract_id" label="Related Contract" :items="[]" />
+                  <AppSelect v-model="record.contract_id" label="Contract" :items="[]" />
                 </VCol>
 
                 <VCol cols="12">

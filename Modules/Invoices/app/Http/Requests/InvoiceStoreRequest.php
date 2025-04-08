@@ -15,6 +15,8 @@ class InvoiceStoreRequest extends FormRequest
     {
         return [
             'items' => 'nullable|array',
+            'title' => 'nullable',
+            'description' => 'nullable',
             // 'sub_total' => 'required|numeric|min:0',
             // 'tax' => 'nullable|numeric|min:0',
             // 'discount' => 'nullable|numeric|min:0',
@@ -22,6 +24,7 @@ class InvoiceStoreRequest extends FormRequest
             'status' => 'required|string|max:32',
             'client_id' => 'nullable|uuid',
             'contract_id' => 'nullable|uuid',
+            'quotation_id' => 'nullable|uuid',
         ];
     }
 }

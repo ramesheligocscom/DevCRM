@@ -180,7 +180,7 @@ onMounted(loadQuotation)
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppTextField v-model="record.valid_uptil" label="Valid Until" type="date" />
+                  <AppDateTimePicker v-model="record.valid_uptil" label="Valid Until" />
                 </VCol>
 
                 <VCol cols="12" md="6">
@@ -204,7 +204,7 @@ onMounted(loadQuotation)
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppSelect v-model="record.contract_id" label="Related Contract" :items="[]" />
+                  <AppSelect v-model="record.contract_id" label="Contract" :items="[]" />
                 </VCol>
 
                 <VCol cols="12">

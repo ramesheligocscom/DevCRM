@@ -187,11 +187,11 @@ onMounted(loadInvoice)
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppSelect v-model="record.contract_id" label="Related Contract" :items="[]" />
+                  <AppSelect v-model="record.contract_id" label="Contract" :items="[]" />
                 </VCol>
 
                 <VCol cols="12">
-                  <AppTextField v-model="record.description" label="Terms & Conditions" />
+                  <AppTextField v-model="record.description" label="Description" />
                 </VCol>
               </VRow>
             </VCol>

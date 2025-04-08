@@ -1,5 +1,7 @@
 <script setup>
-import ConfirmDialog from '../dialog/ConfirmDialog.vue'
+import moment from 'moment';
+
+import ConfirmDialog from '../dialog/ConfirmDialog.vue';
 const searchQuery = ref('')
 const isDeleteDialogOpen = ref(false)
 
@@ -52,7 +54,12 @@ const openDeleteDialog = (item) => {
 }
 
 fetchInvoices();
-
+const makeDateFormat = (date , onlyDate = false) => {
+    if(onlyDate)
+    return moment(date).format('DD-MM-Y');
+    else
+    return moment(date).format('LLLL');
+};
 </script>
 
 <template>
@@ -81,6 +88,14 @@ fetchInvoices();
       <VDataTableServer v-model:items-per-page="itemsPerPage" v-model:page="page" :items="dataItems" item-value="name"
         :headers="headers.filter((header) => header.checked)" :items-length="totalItems" show-select
         class="text-no-wrap" @update:options="updateOptions">
+
+        <template #item.invoice_number="{ item }">
+        <RouterLink :to="{ name: 'invoice-details-id', params: { id: item.id } }"
+                class="text-link font-weight-medium d-inline-block" style="line-height: 1.375rem;">
+                #{{ item.invoice_number }}
+        </RouterLink>
+        </template>
+
         <!-- Actions Column -->
         <template #item.action="{ item }">
 
@@ -103,10 +118,6 @@ fetchInvoices();
           </VChip>
         </template>
 
-        <!-- invoice_number -->
-        <template #item.invoice_number="{ item }">
-          #{{ item.invoice_number }}
-        </template>
         <!-- valid_uptil -->
         <template #item.valid_uptil="{ item }">
           {{ item.valid_uptil }}
@@ -115,7 +126,6 @@ fetchInvoices();
         <template #item.invoice_type="{ item }">
           {{ item.invoice_type }}
         </template>
-
         <!-- sub_total -->
         <template #item.sub_total="{ item }">
           ${{ item.sub_total || 0 }}
@@ -140,9 +150,9 @@ fetchInvoices();
         <template #item.contract_id="{ item }">
           {{ item.contract?.title || '—' }}
         </template>
-        <!-- lead -->
-        <template #item.lead_id="{ item }">
-          {{ item.lead?.name || '—' }}
+        <!-- quotation -->
+        <template #item.quotation_id="{ item }">
+          {{ item.quotation?.quotation_number || '—' }}
         </template>
         <!-- creator -->
         <template #item.created_by="{ item }">
@@ -150,9 +160,17 @@ fetchInvoices();
         </template>
         <!-- updater -->
         <template #item.last_updated_by="{ item }">
-          {{ item.updater?.name || '-' }}
+          {{ item.updater?.name || '—' }}
+        </template>
+      
+        <template #item.created_at="{ item }">
+          {{ makeDateFormat(item.created_at )}}
         </template>
 
+        <template #item.updated_at="{ item }">
+          {{ item.updater ? makeDateFormat(item.updated_at ) : '-'}}
+
+        </template>
         <template #bottom>
           <TablePagination v-model:page="page" :items-per-page="itemsPerPage" :total-items="totalItems" />
         </template>

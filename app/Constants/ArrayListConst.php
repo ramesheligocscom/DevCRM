@@ -44,11 +44,11 @@ class ArrayListConst
             ]
         ],
 
-        # Contact List Sidebar Menu 
+        # Contract List Sidebar Menu 
         [
-            'title' => 'Contact List',
-            'slug' => 'contact-list',
-            'table' => 'contacts',
+            'title' => 'Contract List',
+            'slug' => 'contract-list',
+            'table' => 'contracts',
             'headers' => [
                 // ['title' => 'Items', 'key' => 'items', 'sortable' => true, 'align' => 'left', 'minWidth' => '140px', 'checked' => true],
                 ['title' => 'Start Date', 'key' => 'start_date', 'sortable' => true, 'align' => 'left', 'checked' => true],
@@ -62,7 +62,7 @@ class ArrayListConst
                 ['title' => 'Invoice Id', 'key' => 'invoice_id', 'sortable' => true, 'align' => 'left', 'checked' => true],
                 ['title' => 'Created By', 'key' => 'created_by', 'sortable' => true, 'align' => 'left', 'checked' => true],
                 ['title' => 'Last Updated By', 'key' => 'last_updated_by', 'sortable' => true, 'align' => 'left', 'checked' => true],
-                ['title' => 'Action', 'key' => 'actions', 'sortable' => false, 'align' => 'center', 'checked' => true],
+                ['title' => 'Action', 'key' => 'action', 'sortable' => false, 'align' => 'center', 'checked' => true],
             ]
         ],
 
@@ -83,5 +83,54 @@ class ArrayListConst
                 ['title' => 'Action', 'key' => 'action', 'sortable' => false, 'align' => 'center', 'checked' => true],
             ]
         ],
+
+        # Quotation List Sidebar Menu 
+        [
+            'title' => 'Quotation List',
+            'slug' => 'quotation-list',
+            'table' => 'quotations',
+            'headers' => [
+              ['title' => 'Quotation Number', 'key' => 'quotation_number', 'sortable' => true, 'align' => 'left', 'checked' => true],
+              ['title' => 'Valid Up Till', 'key' => 'valid_uptil', 'sortable' => true, 'align' => 'left', 'checked' => true],
+              ['title' => 'Quotation Type', 'key' => 'quotation_type', 'sortable' => true, 'align' => 'left', 'checked' => true],
+              ['title' => 'Title', 'key' => 'title', 'sortable' => true, 'align' => 'left', 'checked' => true],
+              ['title' => 'Sub Total', 'key' => 'sub_total', 'sortable' => true, 'align' => 'left', 'checked' => true],
+              ['title' => 'Discount', 'key' => 'discount', 'sortable' => true, 'align' => 'left', 'checked' => true],
+              ['title' => 'Tax', 'key' => 'tax', 'sortable' => true, 'align' => 'left', 'checked' => true],
+              ['title' => 'Total', 'key' => 'total', 'sortable' => true, 'align' => 'left', 'checked' => true],
+              ['title' => 'Status', 'key' => 'status', 'sortable' => true, 'align' => 'left', 'checked' => true],
+            //   ['title' => 'Items', 'key' => 'items', 'sortable' => false, 'align' => 'left', 'checked' => true],
+              ['title' => 'Custom Header Text', 'key' => 'custom_header_text', 'sortable' => false, 'align' => 'left', 'checked' => true],
+              ['title' => 'Payment Terms', 'key' => 'payment_terms', 'sortable' => false, 'align' => 'left', 'checked' => true],
+              ['title' => 'Terms & Conditions', 'key' => 'terms_conditions', 'sortable' => false, 'align' => 'left', 'checked' => true],
+              ['title' => 'Lead ID', 'key' => 'lead_id', 'sortable' => true, 'align' => 'left', 'checked' => true],
+              ['title' => 'Client ID', 'key' => 'client_id', 'sortable' => true, 'align' => 'left', 'checked' => true],
+              ['title' => 'Contract ID', 'key' => 'contract_id', 'sortable' => true, 'align' => 'left', 'checked' => true],
+              ['title' => 'Created By', 'key' => 'created_by', 'sortable' => true, 'align' => 'left', 'checked' => true],
+              ['title' => 'Last Updated By', 'key' => 'last_updated_by', 'sortable' => true, 'align' => 'left', 'checked' => true],
+              ['title' => 'Action', 'key' => 'action', 'sortable' => false, 'align' => 'center', 'checked' => true],
+            ]
+          ],
+          
+        # Invoices List Sidebar Menu 
+          [
+            'title' => 'Invoice List',
+            'slug' => 'invoice-list',
+            'table' => 'invoices',
+            'headers' => [
+            //   ['title' => 'Items', 'key' => 'items', 'sortable' => false, 'align' => 'left', 'checked' => true],
+              ['title' => 'Sub Total', 'key' => 'sub_total', 'sortable' => true, 'align' => 'left', 'checked' => true],
+              ['title' => 'Tax', 'key' => 'tax', 'sortable' => true, 'align' => 'left', 'checked' => true],
+              ['title' => 'Discount', 'key' => 'discount', 'sortable' => true, 'align' => 'left', 'checked' => true],
+              ['title' => 'Total', 'key' => 'total', 'sortable' => true, 'align' => 'left', 'checked' => true],
+              ['title' => 'Status', 'key' => 'status', 'sortable' => true, 'align' => 'left', 'checked' => true],
+              ['title' => 'Client ID', 'key' => 'client_id', 'sortable' => true, 'align' => 'left', 'checked' => true],
+              ['title' => 'Contract ID', 'key' => 'contract_id', 'sortable' => true, 'align' => 'left', 'checked' => true],
+              ['title' => 'Created By', 'key' => 'created_by', 'sortable' => true, 'align' => 'left', 'checked' => true],
+              ['title' => 'Last Updated By', 'key' => 'last_updated_by', 'sortable' => true, 'align' => 'left', 'checked' => true],
+              ['title' => 'Action', 'key' => 'action', 'sortable' => false, 'align' => 'center', 'checked' => true],
+            ]
+          ],
+          
     ];
 }

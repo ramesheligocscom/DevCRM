@@ -114,6 +114,15 @@ fetchLeads();
           </div>
         </template>
 
+        <!-- creator -->
+        <template #item.created_by="{ item }">
+          {{ item.creator?.name || '—' }}
+        </template>
+        <!-- updater -->
+        <template #item.last_updated_by="{ item }">
+          {{ item.updater?.name || '-' }}
+        </template>
+
         <!-- status -->
         <template #item.status="{ item }">
           <VChip :color="resolveStatusVariant(item.status).color" size="small">
@@ -122,7 +131,7 @@ fetchLeads();
         </template>
 
         <!-- Actions Column -->
-        <template #item.actions="{ item }">
+        <template #item.action="{ item }">
           <IconBtn v-if="$can('leads', 'edit')" @click="editBranch(item)">
             <VIcon icon="tabler-pencil" />
           </IconBtn>
@@ -138,11 +147,11 @@ fetchLeads();
       </VDataTableServer>
     </VCard>
 
+
     <!-- 👉 Confirm Dialog -->
-    <ConfirmDialog v-model:isDialogVisible="isDeleteDialogOpen" cancel-title="Delete" confirm-title="Delete!"
-      confirm-msg="Lead deleted successfully." confirmation-question="Are you sure want to delete lead?"
-      cancel-msg="Lead Deletion Cancelled!!" :currentLead="currentLead" @submit="fetchLeads"
-      @close="isDeleteDialogOpen = false" />
+    <ConfirmDialog v-model:isDialogVisible="isDeleteDialogOpen" confirm-title="Delete!"
+      confirmation-question="Are you sure want to delete lead?" :currentItem="currentLead" @submit="fetchLeads"
+      :endpoint="`/leads/${currentLead?.id}`" @close="isDeleteDialogOpen = false" />
 
     <AddEditDrawer v-model:is-drawer-open="isAddEditDrawerOpen" :currentLead="currentLead" @submit="fetchLeads"
       @close="isAddEditDrawerOpen = false" />

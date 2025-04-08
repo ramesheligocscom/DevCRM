@@ -1,0 +1,183 @@
+<script setup>
+import { computed } from 'vue'
+
+const props = defineProps({
+  InfoData: {
+    type: null,
+    required: true,
+  },
+})
+
+const clientName = computed(() => props.InfoData.client?.name || `ID: ${props.InfoData.client_id || 'N/A'}`)
+const quotationName = computed(() => props.InfoData.quotation?.name || `ID: ${props.InfoData.quotation_id || 'N/A'}`)
+const invoiceName = computed(() => props.InfoData.invoice?.name || `ID: ${props.InfoData.invoice_id || 'N/A'}`)
+</script>
+
+<template>
+  <VRow>
+    <VCol cols="12">
+      <VCard v-if="props.InfoData">
+        <VCardText>
+          <!-- SECTION Quotation Info -->
+          <h5 class="text-h5 mb-4">Quotation Details</h5>
+
+          <VRow dense>
+            <VCol cols="12" md="4" lg="4">
+              <div class="d-flex align-center gap-x-2 mt-1">
+                <strong>Start Date:</strong>
+                <span>{{ props.InfoData.start_date || 'N/A' }}</span>
+              </div>
+            </VCol>
+
+            <VCol cols="12" md="4" lg="4">
+              <div class="d-flex align-center gap-x-2 mt-1">
+                <strong>End Date:</strong>
+                <span>{{ props.InfoData.end_date || 'N/A' }}</span>
+              </div>
+            </VCol>
+
+            <VCol cols="12" md="4" lg="4">
+              <div class="d-flex align-center gap-x-2 mt-1">
+                <strong>Status:</strong>
+                <VChip label :color="props.InfoData.status === 'active' ? 'success' : 'default'" size="small">
+                  {{ props.InfoData.status }}
+                </VChip>
+              </div>
+            </VCol>
+
+            <VCol cols="12" md="4" lg="4">
+              <div class="d-flex align-center gap-x-2 mt-1">
+                <strong>Created By:</strong>
+                <span>{{ props.InfoData.creator?.name || '-' }}</span>
+              </div>
+            </VCol>
+
+            <VCol cols="12" md="4" lg="4">
+              <div class="d-flex align-center gap-x-2 mt-1">
+                <strong>Last Updated By:</strong>
+                <span>{{ props.InfoData.updater?.name || '-' }}</span>
+              </div>
+            </VCol>
+
+            <VCol cols="12" md="4" lg="4">
+              <div class="d-flex align-center gap-x-2 mt-1">
+                <strong>Client:</strong>
+                <span>{{ clientName }}</span>
+              </div>
+            </VCol>
+
+            <VCol cols="12" md="4" lg="4">
+              <div class="d-flex align-center gap-x-2 mt-1">
+                <strong>Quotation:</strong>
+                <span>{{ quotationName }}</span>
+              </div>
+            </VCol>
+
+            <VCol cols="12" md="4" lg="4">
+              <div class="d-flex align-center gap-x-2 mt-1">
+                <strong>Invoice:</strong>
+                <span>{{ invoiceName }}</span>
+              </div>
+            </VCol>
+          </VRow>
+
+          <VDivider class="my-6" />
+
+          <!-- SECTION Items -->
+          <h5 class="text-h5 mb-2">Quotation Items</h5>
+
+          <VRow v-if="props.InfoData.items?.length">
+            <VCol v-for="(item, index) in props.InfoData.items" :key="index" cols="12" md="6" lg="6">
+              <VCard class="mb-4" outlined>
+                <VCardText>
+                  <VRow dense>
+                    <VCol cols="12">
+                      <strong>Name:</strong> {{ item.name }}
+                    </VCol>
+                    <VCol cols="6">
+                      <strong>Quantity:</strong> {{ item.quantity }}
+                    </VCol>
+                    <VCol cols="6">
+                      <strong>Unit Price:</strong> ${{ Number(item.unit_price || 0).toFixed(2) }}
+                    </VCol>
+                    <VCol cols="6">
+                      <strong>Tax Rate:</strong> {{ item.tax_rate }}%
+                    </VCol>
+                    <VCol cols="6">
+                      <strong>Subtotal:</strong> ${{ Number(item.subtotal || 0).toFixed(2) }}
+                    </VCol>
+                    <VCol cols="6">
+                      <strong>Discount:</strong> ${{ Number(item.discount_amount || 0).toFixed(2) }}
+                    </VCol>
+                    <VCol cols="6">
+                      <strong>Total:</strong> ${{ Number(item.total || 0).toFixed(2) }}
+                    </VCol>
+                    <VCol cols="12">
+                      <strong>Description:</strong> {{ item.description || '—' }}
+                    </VCol>
+
+                  </VRow>
+                </VCardText>
+              </VCard>
+            </VCol>
+          </VRow>
+
+
+
+          <VAlert v-else type="info" variant="tonal" class="mt-4">
+            No items found for this quotation.
+          </VAlert>
+        </VCardText>
+      </VCard>
+    </VCol>
+    <VCol cols="12" md="8">
+    </VCol>
+    <!-- Summary Card -->
+    <VCol cols="12" md="4">
+      <VCard>
+        <VCardText>
+          <h5 class="text-h5 mb-4">Summary</h5>
+
+          <VRow dense>
+            <VCol cols="12">
+              <div class="d-flex justify-space-between">
+                <span>Subtotal:</span>
+                <strong>${{ props.InfoData.sub_total.toFixed(2) }}</strong>
+              </div>
+            </VCol>
+
+            <VCol cols="12">
+              <div class="d-flex justify-space-between">
+                <span>Total Tax:</span>
+                <strong>${{ props.InfoData.tax.toFixed(2) }}</strong>
+              </div>
+            </VCol>
+
+            <VCol cols="12">
+              <div class="d-flex justify-space-between">
+                <span>Total Discount:</span>
+                <strong>-${{ props.InfoData.discount.toFixed(2) }}</strong>
+              </div>
+            </VCol>
+
+            <VDivider class="my-2" />
+
+            <VCol cols="12">
+              <div class="d-flex justify-space-between">
+                <span><strong>Total:</strong></span>
+                <strong>${{ props.InfoData.total.toFixed(2) }}</strong>
+              </div>
+            </VCol>
+          </VRow>
+        </VCardText>
+      </VCard>
+    </VCol>
+
+  </VRow>
+</template>
+
+<style scoped>
+.card-list {
+  --v-card-list-gap: 0.5rem;
+}
+</style>

@@ -8,10 +8,10 @@ const itemsPerPage = ref(10)
 const page = ref(1)
 const sortBy = ref()
 const orderBy = ref()
-const currentContract = ref(null);
+const currentQuotation = ref(null);
 
 
-const tableHeaderSlug = ref('contract-list');
+const tableHeaderSlug = ref('quotation-list');
 const headers = ref([]);
 const getFilteredHeaderValue = async (headerList) => { headers.value = headerList; };
 
@@ -26,37 +26,37 @@ const resolveStatusVariant = status => {
 const updateOptions = options => {
   sortBy.value = options.sortBy[0]?.key
   orderBy.value = options.sortBy[0]?.order
-  fetchContracts();
+  fetchQuotations();
 }
 const dataItems = ref([])
 const totalItems = ref(0)
 
-const fetchContracts = async () => {
+const fetchQuotations = async () => {
   try {
     const response = await $api(
-      `/contracts?search=${searchQuery.value ?? ""}&page=${page.value}&sort_key=${sortBy.value ?? ""}&sort_order=${orderBy.value ?? ""}&per_page=${itemsPerPage.value}`
+      `/quotations?search=${searchQuery.value ?? ""}&page=${page.value}&sort_key=${sortBy.value ?? ""}&sort_order=${orderBy.value ?? ""}&per_page=${itemsPerPage.value}`
     )
 
     dataItems.value = response.data
     totalItems.value = response.meta.total
   } catch (err) {
-    console.error('Failed to fetch Contracts:', err)
+    console.error('Failed to fetch Quotations:', err)
     // Optionally show a toast
-    toast.error('Failed to load Contracts')
+    toast.error('Failed to load Quotations')
   }
 }
 
 const openDeleteDialog = (item) => {
-  currentContract.value = JSON.parse(JSON.stringify(item));
+  currentQuotation.value = JSON.parse(JSON.stringify(item));
   isDeleteDialogOpen.value = true;
 }
 
-fetchContracts();
+fetchQuotations();
 
 </script>
 
 <template>
-  <div v-if="$can('contract', 'view')">
+  <div v-if="$can('quotation', 'view')">
     <VCard>
       <VCardText>
         <div class="d-flex justify-space-between flex-wrap gap-y-4">
@@ -65,10 +65,11 @@ fetchContracts();
           <div class="d-flex flex-row gap-4 align-center flex-wrap">
             <AppSelect v-model="itemsPerPage" :items="[5, 10, 20, 50, 100]" />
 
-            <VBtn v-if="$can('contract', 'export-list')" prepend-icon="tabler-upload" variant="tonal" color="secondary">
+            <VBtn v-if="$can('quotation', 'export-list')" prepend-icon="tabler-upload" variant="tonal"
+              color="secondary">
               Export
             </VBtn>
-            <VBtn v-if="$can('contract', 'create')" :to="{ name: 'contract-create' }" prepend-icon="tabler-plus">
+            <VBtn v-if="$can('quotation', 'create')" :to="{ name: 'quotation-create' }" prepend-icon="tabler-plus">
               Add New
             </VBtn>
             <!-- Filter Header Btn FilterHeaderTableBtn -->
@@ -84,14 +85,14 @@ fetchContracts();
         <!-- Actions Column -->
         <template #item.action="{ item }">
 
-          <IconBtn :to="{ name: 'contract-details-id', params: { id: item.id } }">
+          <IconBtn :to="{ name: 'quotation-details-id', params: { id: item.id } }">
             <VIcon icon="tabler-eye" />
           </IconBtn>
-          <IconBtn :to="{ name: 'contract-edit', params: { id: item.id } }">
+          <IconBtn :to="{ name: 'quotation-edit', params: { id: item.id } }">
             <VIcon icon="tabler-pencil" />
           </IconBtn>
 
-          <IconBtn v-if="$can('contract', 'delete')" @click="openDeleteDialog(item)">
+          <IconBtn v-if="$can('quotation', 'delete')" @click="openDeleteDialog(item)">
             <VIcon icon="tabler-trash" />
           </IconBtn>
         </template>
@@ -148,8 +149,8 @@ fetchContracts();
 
     <!-- 👉 Confirm Dialog -->
     <ConfirmDialog v-model:isDialogVisible="isDeleteDialogOpen" confirm-title="Delete!"
-      confirmation-question="Are you sure want to delete contract?" :currentItem="currentContract"
-      @submit="fetchContracts" :endpoint="`/contracts/${currentContract?.id}`" @close="isDeleteDialogOpen = false" />
+      confirmation-question="Are you sure want to delete quotation?" :currentItem="currentQuotation"
+      @submit="fetchQuotations" :endpoint="`/Quotations/${currentQuotation?.id}`" @close="isDeleteDialogOpen = false" />
 
   </div>
 </template>

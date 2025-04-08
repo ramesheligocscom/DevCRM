@@ -1,10 +1,10 @@
 <script setup>
+import { toast } from 'vue3-toastify'
 import Clients from './tabs/Clients.vue'
 import FollowUps from './tabs/FollowUps.vue'
 import LeadBioPanel from './tabs/LeadBioPanel.vue'
 import Quotations from './tabs/Quotations.vue'
 import SiteVisits from './tabs/SiteVisits.vue'
-
 const route = useRoute('lead-details-id')
 const LeadData = ref()
 const tab = ref(null)
@@ -28,9 +28,14 @@ const tabs = [
   },
 ]
 
-const { data } = await useApi(`/leads/${route.params.id}`)
-if (data.value)
-  LeadData.value = data.value.data
+try {
+  const { data } = await $api(`/leads/${route.params.id}`)
+  LeadData.value = data
+} catch (error) {
+  console.error('Failed to fetch lead data:', error)
+  toast.error(error?.response?.data?.message || 'Failed to load lead details.')
+}
+
 
 </script>
 

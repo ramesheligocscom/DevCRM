@@ -14,18 +14,19 @@ class LeadService
         ?string $status = null,
         ?string $assignedUser = null
     ): LengthAwarePaginator {
+
         return Lead::query()
             ->when($withTrashed, fn($q) => $q->withTrashed())
             ->when($status, fn($q) => $q->where('status', $status))
             ->when($assignedUser, fn($q) => $q->where('assigned_user', $assignedUser))
-            ->with(['client', 'quotation', 'contract', 'invoice', 'visitAssignee'])
+            ->with(['client', 'quotation', 'contract', 'invoice', 'visitAssignee', 'creator', 'updater'])
             ->latest()
             ->paginate($perPage);
     }
 
     public function getLeadById(string $id): Lead
     {
-        return Lead::with(['client', 'quotation', 'contract', 'invoice', 'visitAssignee'])
+        return Lead::with(['client', 'quotation', 'contract', 'invoice', 'visitAssignee','creator','updater'])
             ->findOrFail($id);
     }
 

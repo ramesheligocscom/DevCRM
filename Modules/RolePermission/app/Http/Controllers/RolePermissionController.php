@@ -274,7 +274,6 @@ class RolePermissionController extends Controller
 
     public function roleDelete(Request $request)
     {
-        dd($request->role_id ,$request->delete_text);
         $validator = Validator::make(['role_id' => $request->role_id], [
             'role_id' => 'required|exists:roles,id',
         ]);

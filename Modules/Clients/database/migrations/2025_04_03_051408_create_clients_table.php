@@ -17,10 +17,7 @@ return new class extends Migration
 
         Schema::create('clients', function (Blueprint $table) {
             // Primary UUID with comment
-            $table->uuid('id')
-                ->primary()
-                ->default(DB::raw('uuid_generate_v4()'))
-                ->comment('Auto-generated UUID primary key');
+            $table->uuid('id')->primary()->comment('Auto-generated UUID primary key');
             // Nullable foreign key with constraint
             $table->uuid('lead_id')
                 ->nullable()

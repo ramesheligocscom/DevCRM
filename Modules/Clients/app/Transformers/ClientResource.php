@@ -24,9 +24,8 @@ class ClientResource extends JsonResource
             'assigned_user' => $this->assigned_user,
             'created_by' => $this->created_by,
             'created_at' => $this->created_at->toDateTimeString(),
-            'last_updated_at' => $this->last_updated_at?->toDateTimeString(),
+            'updated_at' => $this->updated_at?->toDateTimeString(),
             'last_updated_by' => $this->last_updated_by,
-            'is_deleted' => $this->is_deleted,
             'parent_lead' => $this->whenLoaded('parentLead'),
             'child_leads' => $this->whenLoaded('childLeads')
         ];

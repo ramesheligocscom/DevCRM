@@ -16,13 +16,18 @@ We are integrating Laravel Modules to manage different application modules (e.g.
 
 ## Router Configuration
 
-### Importing Modular Router File
-import leadsRoutes from '@modules/Leads/resources/assets/js/router';
+### Importing Dynamic Modular Router File
+# File: resources/js/plugins/1.router/index.js
+# Step 1: Dynamically import all module router files
+const moduleRoutes = import.meta.glob('@modules/*/resources/assets/js/router/index.{js,ts}', { eager: true })
 
-### Merging Routes
-const routes2 = [...routes, ...leadsRoutes];
-extend(routes2);
-File: resources/js/plugins/1.router/index.js
+# Step 2: Merge all routes (dynamic + additionalRoutes)
+const mergedModuleRoutes = Object.values(moduleRoutes).flatMap(mod => {
+  const r = mod.default || []
+  return Array.isArray(r) ? r : [r]
+})
+
+## USE ...mergedRoutes
 
 ### Vite Configuration
 File: vite.config.js

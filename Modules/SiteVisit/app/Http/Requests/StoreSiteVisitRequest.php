@@ -111,7 +111,7 @@ class StoreSiteVisitRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->merge([
-            'created_by' => auth()->id(),
+            'created_by' => auth()->user()->uuid,
             'uuid' => Str::orderedUuid(),
             'visit_notes' => $this->visit_notes ? trim($this->visit_notes) : null,
             'lead_id' => $this->lead_id ?: null,

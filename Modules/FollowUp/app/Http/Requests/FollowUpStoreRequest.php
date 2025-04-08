@@ -50,7 +50,7 @@ class FollowUpStoreRequest extends FormRequest
     protected function prepareForValidation()
     {
         $this->merge([
-            'created_by' => auth()->id()
+            'created_by' => auth()->user()->uuid
         ]);
     }
     /**

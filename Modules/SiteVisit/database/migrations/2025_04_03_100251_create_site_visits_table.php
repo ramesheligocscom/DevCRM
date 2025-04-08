@@ -21,8 +21,6 @@ return new class extends Migration
             // ID of the user assigned to this visit (foreign key to users table)
             $table->unsignedBigInteger('visit_assignee')->comment('User ID of the assigned staff member');
 
-            // Automatic timestamp when record is created
-            $table->timestamp('created_at')->useCurrent()->comment('When this record was created');
 
             // Who created this record (could be user email, username, or system identifier)
             $table->string('created_by')->comment('Identifier of who created this record');
@@ -39,9 +37,6 @@ return new class extends Migration
             // Optional reference to a client (if this visit is for an existing client)
             $table->uuid('client_id')->nullable()->comment('Associated client ID if applicable');
             $table->softDeletes(); // Adds a `deleted_at` column
-
-            // Soft delete flag (preferred over actual deletion for audit purposes)
-            $table->boolean('is_deleted')->default(false)->comment('Flag for soft deletion');
 
             // Foreign key constraints
             $table->foreign('visit_assignee')

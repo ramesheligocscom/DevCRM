@@ -15,6 +15,8 @@ class ContractStoreRequest extends FormRequest
     {
         // Changed: Removed status enum validation
         return [
+            'title'=> 'nullable|string',
+            'description'=> 'nullable|string',
             'items' => 'nullable|array',
             'start_date' => 'required|date|after_or_equal:today',
             'end_date' => 'required|date|after:start_date',

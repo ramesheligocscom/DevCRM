@@ -12,12 +12,15 @@ class Contract extends Model
     use SoftDeletes, HasUuids;
 
     protected $fillable = [
+        'title',
+        'description',
         'items',
         'start_date',
         'end_date',
         'sub_total',
         'discount',
         'tax',
+        'total',
         'status',
         'client_id',      // Kept as nullable reference
         'quotation_id',   // Kept as nullable reference
@@ -88,6 +91,17 @@ class Contract extends Model
         return $this->belongsTo(\App\Models\User::class, 'last_updated_by', 'uuid');
     }
 }
+
+    // invoice table :
+    // invoice_number 
+    // title
+    // description
+    // quotation_id
+
+    // contract table :
+    // title
+    // description
+    // total
 
     // item object may be 
     // {

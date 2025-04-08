@@ -1,5 +1,6 @@
 <script setup>
-import { computed } from 'vue'
+import moment from 'moment';
+import { computed } from 'vue';
 
 const props = defineProps({
   InfoData: {
@@ -8,9 +9,16 @@ const props = defineProps({
   },
 })
 
-const clientName = computed(() => props.InfoData.client?.name || `ID: ${props.InfoData.client_id || 'N/A'}`)
-const quotationName = computed(() => props.InfoData.quotation?.name || `ID: ${props.InfoData.quotation_id || 'N/A'}`)
-const invoiceName = computed(() => props.InfoData.invoice?.name || `ID: ${props.InfoData.invoice_id || 'N/A'}`)
+const clientName = computed(() => props.InfoData.client?.name || `-`)
+const quotationName = computed(() => props.InfoData.quotation?.quotation_number || `-`)
+const invoiceName = computed(() => props.InfoData.invoice?.invoice_number || `-`)
+const makeDateFormat = (date , onlyDate = false) => {
+    if(onlyDate)
+    return moment(date).format('DD-MM-Y');
+    else
+    return moment(date).format('LLLL');
+};
+
 </script>
 
 <template>
@@ -25,14 +33,14 @@ const invoiceName = computed(() => props.InfoData.invoice?.name || `ID: ${props.
             <VCol cols="12" md="4" lg="4">
               <div class="d-flex align-center gap-x-2 mt-1">
                 <strong>Start Date:</strong>
-                <span>{{ props.InfoData.start_date || 'N/A' }}</span>
+                <span>{{props.InfoData.start_date ? makeDateFormat(props.InfoData.start_date, true) : '-' }}</span>
               </div>
             </VCol>
-
+ 
             <VCol cols="12" md="4" lg="4">
               <div class="d-flex align-center gap-x-2 mt-1">
                 <strong>End Date:</strong>
-                <span>{{ props.InfoData.end_date || 'N/A' }}</span>
+                <span>{{props.InfoData.end_date ? makeDateFormat(props.InfoData.end_date, true) : '-' }}</span>
               </div>
             </VCol>
 
@@ -142,21 +150,21 @@ const invoiceName = computed(() => props.InfoData.invoice?.name || `ID: ${props.
             <VCol cols="12">
               <div class="d-flex justify-space-between">
                 <span>Subtotal:</span>
-                <strong>${{ props.InfoData.sub_total.toFixed(2) }}</strong>
+                <strong>${{ Number(props.InfoData.sub_total ?? 0).toFixed(2) }}</strong>
               </div>
             </VCol>
 
             <VCol cols="12">
               <div class="d-flex justify-space-between">
                 <span>Total Tax:</span>
-                <strong>${{ props.InfoData.tax.toFixed(2) }}</strong>
+                <strong>${{ Number(props.InfoData.tax ?? 0).toFixed(2) }}</strong>
               </div>
             </VCol>
 
             <VCol cols="12">
               <div class="d-flex justify-space-between">
                 <span>Total Discount:</span>
-                <strong>-${{ props.InfoData.discount.toFixed(2) }}</strong>
+                <strong>-${{ Number(props.InfoData.discount ?? 0).toFixed(2) }}</strong>
               </div>
             </VCol>
 
@@ -165,7 +173,7 @@ const invoiceName = computed(() => props.InfoData.invoice?.name || `ID: ${props.
             <VCol cols="12">
               <div class="d-flex justify-space-between">
                 <span><strong>Total:</strong></span>
-                <strong>${{ props.InfoData.total.toFixed(2) }}</strong>
+                <strong>${{ Number(props.InfoData.total ?? 0).toFixed(2) }}</strong>
               </div>
             </VCol>
           </VRow>

@@ -66,6 +66,12 @@ const openDeleteDialog = (item) => {
 
 fetchLeads();
 
+const makeDateFormat = (date , onlyDate = false) => {
+    if(onlyDate)
+    return moment(date).format('DD-MM-Y');
+    else
+    return moment(date).format('LLLL');
+};
 </script>
 
 <template>
@@ -97,21 +103,10 @@ fetchLeads();
         class="text-no-wrap" @update:options="updateOptions">
 
         <template #item.name="{ item }">
-          <div class="d-flex align-center gap-x-3">
-            <VAvatar size="34" :variant="!item.avatar ? 'tonal' : undefined">
-              <VImg v-if="item.avatar" :src="item.avatar" />
-              <span v-else>{{ avatarText(item.name) }}</span>
-            </VAvatar>
-            <div class="d-flex flex-column">
-              <RouterLink :to="{ name: 'lead-details-id', params: { id: item.id } }"
+        <RouterLink :to="{ name: 'lead-details-id', params: { id: item.id } }"
                 class="text-link font-weight-medium d-inline-block" style="line-height: 1.375rem;">
                 {{ item.name }}
-              </RouterLink>
-              <div class="text-body-2">
-                {{ item.email }}
-              </div>
-            </div>
-          </div>
+        </RouterLink>
         </template>
 
         <!-- creator -->
@@ -132,6 +127,10 @@ fetchLeads();
 
         <!-- Actions Column -->
         <template #item.action="{ item }">
+          <IconBtn :to="{ name: 'lead-details-id', params: { id: item.id } }">
+            <VIcon icon="tabler-eye" />
+          </IconBtn>
+          
           <IconBtn v-if="$can('leads', 'edit')" @click="editBranch(item)">
             <VIcon icon="tabler-pencil" />
           </IconBtn>
@@ -139,6 +138,14 @@ fetchLeads();
           <IconBtn v-if="$can('leads', 'delete')" @click="openDeleteDialog(item)">
             <VIcon icon="tabler-trash" />
           </IconBtn>
+        </template>
+
+        <template #item.created_at="{ item }">
+          {{ makeDateFormat(item.created_at )}}
+        </template>
+
+        <template #item.updated_at="{ item }">
+          {{ item.updater ? makeDateFormat(item.updated_at ) : '-'}}
         </template>
 
         <template #bottom>

@@ -1,5 +1,4 @@
 <script setup>
-import moment from 'moment';
 import { computed } from 'vue';
 
 const props = defineProps({
@@ -10,15 +9,8 @@ const props = defineProps({
 })
 
 const clientName = computed(() => props.InfoData.client?.name || `-`)
+const contractName = computed(() => props.InfoData.contract?.title || `-`)
 const quotationName = computed(() => props.InfoData.quotation?.quotation_number || `-`)
-const invoiceName = computed(() => props.InfoData.invoice?.invoice_number || `-`)
-
-const makeDateFormat = (date , onlyDate = false) => {
-    if(onlyDate)
-    return moment(date).format('DD-MM-Y');
-    else
-    return moment(date).format('LLLL');
-};
 
 </script>
 
@@ -27,28 +19,14 @@ const makeDateFormat = (date , onlyDate = false) => {
     <VCol cols="12">
       <VCard v-if="props.InfoData">
         <VCardText>
-          <!-- SECTION Quotation Info -->
-          <h5 class="text-h5 mb-4">Quotation Details</h5>
+          <!-- SECTION Invoice Info -->
+          <h5 class="text-h5 mb-4">Invoice Details</h5>
 
           <VRow dense>
             <VCol cols="12" md="4" lg="4">
               <div class="d-flex align-center gap-x-2 mt-1">
-                <strong>title:</strong>
+                <strong>Title:</strong>
                 <span>{{ props.InfoData.title || '-' }}</span>
-              </div>
-            </VCol>
-
-            <VCol cols="12" md="4" lg="4">
-              <div class="d-flex align-center gap-x-2 mt-1">
-                <strong>Valid Uptill:</strong>
-                <span>{{ props.InfoData.valid_uptill ? makeDateFormat(props.InfoData.valid_uptill , true) : '-' }}</span>
-              </div>
-            </VCol>
-
-            <VCol cols="12" md="4" lg="4">
-              <div class="d-flex align-center gap-x-2 mt-1">
-                <strong>Quotation Type:</strong>
-                <span>{{ props.InfoData.quotation_type || '-' }}</span>
               </div>
             </VCol>
 
@@ -84,33 +62,15 @@ const makeDateFormat = (date , onlyDate = false) => {
 
             <VCol cols="12" md="4" lg="4">
               <div class="d-flex align-center gap-x-2 mt-1">
-                <strong>Quotation:</strong>
-                <span>{{ quotationName }}</span>
+                <strong>Contract:</strong>
+                <span>{{ contractName }}</span>
               </div>
             </VCol>
 
             <VCol cols="12" md="4" lg="4">
               <div class="d-flex align-center gap-x-2 mt-1">
-                <strong>Invoice:</strong>
-                <span>{{ invoiceName }}</span>
-              </div>
-            </VCol>
-            <VCol cols="12" md="12" lg="12">
-              <div class="d-flex align-center gap-x-2 mt-1">
-                <strong>Custom Header Text:</strong>
-                <span>{{ props.InfoData.custom_header_text }}</span>
-              </div>
-            </VCol>
-            <VCol cols="12" md="12" lg="12">
-              <div class="d-flex align-center gap-x-2 mt-1">
-                <strong>Payment Terms:</strong>
-                <span>{{ props.InfoData.payment_terms }}</span>
-              </div>
-            </VCol>
-            <VCol cols="12" md="12" lg="12">
-              <div class="d-flex align-center gap-x-2 mt-1">
-                <strong>Terms & Conditions:</strong>
-                <span>{{ props.InfoData.terms_conditions }}</span>
+                <strong>Quotation:</strong>
+                <span>{{ quotationName }}</span>
               </div>
             </VCol>
           </VRow>
@@ -118,7 +78,7 @@ const makeDateFormat = (date , onlyDate = false) => {
           <VDivider class="my-6" />
 
           <!-- SECTION Items -->
-          <h5 class="text-h5 mb-2">Quotation Items</h5>
+          <h5 class="text-h5 mb-2">Invoice Items</h5>
 
           <VRow v-if="props.InfoData.items?.length">
             <VCol v-for="(item, index) in props.InfoData.items" :key="index" cols="12" md="6" lg="6">
@@ -159,15 +119,15 @@ const makeDateFormat = (date , onlyDate = false) => {
 
 
           <VAlert v-else type="info" variant="tonal" class="mt-4">
-            No items found for this quotation.
+            No items found for this Invoice.
           </VAlert>
         </VCardText>
       </VCard>
     </VCol>
     <VCol cols="12" md="8">
     </VCol>
-   <!-- Summary Card -->
-   <VCol cols="12" md="4">
+    <!-- Summary Card -->
+    <VCol cols="12" md="4">
       <VCard>
         <VCardText>
           <h5 class="text-h5 mb-4">Summary</h5>

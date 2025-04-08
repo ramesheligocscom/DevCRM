@@ -1,13 +1,12 @@
 <script setup>
 import moment from 'moment';
 import Clients from './tabs/Clients.vue';
+import Contracts from './tabs/Contracts.vue';
 import Information from './tabs/Information.vue';
-import Invoices from './tabs/Invoices.vue';
-import Quotations from './tabs/Quotations.vue';
 
 import { toast } from 'vue3-toastify';
 
-const route = useRoute('contract-details-id')
+const route = useRoute()
 const InfoData = ref()
 const tab = ref(null)
 
@@ -21,21 +20,17 @@ const tabs = [
     icon: 'tabler-user',
   },
   {
-    title: 'Quotations',
+    title: 'Contracts',
     icon: 'tabler-lock',
-  },
-  {
-    title: 'Invoices',
-    icon: 'tabler-bell',
   },
 ]
 
 try {
-  const { data } = await $api(`/contracts/${route.params.id}`)
+  const { data } = await $api(`/invoices/${route.params.id}`)
   InfoData.value = data
 } catch (error) {
-  console.error('Failed to fetch lead data:', error)
-  toast.error(error?.response?.data?.message || 'Failed to load lead details.')
+  console.error('Failed to fetch invoice data:', error)
+  toast.error(error?.response?.data?.message || 'Failed to load invoice details.')
 }
 
 const makeDateFormat = (date , onlyDate = false) => {
@@ -48,18 +43,18 @@ const makeDateFormat = (date , onlyDate = false) => {
 
 <template>
   <div>
-     <!-- 👉 Header  -->
-     <div class="d-flex justify-space-between align-center flex-wrap gap-y-4 mb-6">
+    <!-- 👉 Header  -->
+    <div class="d-flex justify-space-between align-center flex-wrap gap-y-4 mb-6">
       <div>
         <h5 class="text-h5 mb-1">
-          Contract {{ InfoData.title }}
+          Invoice Number #{{ InfoData.invoice_number }}
         </h5>
         <div class="text-body-1">
-          {{ makeDateFormat(InfoData.created_at )}}
+          {{ makeDateFormat(InfoData.created_at) }}
         </div>
       </div>
       <div class="d-flex gap-4">
-        <VBtn variant="tonal" color="success" :to="{ name: 'contract-list' }">
+        <VBtn variant="tonal" color="success" :to="{ name: 'invoice-list' }">
           Back
         </VBtn>
       </div>
@@ -83,7 +78,7 @@ const makeDateFormat = (date , onlyDate = false) => {
             <Invoices />
           </VWindowItem>
           <VWindowItem>
-            <Quotations />
+            <Contracts />
           </VWindowItem>
         </VWindow>
       </VCol>

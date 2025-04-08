@@ -42,7 +42,8 @@ const props = defineProps({
 })
 
 const confirmationText = ref('');
-const errorMessage = ref('')
+const errorMessage = ref('');
+const action = ref('');
 
 const emit = defineEmits(['update:isDialogVisible', 'confirm',])
 

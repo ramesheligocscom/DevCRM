@@ -1,9 +1,15 @@
 const menuItems = [
   { heading: 'CRM' },
   {
+    title: 'Dashboard',
+    icon: { icon: 'tabler-smart-home' },
+    to: 'dashboard',
+    permission: { action: 'dashboard', subject: 'view' },
+  },
+  {
     title: 'User List',
     icon: { icon: 'tabler-user-circle' },
-    to: 'quotation-list',
+    to: 'user-list',
     permission: { action: 'user', subject: 'view' },
   },
   {
@@ -15,25 +21,25 @@ const menuItems = [
   },
   {
     title: 'Leads',
-    icon: { icon: 'tabler-circle-check' },
+    icon: { icon: 'tabler-user' },
     to: 'lead-list',
     permission: { action: 'leads', subject: 'view' },
   },
   {
     title: 'Clients',
-    icon: { icon: 'tabler-user-circle' },
+    icon: { icon: 'tabler-users' },
     to: 'clients-list',
     permission: { action: 'client', subject: 'view' },
   },
   {
     title: 'Contracts',
-    icon: { icon: 'tabler-user-circle' },
+    icon: { icon: 'tabler-file-stack' },
     to: 'contract-list',
     permission: { action: 'contract', subject: 'view' },
   },
   {
     title: 'Quotations',
-    icon: { icon: 'tabler-user-circle' },
+    icon: { icon: 'tabler-brand-asana' },
     to: 'quotation-list',
     permission: { action: 'quotation', subject: 'view' },
   },

@@ -6,6 +6,20 @@ class ArrayListConst
 {
     # TODO: this list Slug Plz make Unique And Change slug to plz Check Vue or js file in change slug 
     const HEADER_MANAGE_LIST = [
+       # User List Sidebar Menu 
+        [
+          'title' => 'User List',
+          'slug' => 'user-list',
+          'table' => 'users',
+          'headers' => [
+            ['title' => 'Name', 'key' => 'name', 'sortable' => true, 'align' => 'left', 'minWidth' => '140px', 'checked' => true],
+            ['title' => 'Email', 'key' => 'email', 'sortable' => true, 'align' => 'left', 'checked' => true],
+            ['title' => 'User Name', 'key' => 'user_name', 'sortable' => false, 'align' => 'left', 'checked' => true],
+            ['title' => 'Role', 'key' => 'role', 'sortable' => false, 'align' => 'left', 'checked' => true],
+            ['title' => 'status', 'key' => 'status', 'sortable' => false, 'align' => 'left', 'checked' => true],
+            ['title' => 'Actions', 'key' => 'action', 'sortable' => false, 'align' => 'center', 'checked' => true],
+          ]
+        ],
         # Lead List Sidebar Menu 
         [
             'title' => 'lead List',

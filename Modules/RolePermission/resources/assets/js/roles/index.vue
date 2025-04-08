@@ -34,7 +34,6 @@ const searchQuery = ref('');
 const pagination = ref({ current_page: 1, last_page: 1, total: 0, per_page: 10, from: 0, to: 0 });
 
 onMounted(async () => {
-    console.log('onMounted getRoleList 1');
     await getRoleList();
 });
 

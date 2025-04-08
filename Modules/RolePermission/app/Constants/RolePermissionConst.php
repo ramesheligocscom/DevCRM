@@ -52,6 +52,9 @@ class RolePermissionConst
                         ["name" => 'View User List', "action" => "user", "slug" => 'view'],
                         ["name" => 'Add User', "action" => "user", "slug" => 'create'],
                         ["name" => 'Edit User', "action" => "user", "slug" => 'edit'],
+                        ["name" => 'Export User list', "action" => "user", "slug" => 'export-list'],
+                        ["name" => 'Restore User', "action" => "user", "slug" => 'restore'],
+                        ["name" => 'Update Password', "action" => "user", "slug" => 'update-password'],
                         ["name" => 'Delete User', "action" => "user", "slug" => 'delete'],
                         ["name" => 'View User List Item Info', "action" => "user", "slug" => 'show'],
                     ]

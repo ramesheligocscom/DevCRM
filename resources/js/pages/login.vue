@@ -29,22 +29,19 @@ const refVForm = ref()
 const loading = ref(false)
 const errors = ref({})
 const credentials = ref({
-  // email: 'admin@eligocs.com',
-  // password: 'qwerty123',
   email: 'admin@eligocs.com',
   password: 'qwerty123',
-
 })
 
 const routeList = ref([
-  // { route: '/dashboards/crm', action: 'dashboard', slug: 'view' },
+  { route: '/dashboard', action: 'dashboard', slug: 'view' },
   { route: '/leads', action: 'leads', slug: 'view' },
   { route: '/clients', action: 'client', slug: 'view' },
-  { route: '/RolePermission', action: 'role', slug: 'view' },
-  // { route: '/admin/quotations', action: 'quotation', slug: 'view' },
-  // { route: '/admin/contracts', action: 'contract', slug: 'view' },
-  // { route: '/admin/invoices-list', action: 'invoice', slug: 'view' },
-  // { route: '/admin/contract-schedulings', action: 'schedule', slug: 'view' },
+  { route: '/roles', action: 'role', slug: 'view' },
+  { route: '/quotations', action: 'quotation', slug: 'view' },
+  { route: '/contracts', action: 'contract', slug: 'view' },
+  // { route: '/invoices-list', action: 'invoice', slug: 'view' },
+  // { route: '/contract-schedulings', action: 'schedule', slug: 'view' },
 ]);
 
 const rememberMe = ref(false)

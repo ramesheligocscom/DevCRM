@@ -6,18 +6,18 @@ export default [
     path: '/roles',
     name: 'role-list',
     component: roleList,
-    meta: { title: 'Role and Permission' },
+    meta: { title: 'Role and Permission', permission: [{ action: 'role', subject: 'view' }] },
   },
   {
     path: '/role-permission-create',
     name: 'role-create',
     component: roleCreate,
-    meta: { title: 'Role and Permission Create' },
+    meta: { title: 'Role and Permission Create', permission: [{ action: 'role', subject: 'create' }] },
   },
   {
     path: '/role-permission/edit/:id',
     name: 'role-edit',
     component: roleEdit,
-    meta: { title: 'Role and Permission Edit' },
+    meta: { title: 'Role and Permission Edit', permission: [{ action: 'role', subject: 'edit' }] },
   },
 ]

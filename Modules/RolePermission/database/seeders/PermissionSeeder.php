@@ -29,6 +29,7 @@ class PermissionSeeder extends Seeder
             ['class' => \Modules\Quotations\Constants\QuotationConst::class, 'const' => 'QUOTATION_PERMISSION_LIST'],
             ['class' => \Modules\Contracts\Constants\ContractConst::class, 'const' => 'CONTRACT_PERMISSION_LIST'],
             ['class' => \Modules\Clients\Constants\ClientConst::class, 'const' => 'CLIENT_PERMISSION_LIST'],
+            ['class' => \Modules\FollowUp\Constants\FollowUpConst::class, 'const' => 'FOLLOW_UP_PERMISSION_LIST'],
         ];
 
         foreach ($optionalModules as $module) {

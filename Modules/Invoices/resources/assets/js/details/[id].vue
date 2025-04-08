@@ -2,7 +2,6 @@
 import Clients from './tabs/Clients.vue'
 import Contracts from './tabs/Contracts.vue'
 import Information from './tabs/Information.vue'
-import Invoices from './tabs/Invoices.vue'
 
 import { toast } from 'vue3-toastify'
 
@@ -22,10 +21,6 @@ const tabs = [
   {
     title: 'Contracts',
     icon: 'tabler-lock',
-  },
-  {
-    title: 'Invoices',
-    icon: 'tabler-bell',
   },
 ]
 

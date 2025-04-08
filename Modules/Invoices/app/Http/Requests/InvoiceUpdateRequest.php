@@ -15,10 +15,10 @@ class InvoiceUpdateRequest extends FormRequest
     {
         return [
             'items' => 'nullable|array',
-            'sub_total' => 'sometimes|numeric|min:0',
-            'tax' => 'nullable|numeric|min:0',
-            'discount' => 'nullable|numeric|min:0',
-            'total' => 'sometimes|numeric|min:0',
+            // 'sub_total' => 'sometimes|numeric|min:0',
+            // 'tax' => 'nullable|numeric|min:0',
+            // 'discount' => 'nullable|numeric|min:0',
+            // 'total' => 'sometimes|numeric|min:0',
             'status' => 'sometimes|string|max:32',
             'client_id' => 'nullable|uuid',
             'contract_id' => 'nullable|uuid',

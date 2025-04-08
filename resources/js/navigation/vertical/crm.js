@@ -37,6 +37,12 @@ const menuItems = [
     to: 'quotation-list',
     permission: { action: 'quotation', subject: 'view' },
   },
+  {
+    title: 'Invoices',
+    icon: { icon: 'tabler-user-circle' },
+    to: 'invoice-list',
+    permission: { action: 'invoice', subject: 'view' },
+  },
 ];
 
 const list = () => {

@@ -32,7 +32,7 @@ class QuotationService
     {
 
         // Generate next quotation number
-        $lastQuotation = Quotation::latest('created_at')->first();
+        $lastQuotation = Quotation::withTrashed()->latest('created_at')->first();
         $lastNumber = 0;
 
         if ($lastQuotation && preg_match('/QUO-(\d+)/', $lastQuotation->quotation_number, $matches)) {

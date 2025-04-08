@@ -19,15 +19,10 @@ let isSubmitting = false
 
 const record = ref({
   invoice_number: '',
-  valid_uptil: '',
-  invoice_type: '',
   title: '',
   status: '',
   items: [],
-  custom_header_text: '',
-  payment_terms: '',
-  terms_conditions: '',
-  lead_id: '',
+  description: '',
   client_id: '',
   contract_id: '',
 })
@@ -180,14 +175,6 @@ onMounted(loadInvoice)
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppTextField v-model="record.valid_uptil" label="Valid Until" type="date" />
-                </VCol>
-
-                <VCol cols="12" md="6">
-                  <AppSelect v-model="record.invoice_type" label="Invoice Type" :items="['manual']" />
-                </VCol>
-
-                <VCol cols="12" md="6">
                   <AppTextField v-model="record.title" label="Title" />
                 </VCol>
 
@@ -200,23 +187,11 @@ onMounted(loadInvoice)
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppSelect v-model="record.lead_id" label="Lead" :items="[]" />
-                </VCol>
-
-                <VCol cols="12" md="6">
                   <AppSelect v-model="record.contract_id" label="Related Contract" :items="[]" />
                 </VCol>
 
                 <VCol cols="12">
-                  <AppTextField v-model="record.custom_header_text" label="Custom Header Text" />
-                </VCol>
-
-                <VCol cols="12">
-                  <AppTextField v-model="record.payment_terms" label="Payment Terms" />
-                </VCol>
-
-                <VCol cols="12">
-                  <AppTextField v-model="record.terms_conditions" label="Terms & Conditions" />
+                  <AppTextField v-model="record.description" label="Terms & Conditions" />
                 </VCol>
               </VRow>
             </VCol>

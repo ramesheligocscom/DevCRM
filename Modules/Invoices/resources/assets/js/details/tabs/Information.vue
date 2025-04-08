@@ -10,7 +10,6 @@ const props = defineProps({
 
 const clientName = computed(() => props.InfoData.client?.name || `ID: ${props.InfoData.client_id || 'N/A'}`)
 const invoiceName = computed(() => props.InfoData.invoice?.name || `ID: ${props.InfoData.invoice_id || 'N/A'}`)
-const invoiceName = computed(() => props.InfoData.invoice?.name || `ID: ${props.InfoData.invoice_id || 'N/A'}`)
 </script>
 
 <template>

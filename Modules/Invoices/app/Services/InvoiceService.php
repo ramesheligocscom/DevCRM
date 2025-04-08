@@ -30,12 +30,18 @@ class InvoiceService
 
     public function createInvoice(array $data): Invoice
     {
+        // Calculate totals before creation
+        $totals = $this->calculateTotals($data['items'] ?? []);
+        $data = array_merge($data, $totals);
         return Invoice::create($data);
     }
 
     public function updateInvoice(string $id, array $data): Invoice
     {
         $invoice = $this->getInvoiceById($id);
+        // Calculate totals before creation
+        $totals = $this->calculateTotals($data['items'] ?? []);
+        $data = array_merge($data, $totals);
         $invoice->update($data);
         return $invoice->fresh();
     }
@@ -48,13 +54,16 @@ class InvoiceService
 
     public function calculateTotals(array $items): array
     {
-        $subTotal = collect($items)->sum('price');
+        $subTotal = collect($items)->sum('subtotal');
+        $total = collect($items)->sum('total');
+        $discount = collect($items)->sum('discount_amount');
         $tax = $subTotal * 0.15;
-        $total = $subTotal + $tax;
+        
 
         return [
             'sub_total' => $subTotal,
             'tax' => $tax,
+            'discount' => $discount,
             'total' => $total
         ];
     }

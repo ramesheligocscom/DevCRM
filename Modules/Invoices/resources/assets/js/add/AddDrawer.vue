@@ -18,19 +18,14 @@ let isSubmitting = false
 
 const record = ref({
   // invoice_number: '',
-  valid_uptil: '',
-  invoice_type: '',
   title: '',
+  description: '',
   // sub_total: 0,
   // discount: 0,
   // tax: 0,
   // total: 0,
   status: '',
   items: [],
-  custom_header_text: '',
-  payment_terms: '',
-  terms_conditions: '',
-  lead_id: '',
   client_id: '',
   contract_id: '',
   // created_by: '',
@@ -124,7 +119,7 @@ const onSubmit = async () => {
     })
 
     if (res?.data) {
-      toast.success(res?.data?.message || 'Contract created successfully!')
+      toast.success(res?.data?.message || 'Invoice created successfully!')
       // ✅ Redirect to invoice list
       router.push({ name: 'invoice-list' })
     }
@@ -151,15 +146,6 @@ const onSubmit = async () => {
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppTextField v-model="record.valid_uptil" :rules="[requiredValidator]" label="Valid Until"
-                    type="date" />
-                </VCol>
-
-                <VCol cols="12" md="6">
-                  <AppSelect v-model="record.invoice_type" label="Invoice Type" :items="['manual']" />
-                </VCol>
-
-                <VCol cols="12" md="6">
                   <AppTextField v-model="record.title" :rules="[requiredValidator]" label="Title" />
                 </VCol>
 
@@ -173,23 +159,11 @@ const onSubmit = async () => {
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppSelect v-model="record.lead_id" label="Lead" :items="[]" />
-                </VCol>
-
-                <VCol cols="12" md="6">
                   <AppSelect v-model="record.contract_id" label="Related Contract" :items="[]" />
                 </VCol>
 
                 <VCol cols="12">
-                  <AppTextField v-model="record.custom_header_text" label="Custom Header Text" />
-                </VCol>
-
-                <VCol cols="12">
-                  <AppTextField v-model="record.payment_terms" ss label="Payment Terms" />
-                </VCol>
-
-                <VCol cols="12">
-                  <AppTextField v-model="record.terms_conditions" label="Terms & Conditions" />
+                  <AppTextField v-model="record.description" label="Description" />
                 </VCol>
 
               </VRow>

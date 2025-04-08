@@ -89,6 +89,15 @@ class Contract extends Model
     }
 }
 
+// invoice table :
+// invoice_number: 
+// title :-
+// description :-
+
+// contract table :
+// title :-
+// description :-
+
     // item object may be 
     // {
     //   "item_id": "uuid or string",

@@ -23,7 +23,6 @@ const emit = defineEmits([
   'confirm',
 ])
 
-
 const updateModelValue = val => {
   emit('update:isDialogVisible', val)
 }

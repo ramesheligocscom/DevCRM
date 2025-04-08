@@ -24,20 +24,6 @@ class LeadConst
                         ["name" => 'View info Leads Item ', "action" => "leads", "slug" => 'show'],
                     ]
                 ],
-                [
-                    'name' => 'View Lead List Items',
-                    "permission_list" => [
-                        ["name" => 'Follow up', "action" => "leads", "slug" => 'follow-up'],
-                        ["name" => 'Create Follow Up', "action" => "leads", "slug" => 'create-follow-up'],
-                        ["name" => 'Edit Follow Up', "action" => "leads", "slug" => 'edit-follow-up'],
-                        ["name" => 'Activity Timeline', "action" => "leads", "slug" => 'activity-timeline'],
-                        ["name" => 'View Site Risk Management', "action" => "leads", "slug" => 'view-site-risk-management'],
-                        ["name" => 'View info Item Site Risk Management', "action" => "leads", "slug" => 'show-site-risk-management'],
-                        ["name" => 'Create Site Risk Management', "action" => "leads", "slug" => 'create-site-risk-management'],
-                        ["name" => 'Edit Site Risk Management', "action" => "leads", "slug" => 'edit-site-risk-management'],
-                        ["name" => 'Delete Site Risk Management', "action" => "leads", "slug" => 'delete-site-risk-management'],
-                    ]
-                ]
             ]
         ],
     ];

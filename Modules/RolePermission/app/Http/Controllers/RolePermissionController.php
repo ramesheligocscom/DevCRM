@@ -274,6 +274,7 @@ class RolePermissionController extends Controller
 
     public function roleDelete(Request $request)
     {
+        dd($request->role_id ,$request->delete_text);
         $validator = Validator::make(['role_id' => $request->role_id], [
             'role_id' => 'required|exists:roles,id',
         ]);
@@ -282,8 +283,8 @@ class RolePermissionController extends Controller
             return $this->actionFailure($validator->errors()->first());
         }
 
-        if (strtolower(trim($request->delete_text)) !== 'delete') {
-            return $this->actionFailure('Your Delete input value is wrong. If you are permanently deleting the file, please type "delete" to confirm!');
+        if (trim($request->delete_text) !== "DELETE") {
+            return $this->actionFailure('Your Delete input value is wrong. If you are permanently deleting the file, please type "DELETE" to confirm!');
         }
 
         if (UserRole::where('role_id', $request->role_id)->exists()) {

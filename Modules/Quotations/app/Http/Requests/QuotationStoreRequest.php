@@ -1,85 +1,35 @@
 <?php
 
-namespace Modules\Quotations\Models;
+namespace Modules\Quotations\Http\Requests;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Concerns\HasUuids;
-use Illuminate\Support\Str;
+use Illuminate\Foundation\Http\FormRequest;
 
-class Quotation extends Model
+class QuotationStoreRequest extends FormRequest
 {
-    use SoftDeletes, HasUuids;
-
-    protected $fillable = [
-        'quotation_number',
-        'valid_uptil',
-        'quotation_type',
-        'title',
-        'sub_total',
-        'discount',
-        'tax',
-        'total',
-        'status',
-        'items',
-        'custom_header_text',
-        'payment_terms',
-        'terms_conditions',
-        'lead_id',
-        'client_id',
-        'contract_id',
-        'created_by',
-        'last_updated_by'
-    ];
-
-    protected $casts = [
-        'valid_uptil' => 'date',
-        'sub_total' => 'decimal:2',
-        'discount' => 'decimal:2',
-        'tax' => 'decimal:2',
-        'total' => 'decimal:2',
-        'items' => 'array',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime'
-    ];
-
-    public static function createWithAttributes(array $attributes)
+    public function authorize(): bool
     {
-        return static::create(array_merge([
-            'id' => Str::orderedUuid(),
-        ], $attributes));
+        return true;
     }
 
-    public function updateWithAttributes(array $attributes)
+    public function rules(): array
     {
-        return $this->update(array_merge($attributes, [
-            'last_updated_by' => auth()->user()->uuid,
-        ]));
-    }
-
-    // Relationships
-    public function lead()
-    {
-        return $this->belongsTo(\Modules\Leads\Models\Lead::class, 'lead_id');
-    }
-
-    public function client()
-    {
-        return $this->belongsTo(\Modules\Clients\Models\Client::class, 'client_id');
-    }
-
-    public function contract()
-    {
-        return $this->belongsTo(\Modules\Contracts\Models\Contract::class, 'contract_id');
-    }
-
-    public function creator()
-    {
-        return $this->belongsTo(\App\Models\User::class, 'created_by');
-    }
-
-    public function updater()
-    {
-        return $this->belongsTo(\App\Models\User::class, 'last_updated_by');
+        return [
+            // 'quotation_number' => 'required|string|max:64|unique:quotations',
+            'valid_uptil' => 'required|date|after_or_equal:today',
+            // 'quotation_type' => 'required|string|max:32',
+            'title' => 'required|string|max:255',
+            // 'sub_total' => 'required|numeric|min:0',
+            // 'discount' => 'nullable|numeric|min:0',
+            // 'tax' => 'nullable|numeric|min:0',
+            // 'total' => 'required|numeric|min:0',
+            'status' => 'required|string|max:32',
+            'items' => 'nullable|array',
+            'custom_header_text' => 'nullable|string',
+            'payment_terms' => 'nullable|string',
+            'terms_conditions' => 'nullable|string',
+            'lead_id' => 'nullable|uuid',
+            'client_id' => 'nullable|uuid',
+            'contract_id' => 'nullable|uuid',
+        ];
     }
 }

@@ -10,7 +10,7 @@ import { VForm } from 'vuetify/components'
 
 const route = useRoute()
 const router = useRouter()
-const quotationId = route.params.id
+const invoiceId = route.params.id
 
 const refForm = ref()
 const valid = ref(true)
@@ -18,9 +18,9 @@ const isLoading = ref(false)
 let isSubmitting = false
 
 const record = ref({
-  quotation_number: '',
+  invoice_number: '',
   valid_uptil: '',
-  quotation_type: '',
+  invoice_type: '',
   title: '',
   status: '',
   items: [],
@@ -48,31 +48,31 @@ const newItem = () => ({
   custom_fields: {},
 })
 
-// Load existing quotation data
-const loadQuotation = async () => {
+// Load existing invoice data
+const loadInvoice = async () => {
   try {
     isLoading.value = true
-    const response = await $api(`/quotations/${quotationId}`)
+    const response = await $api(`/invoices/${invoiceId}`)
 
-    const quotation = response?.data
+    const invoice = response?.data
 
-    if (!quotation) {
-      toast.error('Quotation not found.')
-      router.push({ name: 'quotation-list' })
+    if (!invoice) {
+      toast.error('Invoice not found.')
+      router.push({ name: 'invoice-list' })
       return
     }
 
     record.value = {
-      ...quotation,
-      items: quotation.items?.map(item => ({
+      ...invoice,
+      items: invoice.items?.map(item => ({
         ...newItem(),
         ...item,
       })) ?? [],
     }
   } catch (err) {
-    console.error('Failed to load quotation:', err)
-    toast.error('Failed to load quotation.')
-    router.push({ name: 'quotation-list' })
+    console.error('Failed to load invoice:', err)
+    toast.error('Failed to load invoice.')
+    router.push({ name: 'invoice-list' })
   } finally {
     isLoading.value = false
   }
@@ -142,14 +142,14 @@ const onSubmit = async () => {
   try {
     isLoading.value = true
 
-    const res = await $api(`/quotations/${quotationId}`, {
+    const res = await $api(`/invoices/${invoiceId}`, {
       method: 'PUT',
       body: JSON.stringify(record.value),
     })
 
     if (res?.data) {
-      toast.success(res?.data?.message || 'Quotation updated successfully!')
-      router.push({ name: 'quotation-list' })
+      toast.success(res?.data?.message || 'Invoice updated successfully!')
+      router.push({ name: 'invoice-list' })
     }
   } catch (err) {
     console.error(err)
@@ -160,7 +160,7 @@ const onSubmit = async () => {
   }
 }
 
-onMounted(loadQuotation)
+onMounted(loadInvoice)
 </script>
 
 <template>
@@ -176,7 +176,7 @@ onMounted(loadQuotation)
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppTextField v-model="record.quotation_number" label="Quotation Number" readonly />
+                  <AppTextField v-model="record.invoice_number" label="Invoice Number" readonly />
                 </VCol>
 
                 <VCol cols="12" md="6">
@@ -184,7 +184,7 @@ onMounted(loadQuotation)
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppSelect v-model="record.quotation_type" label="Quotation Type" :items="['manual']" />
+                  <AppSelect v-model="record.invoice_type" label="Invoice Type" :items="['manual']" />
                 </VCol>
 
                 <VCol cols="12" md="6">
@@ -279,7 +279,7 @@ onMounted(loadQuotation)
               <VBtn type="submit" color="primary" :loading="isLoading">
                 Update
               </VBtn>
-              <VBtn color="error" variant="tonal" @click="loadQuotation">
+              <VBtn color="error" variant="tonal" @click="loadInvoice">
                 Reset
               </VBtn>
             </VCol>

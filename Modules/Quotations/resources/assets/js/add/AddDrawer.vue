@@ -17,16 +17,24 @@ const isLoading = ref(false)
 let isSubmitting = false
 
 const record = ref({
-  items: [],
-  start_date: '',
-  end_date: '',
-  // sub_total: '',
-  // discount: '',
-  // tax: '',
+  // quotation_number: '',
+  valid_uptil: '',
+  quotation_type: '',
+  title: '',
+  // sub_total: 0,
+  // discount: 0,
+  // tax: 0,
+  // total: 0,
   status: '',
+  items: [],
+  custom_header_text: '',
+  payment_terms: '',
+  terms_conditions: '',
+  lead_id: '',
   client_id: '',
-  quotation_id: '',
-  invoice_id: '',
+  contract_id: '',
+  // created_by: '',
+  // last_updated_by: '',
 })
 
 // Generate a new empty item
@@ -116,7 +124,7 @@ const onSubmit = async () => {
     })
 
     if (res?.data) {
-      toast.success(res?.data?.message || 'Quotation created successfully!')
+      toast.success(res?.data?.message || 'Contract created successfully!')
       // ✅ Redirect to quotation list
       router.push({ name: 'quotation-list' })
     }
@@ -141,30 +149,47 @@ const onSubmit = async () => {
                 <VCol cols="12">
                   <strong class="text-primary">Basic</strong>
                 </VCol>
+
                 <VCol cols="12" md="6">
-                  <AppTextField v-model="record.start_date" :rules="[requiredValidator]" label="Start Date*"
+                  <AppTextField v-model="record.valid_uptil" :rules="[requiredValidator]" label="Valid Until"
                     type="date" />
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppTextField v-model="record.end_date" :rules="[requiredValidator]" label="End Date*" type="date" />
+                  <AppSelect v-model="record.quotation_type" label="Quotation Type" :items="['manual']" />
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppSelect v-model="record.status" :rules="[requiredValidator]" label="Status*"
+                  <AppTextField v-model="record.title" :rules="[requiredValidator]" label="Title" />
+                </VCol>
+
+                <VCol cols="12" md="6">
+                  <AppSelect v-model="record.status" :rules="[requiredValidator]" label="Status"
                     :items="['Pending', 'Approved', 'Rejected']" />
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppSelect v-model="record.client_id" :items="[]" label="Client ID*" />
+                  <AppSelect v-model="record.client_id" label="Client" :items="[]" />
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppSelect v-model="record.quotation_id" :items="[]" label="Quotation ID" />
+                  <AppSelect v-model="record.lead_id" label="Lead" :items="[]" />
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppSelect v-model="record.invoice_id" :items="[]" label="Invoice ID" />
+                  <AppSelect v-model="record.contract_id" label="Related Contract" :items="[]" />
+                </VCol>
+
+                <VCol cols="12">
+                  <AppTextField v-model="record.custom_header_text" label="Custom Header Text" />
+                </VCol>
+
+                <VCol cols="12">
+                  <AppTextField v-model="record.payment_terms" ss label="Payment Terms" />
+                </VCol>
+
+                <VCol cols="12">
+                  <AppTextField v-model="record.terms_conditions" label="Terms & Conditions" />
                 </VCol>
 
               </VRow>

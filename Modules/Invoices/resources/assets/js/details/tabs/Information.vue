@@ -9,7 +9,7 @@ const props = defineProps({
 })
 
 const clientName = computed(() => props.InfoData.client?.name || `ID: ${props.InfoData.client_id || 'N/A'}`)
-const quotationName = computed(() => props.InfoData.quotation?.name || `ID: ${props.InfoData.quotation_id || 'N/A'}`)
+const invoiceName = computed(() => props.InfoData.invoice?.name || `ID: ${props.InfoData.invoice_id || 'N/A'}`)
 const invoiceName = computed(() => props.InfoData.invoice?.name || `ID: ${props.InfoData.invoice_id || 'N/A'}`)
 </script>
 
@@ -18,8 +18,8 @@ const invoiceName = computed(() => props.InfoData.invoice?.name || `ID: ${props.
     <VCol cols="12">
       <VCard v-if="props.InfoData">
         <VCardText>
-          <!-- SECTION Quotation Info -->
-          <h5 class="text-h5 mb-4">Quotation Details</h5>
+          <!-- SECTION Invoice Info -->
+          <h5 class="text-h5 mb-4">Invoice Details</h5>
 
           <VRow dense>
             <VCol cols="12" md="4" lg="4">
@@ -68,8 +68,8 @@ const invoiceName = computed(() => props.InfoData.invoice?.name || `ID: ${props.
 
             <VCol cols="12" md="4" lg="4">
               <div class="d-flex align-center gap-x-2 mt-1">
-                <strong>Quotation:</strong>
-                <span>{{ quotationName }}</span>
+                <strong>Invoice:</strong>
+                <span>{{ invoiceName }}</span>
               </div>
             </VCol>
 
@@ -84,7 +84,7 @@ const invoiceName = computed(() => props.InfoData.invoice?.name || `ID: ${props.
           <VDivider class="my-6" />
 
           <!-- SECTION Items -->
-          <h5 class="text-h5 mb-2">Quotation Items</h5>
+          <h5 class="text-h5 mb-2">Invoice Items</h5>
 
           <VRow v-if="props.InfoData.items?.length">
             <VCol v-for="(item, index) in props.InfoData.items" :key="index" cols="12" md="6" lg="6">
@@ -125,7 +125,7 @@ const invoiceName = computed(() => props.InfoData.invoice?.name || `ID: ${props.
 
 
           <VAlert v-else type="info" variant="tonal" class="mt-4">
-            No items found for this quotation.
+            No items found for this invoice.
           </VAlert>
         </VCardText>
       </VCard>

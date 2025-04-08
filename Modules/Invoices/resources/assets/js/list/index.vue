@@ -8,10 +8,10 @@ const itemsPerPage = ref(10)
 const page = ref(1)
 const sortBy = ref()
 const orderBy = ref()
-const currentQuotation = ref(null);
+const currentInvoice = ref(null);
 
 
-const tableHeaderSlug = ref('quotation-list');
+const tableHeaderSlug = ref('invoice-list');
 const headers = ref([]);
 const getFilteredHeaderValue = async (headerList) => { headers.value = headerList; };
 
@@ -26,37 +26,37 @@ const resolveStatusVariant = status => {
 const updateOptions = options => {
   sortBy.value = options.sortBy[0]?.key
   orderBy.value = options.sortBy[0]?.order
-  fetchQuotations();
+  fetchInvoices();
 }
 const dataItems = ref([])
 const totalItems = ref(0)
 
-const fetchQuotations = async () => {
+const fetchInvoices = async () => {
   try {
     const response = await $api(
-      `/quotations?search=${searchQuery.value ?? ""}&page=${page.value}&sort_key=${sortBy.value ?? ""}&sort_order=${orderBy.value ?? ""}&per_page=${itemsPerPage.value}`
+      `/invoices?search=${searchQuery.value ?? ""}&page=${page.value}&sort_key=${sortBy.value ?? ""}&sort_order=${orderBy.value ?? ""}&per_page=${itemsPerPage.value}`
     )
 
     dataItems.value = response.data
     totalItems.value = response.meta.total
   } catch (err) {
-    console.error('Failed to fetch Quotations:', err)
+    console.error('Failed to fetch Invoices:', err)
     // Optionally show a toast
-    toast.error('Failed to load Quotations')
+    toast.error('Failed to load Invoices')
   }
 }
 
 const openDeleteDialog = (item) => {
-  currentQuotation.value = JSON.parse(JSON.stringify(item));
+  currentInvoice.value = JSON.parse(JSON.stringify(item));
   isDeleteDialogOpen.value = true;
 }
 
-fetchQuotations();
+fetchInvoices();
 
 </script>
 
 <template>
-  <div v-if="$can('quotation', 'view')">
+  <div v-if="$can('invoice', 'view')">
     <VCard>
       <VCardText>
         <div class="d-flex justify-space-between flex-wrap gap-y-4">
@@ -65,11 +65,10 @@ fetchQuotations();
           <div class="d-flex flex-row gap-4 align-center flex-wrap">
             <AppSelect v-model="itemsPerPage" :items="[5, 10, 20, 50, 100]" />
 
-            <VBtn v-if="$can('quotation', 'export-list')" prepend-icon="tabler-upload" variant="tonal"
-              color="secondary">
+            <VBtn v-if="$can('invoice', 'export-list')" prepend-icon="tabler-upload" variant="tonal" color="secondary">
               Export
             </VBtn>
-            <VBtn v-if="$can('quotation', 'create')" :to="{ name: 'quotation-create' }" prepend-icon="tabler-plus">
+            <VBtn v-if="$can('invoice', 'create')" :to="{ name: 'invoice-create' }" prepend-icon="tabler-plus">
               Add New
             </VBtn>
             <!-- Filter Header Btn FilterHeaderTableBtn -->
@@ -85,14 +84,14 @@ fetchQuotations();
         <!-- Actions Column -->
         <template #item.action="{ item }">
 
-          <IconBtn :to="{ name: 'quotation-details-id', params: { id: item.id } }">
+          <IconBtn :to="{ name: 'invoice-details-id', params: { id: item.id } }">
             <VIcon icon="tabler-eye" />
           </IconBtn>
-          <IconBtn :to="{ name: 'quotation-edit', params: { id: item.id } }">
+          <IconBtn :to="{ name: 'invoice-edit', params: { id: item.id } }">
             <VIcon icon="tabler-pencil" />
           </IconBtn>
 
-          <IconBtn v-if="$can('quotation', 'delete')" @click="openDeleteDialog(item)">
+          <IconBtn v-if="$can('invoice', 'delete')" @click="openDeleteDialog(item)">
             <VIcon icon="tabler-trash" />
           </IconBtn>
         </template>
@@ -104,17 +103,17 @@ fetchQuotations();
           </VChip>
         </template>
 
-        <!-- quotation_number -->
-        <template #item.quotation_number="{ item }">
-          #{{ item.quotation_number }}
+        <!-- invoice_number -->
+        <template #item.invoice_number="{ item }">
+          #{{ item.invoice_number }}
         </template>
         <!-- valid_uptil -->
         <template #item.valid_uptil="{ item }">
           {{ item.valid_uptil }}
         </template>
-        <!-- quotation_type -->
-        <template #item.quotation_type="{ item }">
-          {{ item.quotation_type }}
+        <!-- invoice_type -->
+        <template #item.invoice_type="{ item }">
+          {{ item.invoice_type }}
         </template>
 
         <!-- sub_total -->
@@ -162,8 +161,8 @@ fetchQuotations();
 
     <!-- 👉 Confirm Dialog -->
     <ConfirmDialog v-model:isDialogVisible="isDeleteDialogOpen" confirm-title="Delete!"
-      confirmation-question="Are you sure want to delete quotation?" :currentItem="currentQuotation"
-      @submit="fetchQuotations" :endpoint="`/quotations/${currentQuotation?.id}`" @close="isDeleteDialogOpen = false" />
+      confirmation-question="Are you sure want to delete invoice?" :currentItem="currentInvoice" @submit="fetchInvoices"
+      :endpoint="`/invoices/${currentInvoice?.id}`" @close="isDeleteDialogOpen = false" />
 
   </div>
 </template>

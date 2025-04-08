@@ -2,15 +2,14 @@
 import AppSelect from '@/@core/components/app-form-elements/AppSelect.vue'
 import AppTextField from '@/@core/components/app-form-elements/AppTextField.vue'
 import { v4 as uuidv4 } from 'uuid'
-import { onMounted, ref, watch, watchEffect } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { ref, watch, watchEffect } from 'vue'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { toast } from 'vue3-toastify'
 import { VForm } from 'vuetify/components'
 
-const route = useRoute()
+import { useRouter } from 'vue-router'
+
 const router = useRouter()
-const quotationId = route.params.id
 
 const refForm = ref()
 const valid = ref(true)
@@ -18,10 +17,14 @@ const isLoading = ref(false)
 let isSubmitting = false
 
 const record = ref({
-  quotation_number: '',
+  // invoice_number: '',
   valid_uptil: '',
-  quotation_type: '',
+  invoice_type: '',
   title: '',
+  // sub_total: 0,
+  // discount: 0,
+  // tax: 0,
+  // total: 0,
   status: '',
   items: [],
   custom_header_text: '',
@@ -30,6 +33,8 @@ const record = ref({
   lead_id: '',
   client_id: '',
   contract_id: '',
+  // created_by: '',
+  // last_updated_by: '',
 })
 
 // Generate a new empty item
@@ -48,36 +53,6 @@ const newItem = () => ({
   custom_fields: {},
 })
 
-// Load existing quotation data
-const loadQuotation = async () => {
-  try {
-    isLoading.value = true
-    const response = await $api(`/quotations/${quotationId}`)
-
-    const quotation = response?.data
-
-    if (!quotation) {
-      toast.error('Quotation not found.')
-      router.push({ name: 'quotation-list' })
-      return
-    }
-
-    record.value = {
-      ...quotation,
-      items: quotation.items?.map(item => ({
-        ...newItem(),
-        ...item,
-      })) ?? [],
-    }
-  } catch (err) {
-    console.error('Failed to load quotation:', err)
-    toast.error('Failed to load quotation.')
-    router.push({ name: 'quotation-list' })
-  } finally {
-    isLoading.value = false
-  }
-}
-
 // Add new item row
 const addItem = () => {
   record.value.items.push(newItem())
@@ -87,6 +62,7 @@ const addItem = () => {
 const removeItem = index => {
   record.value.items.splice(index, 1)
 }
+
 
 // Validate each item before submit
 const validateItems = () => {
@@ -142,25 +118,24 @@ const onSubmit = async () => {
   try {
     isLoading.value = true
 
-    const res = await $api(`/quotations/${quotationId}`, {
-      method: 'PUT',
+    const res = await $api('/invoices', {
+      method: 'POST',
       body: JSON.stringify(record.value),
     })
 
     if (res?.data) {
-      toast.success(res?.data?.message || 'Quotation updated successfully!')
-      router.push({ name: 'quotation-list' })
+      toast.success(res?.data?.message || 'Contract created successfully!')
+      // ✅ Redirect to invoice list
+      router.push({ name: 'invoice-list' })
     }
   } catch (err) {
     console.error(err)
-    toast.error(err?.response?.data?.message || 'An error occurred while updating.')
+    toast.error(err?.response?.data?.message || 'An error occurred while saving.')
   } finally {
     isSubmitting = false
     isLoading.value = false
   }
 }
-
-onMounted(loadQuotation)
 </script>
 
 <template>
@@ -176,23 +151,21 @@ onMounted(loadQuotation)
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppTextField v-model="record.quotation_number" label="Quotation Number" readonly />
+                  <AppTextField v-model="record.valid_uptil" :rules="[requiredValidator]" label="Valid Until"
+                    type="date" />
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppTextField v-model="record.valid_uptil" label="Valid Until" type="date" />
+                  <AppSelect v-model="record.invoice_type" label="Invoice Type" :items="['manual']" />
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppSelect v-model="record.quotation_type" label="Quotation Type" :items="['manual']" />
+                  <AppTextField v-model="record.title" :rules="[requiredValidator]" label="Title" />
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppTextField v-model="record.title" label="Title" />
-                </VCol>
-
-                <VCol cols="12" md="6">
-                  <AppSelect v-model="record.status" label="Status" :items="['Pending', 'Approved', 'Rejected']" />
+                  <AppSelect v-model="record.status" :rules="[requiredValidator]" label="Status"
+                    :items="['Pending', 'Approved', 'Rejected']" />
                 </VCol>
 
                 <VCol cols="12" md="6">
@@ -212,14 +185,16 @@ onMounted(loadQuotation)
                 </VCol>
 
                 <VCol cols="12">
-                  <AppTextField v-model="record.payment_terms" label="Payment Terms" />
+                  <AppTextField v-model="record.payment_terms" ss label="Payment Terms" />
                 </VCol>
 
                 <VCol cols="12">
                   <AppTextField v-model="record.terms_conditions" label="Terms & Conditions" />
                 </VCol>
+
               </VRow>
             </VCol>
+
 
             <VCol cols="12" v-if="record.items.length">
               <strong class="text-primary">Items</strong>
@@ -236,21 +211,19 @@ onMounted(loadQuotation)
                 </VCol>
 
                 <VCol cols="12" md="4">
-                  <AppTextField v-model="item.quantity" label="Quantity*" type="number" min="0.01" step="0.01" />
+                  <AppTextField v-model="item.quantity" label="Quantity*" type="number" min="1" />
                 </VCol>
 
                 <VCol cols="12" md="4">
-                  <AppTextField v-model="item.unit_price" label="Unit Price*" type="number" min="0" step="0.01" />
+                  <AppTextField v-model="item.unit_price" label="Unit Price*" type="number" />
                 </VCol>
 
                 <VCol cols="12" md="4">
-                  <AppTextField v-model="item.tax_rate" label="Tax Rate (%)" type="number" min="0" max="100"
-                    step="0.01" />
+                  <AppTextField v-model="item.tax_rate" label="Tax Rate (%)" type="number" />
                 </VCol>
 
                 <VCol cols="12" md="4">
-                  <AppTextField v-model="item.discount_rate" label="Discount Rate (%)" type="number" min="0" max="100"
-                    step="0.01" />
+                  <AppTextField v-model="item.discount_rate" label="Discount Rate (%)" type="number" />
                 </VCol>
 
                 <VCol cols="12" md="4">
@@ -277,10 +250,10 @@ onMounted(loadQuotation)
 
             <VCol cols="12" class="d-flex gap-4 justify-start pt-6 pb-10">
               <VBtn type="submit" color="primary" :loading="isLoading">
-                Update
+                Add
               </VBtn>
-              <VBtn color="error" variant="tonal" @click="loadQuotation">
-                Reset
+              <VBtn color="error" variant="tonal" :to="{ name: 'invoice-list' }">
+                Discard
               </VBtn>
             </VCol>
           </VRow>

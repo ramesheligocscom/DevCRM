@@ -30,12 +30,27 @@ class QuotationService
 
     public function createQuotation(array $data): Quotation
     {
+
+        // Generate next quotation number
+        $lastQuotation = Quotation::latest('created_at')->first();
+        $lastNumber = 0;
+
+        if ($lastQuotation && preg_match('/QUO-(\d+)/', $lastQuotation->quotation_number, $matches)) {
+            $lastNumber = (int) $matches[1];
+        }
+
+        $nextNumber = str_pad($lastNumber + 1, 5, '0', STR_PAD_LEFT);
+        $data['quotation_number'] = "QUO-{$nextNumber}";
+        $totals = $this->calculateTotals($data['items'] ?? []);
+        $data = array_merge($data, $totals);
         return Quotation::create($data);
     }
 
     public function updateQuotation(string $id, array $data): Quotation
     {
         $quotation = $this->getQuotationById($id);
+        $totals = $this->calculateTotals($data['items'] ?? []);
+        $data = array_merge($data, $totals);
         $quotation->update($data);
         return $quotation->fresh();
     }
@@ -48,13 +63,16 @@ class QuotationService
 
     public function calculateTotals(array $items): array
     {
-        $subTotal = collect($items)->sum('price');
+        $subTotal = collect($items)->sum('subtotal');
+        $total = collect($items)->sum('total');
+        $discount = collect($items)->sum('discount_amount');
         $tax = $subTotal * 0.15;
-        $total = $subTotal + $tax;
+        
 
         return [
             'sub_total' => $subTotal,
             'tax' => $tax,
+            'discount' => $discount,
             'total' => $total
         ];
     }

@@ -2,14 +2,15 @@
 import AppSelect from '@/@core/components/app-form-elements/AppSelect.vue'
 import AppTextField from '@/@core/components/app-form-elements/AppTextField.vue'
 import { v4 as uuidv4 } from 'uuid'
-import { ref, watch, watchEffect } from 'vue'
+import { onMounted, ref, watch, watchEffect } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { toast } from 'vue3-toastify'
 import { VForm } from 'vuetify/components'
 
-import { useRouter } from 'vue-router'
-
+const route = useRoute()
 const router = useRouter()
+const invoiceId = route.params.id
 
 const refForm = ref()
 const valid = ref(true)
@@ -17,18 +18,13 @@ const isLoading = ref(false)
 let isSubmitting = false
 
 const record = ref({
-  title:"",
-  description:"",
-  items: [],
-  start_date: '',
-  end_date: '',
-  // sub_total: '',
-  // discount: '',
-  // tax: '',
+  invoice_number: '',
+  title: '',
   status: '',
+  items: [],
+  description: '',
   client_id: '',
-  quotation_id: '',
-  invoice_id: '',
+  contract_id: '',
 })
 
 // Generate a new empty item
@@ -47,6 +43,36 @@ const newItem = () => ({
   custom_fields: {},
 })
 
+// Load existing invoice data
+const loadInvoice = async () => {
+  try {
+    isLoading.value = true
+    const response = await $api(`/invoices/${invoiceId}`)
+
+    const invoice = response?.data
+
+    if (!invoice) {
+      toast.error('Invoice not found.')
+      router.push({ name: 'invoice-list' })
+      return
+    }
+
+    record.value = {
+      ...invoice,
+      items: invoice.items?.map(item => ({
+        ...newItem(),
+        ...item,
+      })) ?? [],
+    }
+  } catch (err) {
+    console.error('Failed to load invoice:', err)
+    toast.error('Failed to load invoice.')
+    router.push({ name: 'invoice-list' })
+  } finally {
+    isLoading.value = false
+  }
+}
+
 // Add new item row
 const addItem = () => {
   record.value.items.push(newItem())
@@ -56,7 +82,6 @@ const addItem = () => {
 const removeItem = index => {
   record.value.items.splice(index, 1)
 }
-
 
 // Validate each item before submit
 const validateItems = () => {
@@ -112,24 +137,25 @@ const onSubmit = async () => {
   try {
     isLoading.value = true
 
-    const res = await $api('/contracts', {
-      method: 'POST',
+    const res = await $api(`/invoices/${invoiceId}`, {
+      method: 'PUT',
       body: JSON.stringify(record.value),
     })
 
     if (res?.data) {
-      toast.success(res?.data?.message || 'Contract created successfully!')
-      // ✅ Redirect to contract list
-      router.push({ name: 'contract-list' })
+      toast.success(res?.data?.message || 'Invoice updated successfully!')
+      router.push({ name: 'invoice-list' })
     }
   } catch (err) {
     console.error(err)
-    toast.error(err?.response?.data?.message || 'An error occurred while saving.')
+    toast.error(err?.response?.data?.message || 'An error occurred while updating.')
   } finally {
     isSubmitting = false
     isLoading.value = false
   }
 }
+
+onMounted(loadInvoice)
 </script>
 
 <template>
@@ -143,45 +169,32 @@ const onSubmit = async () => {
                 <VCol cols="12">
                   <strong class="text-primary">Basic</strong>
                 </VCol>
+
                 <VCol cols="12" md="6">
-                
-                  <AppTextField v-model="record.title" label="Title"
-                     />
+                  <AppTextField v-model="record.invoice_number" label="Invoice Number" readonly />
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppSelect v-model="record.status" :rules="[requiredValidator]" label="Status*"
-                    :items="['Pending', 'Approved', 'Rejected']" />
-                </VCol>
-                
-                <VCol cols="12" md="6">
-                  <AppDateTimePicker v-model="record.start_date" :rules="[requiredValidator]" label="Start Date*"
-                     />
+                  <AppTextField v-model="record.title" label="Title" />
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppDateTimePicker v-model="record.end_date" :rules="[requiredValidator]" label="End Date*"  />
+                  <AppSelect v-model="record.status" label="Status" :items="['Pending', 'Approved', 'Rejected']" />
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppSelect v-model="record.client_id" :items="[]" label="Client ID" />
+                  <AppSelect v-model="record.client_id" label="Client" :items="[]" />
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppSelect v-model="record.quotation_id" :items="[]" label="Quotation ID" />
+                  <AppSelect v-model="record.contract_id" label="Contract" :items="[]" />
                 </VCol>
 
-                <VCol cols="12" md="6">
-                  <AppSelect v-model="record.invoice_id" :items="[]" label="Invoice ID" />
-                </VCol>
-
-                <VCol cols="12" md="12">
-                  <AppTextField v-model="record.description" label="Description"
-                     />
+                <VCol cols="12">
+                  <AppTextField v-model="record.description" label="Description" />
                 </VCol>
               </VRow>
             </VCol>
-
 
             <VCol cols="12" v-if="record.items.length">
               <strong class="text-primary">Items</strong>
@@ -198,19 +211,21 @@ const onSubmit = async () => {
                 </VCol>
 
                 <VCol cols="12" md="4">
-                  <AppTextField v-model="item.quantity" label="Quantity*" type="number" min="1" />
+                  <AppTextField v-model="item.quantity" label="Quantity*" type="number" min="0.01" step="0.01" />
                 </VCol>
 
                 <VCol cols="12" md="4">
-                  <AppTextField v-model="item.unit_price" label="Unit Price*" type="number" />
+                  <AppTextField v-model="item.unit_price" label="Unit Price*" type="number" min="0" step="0.01" />
                 </VCol>
 
                 <VCol cols="12" md="4">
-                  <AppTextField v-model="item.tax_rate" label="Tax Rate (%)" type="number" />
+                  <AppTextField v-model="item.tax_rate" label="Tax Rate (%)" type="number" min="0" max="100"
+                    step="0.01" />
                 </VCol>
 
                 <VCol cols="12" md="4">
-                  <AppTextField v-model="item.discount_rate" label="Discount Rate (%)" type="number" />
+                  <AppTextField v-model="item.discount_rate" label="Discount Rate (%)" type="number" min="0" max="100"
+                    step="0.01" />
                 </VCol>
 
                 <VCol cols="12" md="4">
@@ -237,10 +252,10 @@ const onSubmit = async () => {
 
             <VCol cols="12" class="d-flex gap-4 justify-start pt-6 pb-10">
               <VBtn type="submit" color="primary" :loading="isLoading">
-                Add
+                Update
               </VBtn>
-              <VBtn color="error" variant="tonal" :to="{ name: 'contract-list' }">
-                Discard
+              <VBtn color="error" variant="tonal" @click="loadInvoice">
+                Reset
               </VBtn>
             </VCol>
           </VRow>

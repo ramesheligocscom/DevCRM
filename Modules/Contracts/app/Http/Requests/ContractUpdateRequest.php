@@ -17,6 +17,8 @@ class ContractUpdateRequest extends FormRequest
     {
         // Changed: Simplified status validation
         return [
+            'title'=> 'nullable|string',
+            'description'=> 'nullable|string',
             'items' => 'sometimes|array',
             'start_date' => 'sometimes|date',
             'end_date' => 'sometimes|date|after:start_date',

@@ -228,7 +228,7 @@ const onSubmit = async () => {
                   {{ props.currentLead ? 'Update' : 'Add' }}
                 </VBtn>
                 <VBtn color="error" variant="tonal" @click="resetForm">
-                  Discard
+                  Reset
                 </VBtn>
               </VCol>
             </VRow>

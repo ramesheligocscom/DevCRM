@@ -22,7 +22,7 @@
     "editor.defaultFormatter": "vscode.json-language-features"
   },
   "[vue]": {
-    "editor.defaultFormatter": "Vue.volar"
+    "editor.defaultFormatter": null, // "Vue.volar"
   },
   "volar.preview.port": 3000,
   "volar.completion.preferredTagNameCase": "pascal",

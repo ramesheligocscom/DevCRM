@@ -3,12 +3,13 @@ import AppSelect from '@/@core/components/app-form-elements/AppSelect.vue'
 import AppTextField from '@/@core/components/app-form-elements/AppTextField.vue'
 import { v4 as uuidv4 } from 'uuid'
 import { onMounted, ref, watch, watchEffect } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { toast } from 'vue3-toastify'
 import { VForm } from 'vuetify/components'
 
 const route = useRoute()
+const router = useRouter()
 const quotationId = route.params.id
 
 const refForm = ref()
@@ -17,16 +18,21 @@ const isLoading = ref(false)
 let isSubmitting = false
 
 const record = ref({
-  items: [],
-  start_date: '',
-  end_date: '',
+  quotation_number: '',
+  valid_uptil: '',
+  quotation_type: '',
+  title: '',
   status: '',
+  items: [],
+  custom_header_text: '',
+  payment_terms: '',
+  terms_conditions: '',
+  lead_id: '',
   client_id: '',
-  quotation_id: '',
-  invoice_id: '',
+  contract_id: '',
 })
 
-// Helper for creating new item object
+// Generate a new empty item
 const newItem = () => ({
   item_id: uuidv4(),
   name: '',
@@ -48,17 +54,15 @@ const loadQuotation = async () => {
     isLoading.value = true
     const response = await $api(`/quotations/${quotationId}`)
 
-    console.log('Fetched quotation:', response?.data) // Real data is in .value
-
     const quotation = response?.data
 
     if (!quotation) {
       toast.error('Quotation not found.')
+      router.push({ name: 'quotation-list' })
       return
     }
 
     record.value = {
-      ...record.value,
       ...quotation,
       items: quotation.items?.map(item => ({
         ...newItem(),
@@ -68,22 +72,23 @@ const loadQuotation = async () => {
   } catch (err) {
     console.error('Failed to load quotation:', err)
     toast.error('Failed to load quotation.')
+    router.push({ name: 'quotation-list' })
   } finally {
     isLoading.value = false
   }
 }
 
-// Add item
+// Add new item row
 const addItem = () => {
   record.value.items.push(newItem())
 }
 
-// Remove item
+// Remove item by index
 const removeItem = index => {
   record.value.items.splice(index, 1)
 }
 
-// Validate items
+// Validate each item before submit
 const validateItems = () => {
   for (const item of record.value.items) {
     if (!item.name || item.quantity <= 0 || item.unit_price <= 0) {
@@ -94,7 +99,7 @@ const validateItems = () => {
   return true
 }
 
-// Calculate item values
+// Calculate dynamic fields for item
 const calculateItemValues = item => {
   const quantity = parseFloat(item.quantity || 0)
   const unitPrice = parseFloat(item.unit_price || 0)
@@ -112,7 +117,7 @@ const calculateItemValues = item => {
   item.total = parseFloat(total.toFixed(2))
 }
 
-// Watch item values
+// Watch each item for real-time calculation
 watch(
   () => record.value.items,
   items => {
@@ -123,7 +128,7 @@ watch(
   { deep: true }
 )
 
-// Update quotation
+// Submit form
 const onSubmit = async () => {
   if (isSubmitting) return
   isSubmitting = true
@@ -144,6 +149,7 @@ const onSubmit = async () => {
 
     if (res?.data) {
       toast.success(res?.data?.message || 'Quotation updated successfully!')
+      router.push({ name: 'quotation-list' })
     }
   } catch (err) {
     console.error(err)
@@ -168,28 +174,49 @@ onMounted(loadQuotation)
                 <VCol cols="12">
                   <strong class="text-primary">Basic</strong>
                 </VCol>
+
                 <VCol cols="12" md="6">
-                  <AppTextField v-model="record.start_date" label="Start Date*" type="date" />
+                  <AppTextField v-model="record.quotation_number" label="Quotation Number" readonly />
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppTextField v-model="record.end_date" label="End Date*" type="date" />
+                  <AppDateTimePicker v-model="record.valid_uptil" label="Valid Until" />
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppSelect v-model="record.status" label="Status*" :items="['Pending', 'Approved', 'Rejected']" />
+                  <AppSelect v-model="record.quotation_type" label="Quotation Type" :items="['manual']" />
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppSelect v-model="record.client_id" label="Client ID*" :items="[]" />
+                  <AppTextField v-model="record.title" label="Title" />
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppSelect v-model="record.quotation_id" label="Quotation ID" :items="[]" />
+                  <AppSelect v-model="record.status" label="Status" :items="['Pending', 'Approved', 'Rejected']" />
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppSelect v-model="record.invoice_id" label="Invoice ID" :items="[]" />
+                  <AppSelect v-model="record.client_id" label="Client" :items="[]" />
+                </VCol>
+
+                <VCol cols="12" md="6">
+                  <AppSelect v-model="record.lead_id" label="Lead" :items="[]" />
+                </VCol>
+
+                <VCol cols="12" md="6">
+                  <AppSelect v-model="record.contract_id" label="Contract" :items="[]" />
+                </VCol>
+
+                <VCol cols="12">
+                  <AppTextField v-model="record.custom_header_text" label="Custom Header Text" />
+                </VCol>
+
+                <VCol cols="12">
+                  <AppTextField v-model="record.payment_terms" label="Payment Terms" />
+                </VCol>
+
+                <VCol cols="12">
+                  <AppTextField v-model="record.terms_conditions" label="Terms & Conditions" />
                 </VCol>
               </VRow>
             </VCol>
@@ -209,19 +236,21 @@ onMounted(loadQuotation)
                 </VCol>
 
                 <VCol cols="12" md="4">
-                  <AppTextField v-model="item.quantity" label="Quantity*" type="number" min="1" />
+                  <AppTextField v-model="item.quantity" label="Quantity*" type="number" min="0.01" step="0.01" />
                 </VCol>
 
                 <VCol cols="12" md="4">
-                  <AppTextField v-model="item.unit_price" label="Unit Price*" type="number" />
+                  <AppTextField v-model="item.unit_price" label="Unit Price*" type="number" min="0" step="0.01" />
                 </VCol>
 
                 <VCol cols="12" md="4">
-                  <AppTextField v-model="item.tax_rate" label="Tax Rate (%)" type="number" />
+                  <AppTextField v-model="item.tax_rate" label="Tax Rate (%)" type="number" min="0" max="100"
+                    step="0.01" />
                 </VCol>
 
                 <VCol cols="12" md="4">
-                  <AppTextField v-model="item.discount_rate" label="Discount Rate (%)" type="number" />
+                  <AppTextField v-model="item.discount_rate" label="Discount Rate (%)" type="number" min="0" max="100"
+                    step="0.01" />
                 </VCol>
 
                 <VCol cols="12" md="4">

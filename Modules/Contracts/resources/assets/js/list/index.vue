@@ -1,5 +1,7 @@
 <script setup>
-import ConfirmDialog from '../dialog/ConfirmDialog.vue'
+import moment from 'moment';
+
+import ConfirmDialog from '../dialog/ConfirmDialog.vue';
 const searchQuery = ref('')
 const isDeleteDialogOpen = ref(false)
 
@@ -52,7 +54,12 @@ const openDeleteDialog = (item) => {
 }
 
 fetchContracts();
-
+const makeDateFormat = (date , onlyDate = false) => {
+    if(onlyDate)
+    return moment(date).format('DD-MM-Y');
+    else
+    return moment(date).format('LLLL');
+};
 </script>
 
 <template>
@@ -81,6 +88,14 @@ fetchContracts();
       <VDataTableServer v-model:items-per-page="itemsPerPage" v-model:page="page" :items="dataItems" item-value="name"
         :headers="headers.filter((header) => header.checked)" :items-length="totalItems" show-select
         class="text-no-wrap" @update:options="updateOptions">
+
+        <template #item.title="{ item }">
+        <RouterLink :to="{ name: 'contract-details-id', params: { id: item.id } }"
+                class="text-link font-weight-medium d-inline-block" style="line-height: 1.375rem;">
+                {{ item.title }}
+        </RouterLink>
+        </template>
+
         <!-- Actions Column -->
         <template #item.action="{ item }">
 
@@ -139,7 +154,23 @@ fetchContracts();
         <template #item.last_updated_by="{ item }">
           {{ item.updater?.name || '-' }}
         </template>
+       
+        <template #item.start_date="{ item }">
+          {{ item.start_date ? makeDateFormat(item.start_date, true) : '-'}}
+        </template>
 
+        <template #item.end_date="{ item }">
+          {{ item.end_date ? makeDateFormat(item.end_date, true) : '-'}}
+        </template>
+        
+        <template #item.created_at="{ item }">
+          {{ makeDateFormat(item.created_at )}}
+        </template>
+
+        <template #item.updated_at="{ item }">
+          {{ item.updater ? makeDateFormat(item.updated_at ) : '-'}}
+
+        </template>
         <template #bottom>
           <TablePagination v-model:page="page" :items-per-page="itemsPerPage" :total-items="totalItems" />
         </template>

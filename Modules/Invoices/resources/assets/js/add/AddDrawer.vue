@@ -17,18 +17,19 @@ const isLoading = ref(false)
 let isSubmitting = false
 
 const record = ref({
-  title:"",
-  description:"",
-  items: [],
-  start_date: '',
-  end_date: '',
-  // sub_total: '',
-  // discount: '',
-  // tax: '',
+  // invoice_number: '',
+  title: '',
+  description: '',
+  // sub_total: 0,
+  // discount: 0,
+  // tax: 0,
+  // total: 0,
   status: '',
+  items: [],
   client_id: '',
-  quotation_id: '',
-  invoice_id: '',
+  contract_id: '',
+  // created_by: '',
+  // last_updated_by: '',
 })
 
 // Generate a new empty item
@@ -112,15 +113,15 @@ const onSubmit = async () => {
   try {
     isLoading.value = true
 
-    const res = await $api('/contracts', {
+    const res = await $api('/invoices', {
       method: 'POST',
       body: JSON.stringify(record.value),
     })
 
     if (res?.data) {
-      toast.success(res?.data?.message || 'Contract created successfully!')
-      // ✅ Redirect to contract list
-      router.push({ name: 'contract-list' })
+      toast.success(res?.data?.message || 'Invoice created successfully!')
+      // ✅ Redirect to invoice list
+      router.push({ name: 'invoice-list' })
     }
   } catch (err) {
     console.error(err)
@@ -143,42 +144,28 @@ const onSubmit = async () => {
                 <VCol cols="12">
                   <strong class="text-primary">Basic</strong>
                 </VCol>
+
                 <VCol cols="12" md="6">
-                
-                  <AppTextField v-model="record.title" label="Title"
-                     />
+                  <AppTextField v-model="record.title" :rules="[requiredValidator]" label="Title" />
                 </VCol>
 
                 <VCol cols="12" md="6">
                   <AppSelect v-model="record.status" :rules="[requiredValidator]" label="Status*"
                     :items="['Pending', 'Approved', 'Rejected']" />
                 </VCol>
-                
+
                 <VCol cols="12" md="6">
-                  <AppDateTimePicker v-model="record.start_date" :rules="[requiredValidator]" label="Start Date*"
-                     />
+                  <AppSelect v-model="record.client_id" label="Client" :items="[]" />
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppDateTimePicker v-model="record.end_date" :rules="[requiredValidator]" label="End Date*"  />
+                  <AppSelect v-model="record.contract_id" label="Contract" :items="[]" />
                 </VCol>
 
-                <VCol cols="12" md="6">
-                  <AppSelect v-model="record.client_id" :items="[]" label="Client ID" />
+                <VCol cols="12">
+                  <AppTextField v-model="record.description" label="Description" />
                 </VCol>
 
-                <VCol cols="12" md="6">
-                  <AppSelect v-model="record.quotation_id" :items="[]" label="Quotation ID" />
-                </VCol>
-
-                <VCol cols="12" md="6">
-                  <AppSelect v-model="record.invoice_id" :items="[]" label="Invoice ID" />
-                </VCol>
-
-                <VCol cols="12" md="12">
-                  <AppTextField v-model="record.description" label="Description"
-                     />
-                </VCol>
               </VRow>
             </VCol>
 
@@ -239,7 +226,7 @@ const onSubmit = async () => {
               <VBtn type="submit" color="primary" :loading="isLoading">
                 Add
               </VBtn>
-              <VBtn color="error" variant="tonal" :to="{ name: 'contract-list' }">
+              <VBtn color="error" variant="tonal" :to="{ name: 'invoice-list' }">
                 Discard
               </VBtn>
             </VCol>

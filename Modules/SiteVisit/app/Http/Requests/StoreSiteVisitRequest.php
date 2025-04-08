@@ -28,7 +28,7 @@ class StoreSiteVisitRequest extends FormRequest
                 'before_or_equal:' . now()->addMonths(3)
             ],
             'visit_assignee' => [
-                'required',
+                'nullable',
                 'exists:users,id',
                 Rule::exists('users', 'id')->where(function ($query) {
                     $query->where('is_active', true);
@@ -37,8 +37,7 @@ class StoreSiteVisitRequest extends FormRequest
             'status' => [
                 'required',
                 'string',
-                'max:255',
-                Rule::in(['scheduled', 'pending', 'confirmed'])
+                'max:255'
             ],
             'visit_notes' => [
                 'nullable',
@@ -47,27 +46,11 @@ class StoreSiteVisitRequest extends FormRequest
             ],
             'lead_id' => [
                 'nullable',
-                'exists:leads,id',
-                Rule::requiredIf(function () {
-                    return empty($this->client_id);
-                }),
-                function ($attribute, $value, $fail) {
-                    if ($value && !auth()->user()->can('assign leads')) {
-                        $fail('You do not have permission to assign leads.');
-                    }
-                }
+                'exists:leads,id'
             ],
             'client_id' => [
-                'nullable',
-                'exists:clients,id',
-                Rule::requiredIf(function () {
-                    return empty($this->lead_id);
-                }),
-                function ($attribute, $value, $fail) {
-                    if ($value && !auth()->user()->can('assign clients')) {
-                        $fail('You do not have permission to assign clients.');
-                    }
-                }
+                'nullable'
+  
             ],
             'attachments' => [
                 'nullable',

@@ -8,19 +8,8 @@ import { VForm } from "vuetify/components/VForm";
 import { VBtn } from "vuetify/lib/components/index.mjs";
 const valid = ref(true);
 const refForm = ref(false);
-
-import dayjs from 'dayjs';
 import { watch } from 'vue';
 
-const visit_time = ref('')
-const menu = ref(false)
-
-// Optional: watch and format the value when date changes
-watch(visit_time, (val) => {
-  if (val) {
-    visit_time.value = dayjs(val).format('YYYY-MM-DD')
-  }
-})
 
 
 const props = defineProps({
@@ -89,13 +78,13 @@ const onSubmit = async () => {
 
     const payload = {
       ...client.value,
-      addresses: customer.value.addresses,
+      visit_time: date.value,
     };
 
     const res = await $api(
       props.currentClient
-        ? `api/clients/${props.currentClient.id}?_method=PUT`
-        : `api/clients`,
+        ? `/sitevisit/${props.currentClient.id}?_method=PUT`
+        : `/sitevisit`,
       {
         method: "POST",
         body: payload,
@@ -185,9 +174,8 @@ const userOptions = ref([
 const users = ref({
   assigned_user: null // This will store the selected UUID
 })
-
-
 const Status = ref("");
+const date = ref('')
 </script>
 
 <template>
@@ -203,19 +191,12 @@ const Status = ref("");
           <VForm ref="refForm" v-model="valid" @submit.prevent="onSubmit">
             <VRow>
               <VCol cols="12">
-                <VMenu v-model="menu" :close-on-content-click="false" transition="scale-transition" offset-y
-                  min-width="auto">
-                  <template #activator="{ props }">
-                    <AppTextField v-model="visit_time" label="Visit Time" placeholder="Visit Time" v-bind="props"
-                      readonly prepend-inner-icon="tabler-calendar" />
-                  </template>
-
-                  <VDatePicker v-model="visit_time" @input="menu = false" />
-                </VMenu>
+                <AppDateTimePicker v-model="date" label="Date & TIme" placeholder="Select date and time"
+                  :config="{ enableTime: true, dateFormat: 'Y-m-d H:i' }" />
               </VCol>
               <VCol cols="12">
                 <VSelect v-model="client.visit_assignee" :items="userOptions" label="Visit Assignee"
-                  placeholder="visit_assignee *" item-title="name" item-value="id" clearable>
+                  placeholder="Visit Assignee *" item-title="name" item-value="id" clearable>
                   <template #selection="{ item }">
                     <span>{{ item.title }}</span>
                   </template>

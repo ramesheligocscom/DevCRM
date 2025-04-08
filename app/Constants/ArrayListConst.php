@@ -62,7 +62,7 @@ class ArrayListConst
                 ['title' => 'Invoice Id', 'key' => 'invoice_id', 'sortable' => true, 'align' => 'left', 'checked' => true],
                 ['title' => 'Created By', 'key' => 'created_by', 'sortable' => true, 'align' => 'left', 'checked' => true],
                 ['title' => 'Last Updated By', 'key' => 'last_updated_by', 'sortable' => true, 'align' => 'left', 'checked' => true],
-                ['title' => 'Action', 'key' => 'actions', 'sortable' => false, 'align' => 'center', 'checked' => true],
+                ['title' => 'Action', 'key' => 'action', 'sortable' => false, 'align' => 'center', 'checked' => true],
             ]
         ],
 

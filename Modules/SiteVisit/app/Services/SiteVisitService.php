@@ -1,8 +1,8 @@
 <?php
 
-namespace Modules\SiteVisits\Services;
+namespace Modules\SiteVisit\Services;
 
-use App\Modules\SiteVisit\Models\SiteVisit;
+use Modules\SiteVisit\Models\SiteVisit;
 use Illuminate\Database\Eloquent\Collection;
 
 class SiteVisitService

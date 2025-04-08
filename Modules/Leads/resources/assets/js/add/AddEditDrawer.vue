@@ -117,7 +117,7 @@ const onSubmit = async () => {
       ? `/leads/${props.currentLead.id}?_method=PUT`
       : '/leads'
 
-    const res = await useApi(endpoint, {
+    const res = await $api(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),

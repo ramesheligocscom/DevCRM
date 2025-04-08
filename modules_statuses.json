@@ -6,5 +6,6 @@
     "RolePermission": true,
     "Contracts": true,
     "Quotations": true,
-    "Invoices": true
+    "Invoices": true,
+    "Custom": true
 }

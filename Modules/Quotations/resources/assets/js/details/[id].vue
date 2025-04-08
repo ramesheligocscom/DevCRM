@@ -6,7 +6,7 @@ import Quotations from './tabs/Quotations.vue'
 
 import { toast } from 'vue3-toastify'
 
-const route = useRoute('contract-details-id')
+const route = useRoute('quotation-details-id')
 const InfoData = ref()
 const tab = ref(null)
 
@@ -30,7 +30,7 @@ const tabs = [
 ]
 
 try {
-  const { data } = await $api(`/contracts/${route.params.id}`)
+  const { data } = await $api(`/quotations/${route.params.id}`)
   InfoData.value = data
 } catch (error) {
   console.error('Failed to fetch lead data:', error)

@@ -19,6 +19,11 @@ export default [
       title: 'Contracts',
       icon: { icon: 'tabler-user-circle' },
       to: 'contract-list', // ✅ Use exact name from router
+    },
+    {
+      title: 'Quotations',
+      icon: { icon: 'tabler-user-circle' },
+      to: 'quotation-list', // ✅ Use exact name from router
     }
   ]
   

@@ -1,6 +1,4 @@
 <script setup>
-import AppSelect from '@/@core/components/app-form-elements/AppSelect.vue'
-import AppTextField from '@/@core/components/app-form-elements/AppTextField.vue'
 import { v4 as uuidv4 } from 'uuid'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'

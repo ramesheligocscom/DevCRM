@@ -3,9 +3,6 @@ import { nextTick, ref } from 'vue'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { VForm } from 'vuetify/components/VForm'
 
-// import AppDrawerHeaderSection from '@/@core/components/app-drawer/AppDrawerHeaderSection.vue'
-import AppSelect from '@/@core/components/app-form-elements/AppSelect.vue'
-import AppTextField from '@/@core/components/app-form-elements/AppTextField.vue'
 import { toast } from 'vue3-toastify'
 
 const props = defineProps({

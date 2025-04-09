@@ -1,6 +1,4 @@
 <script setup>
-import AppSelect from '@/@core/components/app-form-elements/AppSelect.vue'
-import AppTextField from '@/@core/components/app-form-elements/AppTextField.vue'
 import { v4 as uuidv4 } from 'uuid'
 import { ref, watch, watchEffect } from 'vue'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
@@ -129,6 +127,22 @@ const onSubmit = async () => {
     isLoading.value = false
   }
 }
+
+const loadingAttributes = ref(false)
+const attributeItems = ref([])
+const fetchAttributes = async (search = '') => {
+  loadingAttributes.value = true
+  try {
+    const { data } = await $api('/product-services', {
+      params: { search },
+    })
+    attributeItems.value = data // adapt if your API response is shaped differently
+  } catch (e) {
+    console.error('Failed to load attributeItems', e)
+  } finally {
+    loadingAttributes.value = false
+  }
+}
 </script>
 
 <template>
@@ -195,6 +209,24 @@ const onSubmit = async () => {
 
             <VCol cols="12" v-for="(item, index) in record.items" :key="item.item_id">
               <VRow class="border rounded pa-3 mb-3">
+
+                <VCol cols="12" md="6">
+                  <AppAutocomplete label="Product/Service" :items="attributeItems"
+                  item-title="name"
+                  :loading="loadingAttributes"
+                  :searchable="true"
+                  @update:search="fetchAttributes"
+                  return-object
+                  />
+                </VCol>
+
+                <VCol cols="12" md="6">
+                  <AppAutocomplete label="Attribute" :items="[]"
+                  item-title="value"
+                  return-object
+                  />
+                </VCol>
+
                 <VCol cols="12" md="6">
                   <AppTextField v-model="item.name" label="Name*" />
                 </VCol>

@@ -6,10 +6,8 @@ const props = defineProps({
   },
 })
 
-const clientName = computed(() => props.InfoData.client?.name || `-`)
-const quotationName = computed(() => props.InfoData.quotation?.quotation_number || `-`)
-const contractName = computed(() => props.InfoData.contract?.title || `-`)
-const invoiceName = computed(() => props.InfoData.invoice?.invoice_number || `-`)
+const assignedUserName = computed(() => props.InfoData.assigned_user?.name || `-`)
+const visitAssigneeName = computed(() => props.InfoData.visit_assignee?.name || `-`)
 
 </script>
 
@@ -84,7 +82,7 @@ const invoiceName = computed(() => props.InfoData.invoice?.invoice_number || `-`
             <VCol cols="12" md="4" lg="4">
               <div class="d-flex align-center gap-x-2 mt-1">
                 <strong> Assigned User:</strong>
-                <span>{{ props.InfoData.assigned_user || '-' }}</span>
+                <span>{{ assignedUserName }}</span>
               </div>
             </VCol>
 
@@ -98,7 +96,7 @@ const invoiceName = computed(() => props.InfoData.invoice?.invoice_number || `-`
             <VCol cols="12" md="4" lg="4">
               <div class="d-flex align-center gap-x-2 mt-1">
                 <strong>Visit Assignee:</strong>
-                <span>{{ props.InfoData.visit_assignee || '-' }}</span>
+                <span>{{ visitAssigneeName }}</span>
               </div>
             </VCol> 
 
@@ -120,34 +118,6 @@ const invoiceName = computed(() => props.InfoData.invoice?.invoice_number || `-`
               <div class="d-flex align-center gap-x-2 mt-1">
                 <strong>Last Updated By:</strong>
                 <span>{{ props.InfoData.updater?.name || '-' }}</span>
-              </div>
-            </VCol>
-
-            <VCol cols="12" md="4" lg="4">
-              <div class="d-flex align-center gap-x-2 mt-1">
-                <strong>Client:</strong>
-                <span>{{ clientName }}</span>
-              </div>
-            </VCol>
-
-            <VCol cols="12" md="4" lg="4">
-              <div class="d-flex align-center gap-x-2 mt-1">
-                <strong>Contract:</strong>
-                <span>{{ contractName }}</span>
-              </div>
-            </VCol>
-
-            <VCol cols="12" md="4" lg="4">
-              <div class="d-flex align-center gap-x-2 mt-1">
-                <strong>Quotation:</strong>
-                <span>{{ quotationName }}</span>
-              </div>
-            </VCol>
-
-            <VCol cols="12" md="4" lg="4">
-              <div class="d-flex align-center gap-x-2 mt-1">
-                <strong>Invoice:</strong>
-                <span>{{ invoiceName }}</span>
               </div>
             </VCol>
           </VRow>

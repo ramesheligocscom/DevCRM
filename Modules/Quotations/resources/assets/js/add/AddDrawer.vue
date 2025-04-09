@@ -17,14 +17,9 @@ const isLoading = ref(false)
 let isSubmitting = false
 
 const record = ref({
-  // quotation_number: '',
   valid_uptil: '',
   quotation_type: '',
   title: '',
-  // sub_total: 0,
-  // discount: 0,
-  // tax: 0,
-  // total: 0,
   status: '',
   items: [],
   custom_header_text: '',
@@ -33,8 +28,6 @@ const record = ref({
   lead_id: '',
   client_id: '',
   contract_id: '',
-  // created_by: '',
-  // last_updated_by: '',
 })
 
 // Generate a new empty item

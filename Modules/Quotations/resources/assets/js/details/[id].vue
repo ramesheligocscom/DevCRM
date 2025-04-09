@@ -1,9 +1,6 @@
 <script setup>
 import moment from 'moment';
-import Clients from './tabs/Clients.vue';
-import Contracts from './tabs/Contracts.vue';
 import Information from './tabs/Information.vue';
-import Invoices from './tabs/Invoices.vue';
 
 import { toast } from 'vue3-toastify';
 
@@ -15,19 +12,7 @@ const tabs = [
   {
     title: 'Information',
     icon: 'tabler-user',
-  },
-  {
-    title: 'Clients',
-    icon: 'tabler-user',
-  },
-  {
-    title: 'Contracts',
-    icon: 'tabler-lock',
-  },
-  {
-    title: 'Invoices',
-    icon: 'tabler-bell',
-  },
+  }
 ]    
 
 try {
@@ -75,15 +60,6 @@ const makeDateFormat = (date , onlyDate = false) => {
         <VWindow v-model="tab" class="disable-tab-transition" :touch="false">
           <VWindowItem>
             <Information :InfoData="InfoData" />
-          </VWindowItem>
-          <VWindowItem>
-            <Clients />
-          </VWindowItem>
-          <VWindowItem>
-            <Invoices />
-          </VWindowItem>
-          <VWindowItem>
-            <Contracts />
           </VWindowItem>
         </VWindow>
       </VCol>

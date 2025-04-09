@@ -1,10 +1,10 @@
 <script setup>
+import moment from 'moment'
 import AddEditDrawer from '../add/AddEditDrawer.vue'
 import ConfirmDialog from '../dialog/ConfirmDialog.vue'
 const searchQuery = ref('')
 const isAddEditDrawerOpen = ref(false)
 const isDeleteDialogOpen = ref(false)
-
 // Data table options
 
 const itemsPerPage = ref(10)
@@ -103,10 +103,10 @@ const makeDateFormat = (date , onlyDate = false) => {
         class="text-no-wrap" @update:options="updateOptions">
 
         <template #item.name="{ item }">
-        <RouterLink :to="{ name: 'lead-details-id', params: { id: item.id } }"
-                class="text-link font-weight-medium d-inline-block" style="line-height: 1.375rem;">
-                {{ item.name }}
-        </RouterLink>
+          <RouterLink :to="{ name: 'lead-details-id', params: { id: item.id } }"
+                  class="text-link font-weight-medium d-inline-block" style="line-height: 1.375rem;">
+                  {{ item.name }}
+          </RouterLink>
         </template>
 
         <!-- creator -->
@@ -117,29 +117,20 @@ const makeDateFormat = (date , onlyDate = false) => {
         <template #item.last_updated_by="{ item }">
           {{ item.updater?.name || '-' }}
         </template>
-
+         <!-- assigned_user -->
+         <template #item.assigned_user="{ item }">
+          {{ item.assigned_user?.name || '-' }}
+        </template>
+         <!-- visit_assignee -->
+         <template #item.visit_assignee="{ item }">
+          {{ item.visit_assignee?.name || '-' }}
+        </template>
         <!-- status -->
         <template #item.status="{ item }">
           <VChip :color="resolveStatusVariant(item.status).color" size="small">
             {{ resolveStatusVariant(item.status).text }}
           </VChip>
         </template>
-
-        <!-- Actions Column -->
-        <template #item.action="{ item }">
-          <IconBtn :to="{ name: 'lead-details-id', params: { id: item.id } }">
-            <VIcon icon="tabler-eye" />
-          </IconBtn>
-          
-          <IconBtn v-if="$can('leads', 'edit')" @click="editBranch(item)">
-            <VIcon icon="tabler-pencil" />
-          </IconBtn>
-
-          <IconBtn v-if="$can('leads', 'delete')" @click="openDeleteDialog(item)">
-            <VIcon icon="tabler-trash" />
-          </IconBtn>
-        </template>
-
         <template #item.created_at="{ item }">
           {{ makeDateFormat(item.created_at )}}
         </template>
@@ -147,7 +138,18 @@ const makeDateFormat = (date , onlyDate = false) => {
         <template #item.updated_at="{ item }">
           {{ item.updater ? makeDateFormat(item.updated_at ) : '-'}}
         </template>
-
+        <!-- Actions Column -->
+        <template #item.action="{ item }">
+          <IconBtn :to="{ name: 'lead-details-id', params: { id: item.id } }">
+            <VIcon icon="tabler-eye" />
+          </IconBtn>
+          <IconBtn v-if="$can('leads', 'edit')" @click="editBranch(item)">
+            <VIcon icon="tabler-pencil" />
+          </IconBtn>
+          <IconBtn v-if="$can('leads', 'delete')" @click="openDeleteDialog(item)">
+            <VIcon icon="tabler-trash" />
+          </IconBtn>
+        </template>
         <template #bottom>
           <TablePagination v-model:page="page" :items-per-page="itemsPerPage" :total-items="totalItems" />
         </template>

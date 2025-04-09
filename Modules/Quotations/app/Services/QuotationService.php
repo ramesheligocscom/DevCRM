@@ -11,20 +11,29 @@ class QuotationService
         int $perPage = 15,
         bool $withTrashed = false,
         ?string $status = null,
-        ?string $clientId = null
+        ?string $clientId = null,
+        ?string $leadId = null,
+        ?string $contractId = null,
+        ?string $createdBy = null,
+        ?string $lastUpdatedBy = null
     ): LengthAwarePaginator {
         return Quotation::query()
             ->when($withTrashed, fn($q) => $q->withTrashed())
             ->when($status, fn($q) => $q->where('status', $status))
             ->when($clientId, fn($q) => $q->where('client_id', $clientId))
-            ->with(['lead', 'client', 'contract', 'creator', 'updater'])
+            ->when($leadId, fn($q) => $q->where('lead_id', $leadId))
+            ->when($contractId, fn($q) => $q->where('contract_id', $contractId))
+            ->when($createdBy, fn($q) => $q->where('created_by', $createdBy))
+            ->when($lastUpdatedBy, fn($q) => $q->where('last_updated_by', $lastUpdatedBy))
+            ->with(['creator', 'updater'])
             ->latest()
             ->paginate($perPage);
     }
 
+
     public function getQuotationById(string $id): Quotation
     {
-        return Quotation::with(['lead', 'client', 'contract', 'creator', 'updater'])
+        return Quotation::with(['creator', 'updater'])
             ->findOrFail($id);
     }
 

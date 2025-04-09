@@ -64,9 +64,7 @@ const openDeleteDialog = (item) => {
   isDeleteDialogOpen.value = true;
 }
 
-const refresh = (item) => {
   fetchLeads();
-}
 
 const makeDateFormat = (date , onlyDate = false) => {
     if(onlyDate)

@@ -118,6 +118,9 @@ class PermissionSeeder extends Seeder
                 case RolePermissionConst::SLUG_ADMIN:
                     $permissions_ids = Permission::whereIn('permission', RolePermissionConst::ADMIN_PERMISSION)->pluck('id')->toArray();
                     break;
+                case RolePermissionConst::SLUG_EMPLOYEE:
+                    $permissions_ids = Permission::whereIn('permission', RolePermissionConst::EMPLOYEE_PERMISSION)->pluck('id')->toArray();
+                    break;
                 default:
                     $permissions_ids = [];
                     break;

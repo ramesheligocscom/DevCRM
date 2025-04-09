@@ -63,7 +63,7 @@ const login = async () => {
       const user = response.data.user;
 
       // Store in localStorage
-      localStorage.setItem('user_id', user.id);
+      localStorage.setItem('user_id', user.uuid);
       localStorage.setItem('user_name', user.name);
 
       localStorage.setItem('permission_list', JSON.stringify(ability_list.value)) ?? [];

@@ -21,9 +21,12 @@ class LeadService
         ?string $lastUpdatedBy = null,
     ): LengthAwarePaginator {
 
-        return Lead::query()
-            ->when($withTrashed, fn($q) => $q->withTrashed())
-            ->when($status, fn($q) => $q->where('status', $status))
+        $query = Lead::query()->when($withTrashed, fn($q) => $q->withTrashed());
+
+        # ✅ Apply custom filtering from the helper
+        $query = applyFilteringUser($query, 'assign_user');
+
+        return $query->when($status, fn($q) => $q->where('status', $status))
             ->when($assignedUser, fn($q) => $q->where('assigned_user', $assignedUser))
             ->when($visitAssigneeUser, fn($q) => $q->where('visit_assignee', $visitAssigneeUser))
             ->when($clientId, fn($q) => $q->where('client_id', $clientId))
@@ -32,14 +35,14 @@ class LeadService
             ->when($invoiceId, fn($q) => $q->where('invoice_id', $invoiceId))
             ->when($createdBy, fn($q) => $q->where('created_by', $createdBy))
             ->when($lastUpdatedBy, fn($q) => $q->where('last_updated_by', $lastUpdatedBy))
-            ->with(['creator', 'updater' ,'assignedUser','visitAssignee'])
+            ->with(['creator', 'updater', 'assignedUser', 'visitAssignee'])
             ->latest()
             ->paginate($perPage);
     }
 
     public function getLeadById(string $id): Lead
     {
-        return Lead::with(['assignedUser', 'visitAssignee','creator','updater'])
+        return Lead::with(['assignedUser', 'visitAssignee', 'creator', 'updater'])
             ->findOrFail($id);
     }
 
@@ -61,4 +64,3 @@ class LeadService
         $lead->delete();
     }
 }
-

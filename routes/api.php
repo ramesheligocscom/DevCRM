@@ -1,6 +1,7 @@
 <?php
 // routes/api.php
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\TableHeaderManageController;
 use Illuminate\Support\Facades\Route;
@@ -12,6 +13,21 @@ Route::post('/update-password/{user_id}', [UserController::class, 'updatePasswor
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/profile', [AuthController::class, 'getProfile']);
+    Route::get('/logout', [AuthController::class, 'logout']);
+    # User Login Log api
+    Route::get('/user-login-logs', [AuthController::class, 'getUserLoginLogs']);
+    Route::delete('/delete-login-log/{login_log_id}', [AuthController::class, 'deleteLoginLog'])->name('delete.login.log');
+
+    # Notification Api
+    Route::post('/notification-count', [NotificationController::class, 'getNotificationCount']);
+    Route::post('/latest-five-notification-list', [NotificationController::class, 'getLatestFiveNotificationList']);
+    Route::post('/notification-list', [NotificationController::class, 'getNotificationList']);
+    Route::post('/is-read-notification', [NotificationController::class, 'isReadNotification']);
+    Route::post('/mark-all-read-or-un-read', [NotificationController::class, 'markAllReadOrUnread']);
+    Route::delete('/delete-notification/{notification_id}', [NotificationController::class, 'deleteNotification']);
+
+    Route::post('/test-message-send-pusher', [NotificationController::class, 'testMessageSendPusher']);
+
     # User api Name
     Route::group(['prefix' => 'user'], function () {
         Route::get('/', [UserController::class, 'index'])->name('user.index');

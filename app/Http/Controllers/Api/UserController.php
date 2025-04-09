@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Events\SendMessage;
+use App\Events\NotificationMessage;
 use App\Http\Controllers\Controller;
 use App\Mail\ForgetPassword;
 use App\Models\PasswordReset;
@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Validation\Rule;
 use Modules\RolePermission\Models\Role;
 use Modules\RolePermission\Models\UserRole;
+use Stevebauman\Location\Facades\Location;
 
 class UserController extends Controller
 {
@@ -96,7 +97,7 @@ class UserController extends Controller
 
             # Filter by search query
             if ($search = $request->input('search')) {
-                $query->where('name', 'LIKE', "%{$search}%");
+                $query->where('name', 'ILIKE', "%{$search}%");
             }
 
             # Sort results
@@ -362,7 +363,7 @@ class UserController extends Controller
                     if (trim($request->delete_text) !== "DELETE") {
                         return $this->actionFailure('Your Delete input value is wrong. If you are permanently deleting the file, please type "DELETE" to confirm!');
                     }
-                    $user->Delete();
+                    $user->forceDelete();
                     $message = 'User permanently deleted successfully.';
                     break;
                 default:

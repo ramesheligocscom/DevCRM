@@ -7,16 +7,20 @@ class RolePermissionConst
     # Roles TODO: Make new Role add slug and make permission 
     const SUPER_ADMIN = 'Super Admin';
     const ADMIN = "Admin";
+    const EMPLOYEE = "Employee";
 
     const SLUG_SUPER_ADMIN = 'super-admin';
     const SLUG_ADMIN = "admin";
+    const SLUG_EMPLOYEE = "employee";
 
     const SUPER_ADMIN_MESSAGE = "Super Admin Role Permission Not Update!";
     const ADMIN_PERMISSION = [];
+    const EMPLOYEE_PERMISSION = [];
 
     const ROLE_LIST = [
         ['name' => RolePermissionConst::SUPER_ADMIN, "slug" => RolePermissionConst::SLUG_SUPER_ADMIN, 'description' => 'Full access to all system features and settings.', "position" => 0],
         ['name' => RolePermissionConst::ADMIN, "slug" => RolePermissionConst::SLUG_ADMIN, 'description' => 'Manage most system settings and data.', "position" => 1],
+        ['name' => RolePermissionConst::EMPLOYEE, "slug" => RolePermissionConst::SLUG_EMPLOYEE, 'description' => 'Manage most system settings and data.', "position" => 2],
     ];
 
     const PERMISSION_LIST = [
@@ -84,6 +88,28 @@ class RolePermissionConst
                         ["name" => 'Delete Notifications', "action" => "notification", "slug" => 'delete'],
                     ]
                 ]
+            ]
+        ],
+        # 7. Profiles Permission
+        [
+            'name' => 'Profile',
+            'position' => 6,
+            "icon" => 'tabler-bell-dollar',
+            "category" => [
+                // [
+                //     'name' => 'Profile',
+                //     "permission_list" => [
+                //         ["name" => 'Update Info', "action" => "profile", "slug" => 'edit'],
+                //         ["name" => 'Change Password', "action" => "profile", "slug" => 'change-password'],
+                //     ]
+                // ],
+                [
+                    'name' => 'Login Log',
+                    "permission_list" => [
+                        ["name" => 'View Login Log List', "action" => "loginLog", "slug" => 'view'],
+                        ["name" => 'Delete Login Log', "action" => "loginLog", "slug" => 'delete'],
+                    ]
+                ],
             ]
         ],
 

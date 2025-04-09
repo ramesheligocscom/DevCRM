@@ -31,7 +31,6 @@ class AuthController extends Controller
         }
 
         try {
-
             # Retrieve the user by username, email, or phone
             $user = User::where('email', $request->email)
                 ->first();
@@ -42,6 +41,14 @@ class AuthController extends Controller
 
             # Log in the user (not required for Sanctum token issuing, but optional)
             $token = $user->createToken('API Token')->plainTextToken;
+
+            $credentials = ['email' => $user->email, 'user_name' => $user->user_name, 'password' => $request->password];
+
+            if ($request->remember_me) {
+                auth('web')->attempt($credentials, true);
+            } else {
+                auth('web')->attempt($credentials);
+            }
 
             $response = [
                 'access_token' => $token,
@@ -84,8 +91,9 @@ class AuthController extends Controller
     public function getProfile()
     {
         try {
-            $user = Auth::user();
-            return $this->actionSuccess('Profile show successfully.', $user);
+            $user_id = Auth::user()->uuid;
+            $user = User::where('uuid', $user_id)->with('roles')->first();
+            return $this->actionSuccess('Profile retrieved successfully.', $user);
         } catch (\Exception $e) {
             createExceptionError($e, self::CONTROLLER_NAME, __FUNCTION__);
             return $this->actionFailure($e->getMessage());
@@ -213,7 +221,7 @@ class AuthController extends Controller
                 return $this->actionFailure('No active session found.');
             }
 
-            $ip = request()->ip();
+            $ip = getIpAddress();
             $location = Location::get($ip);
 
             # Log the logout before revoking token
@@ -224,14 +232,22 @@ class AuthController extends Controller
                 'event'      => 'logout',
                 'success'    => true,
                 'logged_at'  => now(),
-                'country'    => $location?->countryName,
-                'state'      => $location?->regionName,
-                'city'       => $location?->cityName,
+                'country'    => $location?->countryName ?? '',
+                'state'      => $location?->regionName ?? '',
+                'city'       => $location?->cityName ?? '',
             ]);
 
-            # Revoke token and logout
-            $user->token()->revoke();
+            # Passport	
+            # $user->token()->revoke();
+            # request()->user()->token()->revoke();
+
+            # Sanctum	
+            request()->user()->currentAccessToken()->delete();
+
+            #Web (Session)	
             # Auth::logout();
+            # request()->session()->invalidate();
+            # request()->session()->regenerateToken();
 
             return $this->actionSuccess('User logged out successfully.');
         } catch (\Exception $e) {
@@ -244,24 +260,22 @@ class AuthController extends Controller
     public function getUserLoginLogs(Request $request)
     {
         try {
-
-            # Get logged-in user and their roles
-            $user =  request()->user() ?? Auth::user() ?? null;
-            $roleSlugs = $user->roles()->pluck('slug')->toArray();
-
             $query = UserLoginLog::query();
 
             # Apply filtering if the user is NOT a Super Admin
-            // if ($user->account_type !== User::SUPER_ADMIN && (!in_array(RolePermissionConst::SLUG_SUPER_ADMIN, $roleSlugs) || !in_array(RolePermissionConst::SLUG_ADMIN, $roleSlugs))) {
-            // $query->where('user_id', $user->uuid);
-            // }
+            $query  = applyFilteringUser($query, "user_id");
 
             # Filter by search query
             if ($search = $request->input('search')) {
-                $query->whereHas('user', function ($qur) use ($search) {
-                    $qur->where('name', 'LIKE', "%{$search}%")
-                        ->orWhere('email', 'LIKE', "%{$search}%")
-                        ->orWhere('phone', 'LIKE', "%{$search}%");
+                $query->where(function ($qur) use ($search) {
+                    $qur->where('user_agent', 'ILIKE', "%{$search}%")
+                        ->orWhere('country', 'ILIKE', "%{$search}%")
+                        ->orWhere('state', 'ILIKE', "%{$search}%")
+                        ->orWhereHas('user', function ($qu) use ($search) {
+                            $qu->where('name', 'ILIKE', "%{$search}%")
+                                ->orWhere('email', 'ILIKE', "%{$search}%")
+                                ->orWhere('phone', 'ILIKE', "%{$search}%");
+                        });
                 });
             }
 
@@ -323,7 +337,7 @@ class AuthController extends Controller
             if (!User::where('id', $request->user_id)->exists()) {
                 return $this->actionFailure("User is not exists");
             }
-            $ip = $request->ip();
+            $ip = getIpAddress();
             $location = Location::get($ip);
 
             $log = UserLoginLog::create([
@@ -333,9 +347,9 @@ class AuthController extends Controller
                 'event'      => 'Unauthenticated',
                 'success'    => false,
                 'logged_at'  => now(),
-                'country'    => $location?->countryName ?? 'Unknown',
-                'state'      => $location?->regionName ?? 'Unknown',
-                'city'       => $location?->cityName ?? 'Unknown',
+                'country'    => $location?->countryName ?? '',
+                'state'      => $location?->regionName ?? '',
+                'city'       => $location?->cityName ?? '',
             ]);
             return $this->actionSuccess('Unauthenticated access logged successfully', $log);
         } catch (\Exception $e) {

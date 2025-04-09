@@ -1,68 +1,6 @@
-<script setup>
-const isNewPasswordVisible = ref(false)
-const isConfirmPasswordVisible = ref(false)
-const smsVerificationNumber = ref('+1(968) 819-2547')
-const isTwoFactorDialogOpen = ref(false)
-
-const recentDeviceHeader = [
-  {
-    title: 'BROWSER',
-    key: 'browser',
-  },
-  {
-    title: 'DEVICE',
-    key: 'device',
-  },
-  {
-    title: 'LOCATION',
-    key: 'location',
-  },
-  {
-    title: 'RECENT ACTIVITY',
-    key: 'activity',
-  },
-]
-
-const recentDevices = [
-  {
-    browser: ' Chrome on Windows',
-    icon: 'tabler-brand-windows',
-    color: 'info',
-    device: 'HP Spectre 360',
-    location: 'Switzerland',
-    activity: '10, July 2021 20:07',
-  },
-  {
-    browser: 'Chrome on Android',
-    icon: 'tabler-brand-android',
-    color: 'success',
-    device: 'Oneplus 9 Pro',
-    location: 'Dubai',
-    activity: '14, July 2021 15:15',
-  },
-  {
-    browser: 'Chrome on macOS',
-    icon: 'tabler-brand-apple',
-    color: 'secondary',
-    device: 'Apple iMac',
-    location: 'India',
-    activity: '16, July 2021 16:17',
-  },
-  {
-    browser: 'Chrome on iPhone',
-    icon: 'tabler-device-mobile',
-    color: 'error',
-    device: 'iPhone 12x',
-    location: 'Australia',
-    activity: '13, July 2021 10:10',
-  },
-]
-</script>
-
 <template>
   <VRow>
     <VCol cols="12">
-      <!-- 👉 Change password -->
       <VCard title="Change Password">
         <VCardText>
           <VAlert
@@ -71,38 +9,39 @@ const recentDevices = [
             color="warning"
             class="mb-4"
             title="Ensure that these requirements are met"
-            text="Minimum 8 characters long, uppercase & symbol"
+            text="Minimum 8 characters long, with at least 1 uppercase letter & 1 symbol"
           />
 
-          <VForm @submit.prevent="() => { }">
+          <VForm v-model="valid" @submit.prevent="onSubmit">
             <VRow>
-              <VCol
-                cols="12"
-                md="6"
-              >
+              <VCol cols="12" md="6">
                 <AppTextField
+                  v-model="credentials.password"
                   label="New Password"
                   placeholder="············"
                   :type="isNewPasswordVisible ? 'text' : 'password'"
                   :append-inner-icon="isNewPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
+                  :rules="[...requiredRule, ...minLengthRule(8)]"
+                  :error-messages="errors.password"
                   @click:append-inner="isNewPasswordVisible = !isNewPasswordVisible"
                 />
               </VCol>
-              <VCol
-                cols="12"
-                md="6"
-              >
+
+              <VCol cols="12" md="6">
                 <AppTextField
+                  v-model="credentials.confirmPassword"
                   label="Confirm Password"
                   placeholder="············"
                   :type="isConfirmPasswordVisible ? 'text' : 'password'"
                   :append-inner-icon="isConfirmPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
+                  :rules="[...requiredRule, ...minLengthRule(8), ...confirmPasswordMatchRule(credentials.password)]"
+                  :error-messages="errors.confirmPassword"
                   @click:append-inner="isConfirmPasswordVisible = !isConfirmPasswordVisible"
                 />
               </VCol>
 
               <VCol cols="12">
-                <VBtn type="submit">
+                <VBtn type="submit" :loading="loading" :disabled="loading">
                   Change Password
                 </VBtn>
               </VCol>
@@ -112,8 +51,8 @@ const recentDevices = [
       </VCard>
     </VCol>
 
-    <VCol cols="12">
-      <!-- 👉 Two step verification -->
+        <!-- 👉 Two step verification -->
+    <!-- <VCol cols="12">
       <VCard
         title="Two-steps verification"
         subtitle="Keep your account secure with authentication step."
@@ -147,39 +86,72 @@ const recentDevices = [
           </p>
         </VCardText>
       </VCard>
-    </VCol>
+    </VCol> -->
 
+    <!-- Login Log Component -->
     <VCol cols="12">
-      <VCard title="Recent devices">
-        <VDivider />
-        <VDataTable
-          :items="recentDevices"
-          :headers="recentDeviceHeader"
-          hide-default-footer
-          class="text-no-wrap"
-        >
-          <template #item.browser="{ item }">
-            <div class="d-flex align-center gap-x-4">
-              <VIcon
-                :icon="item.icon"
-                :color="item.color"
-                :size="22"
-              />
-              <div class="text-body-1 text-high-emphasis">
-                {{ item.browser }}
-              </div>
-            </div>
-          </template>
-          <!-- TODO Refactor this after vuetify provides proper solution for removing default footer -->
-          <template #bottom />
-        </VDataTable>
-      </VCard>
+      <LoginLog />
     </VCol>
   </VRow>
 
-  <!-- 👉 Enable One Time Password Dialog -->
+  <!-- Two-Factor Auth Dialog (if needed later) -->
   <TwoFactorAuthDialog
     v-model:isDialogVisible="isTwoFactorDialogOpen"
     :sms-code="smsVerificationNumber"
   />
 </template>
+
+<script setup>
+import { confirmPasswordMatchRule, minLengthRule, requiredRule } from '@/validations/validationRules';
+import { ref } from 'vue';
+import { useRoute } from 'vue-router';
+import { toast } from 'vue3-toastify';
+import LoginLog from './login-log.vue';
+
+// State
+const route = useRoute();
+const valid = ref(true);
+const loading = ref(false);
+const isNewPasswordVisible = ref(false);
+const isConfirmPasswordVisible = ref(false);
+const isTwoFactorDialogOpen = ref(false);
+const smsVerificationNumber = ref('+91 98765 43210'); 
+
+const credentials = ref({
+  password: '',
+  confirmPassword: '',
+});
+
+const errors = ref({
+  password: [],
+  confirmPassword: [],
+});
+
+// Submit handler
+const onSubmit = async () => {
+  loading.value = true;
+  errors.value = { password: [], confirmPassword: [] };
+
+  if (credentials.value.password !== credentials.value.confirmPassword) {
+    errors.value.confirmPassword = ['Password and confirm password should match'];
+    toast.error('Password and confirm password should match');
+    loading.value = false;
+    return;
+  }
+
+  try {
+    const { data } = await $api(`/update-password/${route.params.id}`, { method: 'POST', body: credentials.value });
+
+    if (data.status) {
+      toast.success(data.message || 'Password changed successfully');
+    } else {
+      toast.error(data.message || 'Failed to update password');
+    }
+  } catch (error) {
+    toast.error('An error occurred while updating the password');
+    console.error(error);
+  } finally {
+    loading.value = false;
+  }
+};
+</script>

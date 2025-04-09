@@ -17,9 +17,12 @@ class InvoiceService
         ?string $createdBy = null,
         ?string $lastUpdatedBy = null
     ): LengthAwarePaginator {
-        return Invoice::query()
-            ->when($withTrashed, fn($q) => $q->withTrashed())
-            ->when($status, fn($q) => $q->where('status', $status))
+        $query = Invoice::query()->when($withTrashed, fn($q) => $q->withTrashed());
+
+        # ✅ Apply custom filtering from the helper
+        $query = applyFilteringUser($query, 'created_by');
+
+        return $query->when($status, fn($q) => $q->where('status', $status))
             ->when($clientId, fn($q) => $q->where('client_id', $clientId))
             ->when($contractId, fn($q) => $q->where('contract_id', $contractId))
             ->when($quotationId, fn($q) => $q->where('quotation_id', $quotationId))
@@ -32,7 +35,7 @@ class InvoiceService
 
     public function getInvoiceById(string $id): Invoice
     {
-        return Invoice::with([ 'creator', 'updater'])
+        return Invoice::with(['creator', 'updater'])
             ->findOrFail($id);
     }
 
@@ -76,7 +79,7 @@ class InvoiceService
         $total = collect($items)->sum('total');
         $discount = collect($items)->sum('discount_amount');
         $tax = $subTotal * 0.15;
-        
+
 
         return [
             'sub_total' => $subTotal,

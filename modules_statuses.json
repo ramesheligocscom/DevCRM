@@ -7,5 +7,7 @@
     "Contracts": true,
     "Quotations": true,
     "Invoices": true,
-    "Custom": true
+    "Custom": true,
+    "ProductService": true,
+    "Setting": true
 }

@@ -15,11 +15,11 @@ const tabs = [
 ]
 
 try {
-  const { data } = await $api(`/contracts/${route.params.id}`)
+  const { data } = await $api(`/product-services/${route.params.id}`)
   InfoData.value = data
 } catch (error) {
-  console.error('Failed to fetch contracts data:', error)
-  toast.error(error?.response?.data?.message || 'Failed to load contracts details.')
+  console.error('Failed to fetch Product/Service data:', error)
+  toast.error(error?.response?.data?.message || 'Failed to load Product/Service details.')
 }
 
 const makeDateFormat = (date , onlyDate = false) => {
@@ -36,14 +36,14 @@ const makeDateFormat = (date , onlyDate = false) => {
      <div class="d-flex justify-space-between align-center flex-wrap gap-y-4 mb-6">
       <div>
         <h5 class="text-h5 mb-1">
-          Contract {{ InfoData.title }}
+          Product/Service {{ InfoData.title }}
         </h5>
         <div class="text-body-1">
           {{ makeDateFormat(InfoData.created_at )}}
         </div>
       </div>
       <div class="d-flex gap-4">
-        <VBtn variant="tonal" color="success" :to="{ name: 'contract-list' }">
+        <VBtn variant="tonal" color="success" :to="{ name: 'product-service-list' }">
           Back
         </VBtn>
       </div>
@@ -65,7 +65,7 @@ const makeDateFormat = (date , onlyDate = false) => {
     </VRow>
     <div v-else>
       <VAlert type="error" variant="tonal">
-        Contract with ID {{ route.params.id }} not found!
+        Product/Service with ID {{ route.params.id }} not found!
       </VAlert>
     </div>
   </div>

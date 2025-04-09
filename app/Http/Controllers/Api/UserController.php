@@ -362,7 +362,7 @@ class UserController extends Controller
                     if (trim($request->delete_text) !== "DELETE") {
                         return $this->actionFailure('Your Delete input value is wrong. If you are permanently deleting the file, please type "DELETE" to confirm!');
                     }
-                    $user->Delete();
+                    $user->forceDelete();
                     $message = 'User permanently deleted successfully.';
                     break;
                 default:

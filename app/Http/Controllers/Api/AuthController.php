@@ -31,7 +31,6 @@ class AuthController extends Controller
         }
 
         try {
-
             # Retrieve the user by username, email, or phone
             $user = User::where('email', $request->email)
                 ->first();
@@ -84,8 +83,9 @@ class AuthController extends Controller
     public function getProfile()
     {
         try {
-            $user = Auth::user();
-            return $this->actionSuccess('Profile show successfully.', $user);
+            $user_id = Auth::user()->uuid;
+            $user = User::where('uuid', $user_id)->with('roles')->first();
+            return $this->actionSuccess('Profile retrieved successfully.', $user);
         } catch (\Exception $e) {
             createExceptionError($e, self::CONTROLLER_NAME, __FUNCTION__);
             return $this->actionFailure($e->getMessage());

@@ -46,7 +46,7 @@
                     </template>
 
                     <template #item.role="{ item }">
-                        <template v-if="item.roleSelectOptionShow && $can('users', 'edit-user')">
+                        <template v-if="item.roleSelectOptionShow && $can('user', 'edit')">
                             <VSelect v-model="item.role_ids" :items="roleList" multiple label="Select Role"
                                 item-title="name" item-value="id" @blur="userRoleUpdate(item)" />
                         </template>
@@ -56,8 +56,7 @@
                                     <template v-slot:activator="{ props }">
                                         <VChip v-if="i == 0" v-bind="props" class="ml-1" :color="'success'"
                                             variant="tonal" @dblclick="dbClickShowRoleOption(item)">
-                                            {{ role.name }} {{ item.roles.length > 1 ? `+ ${item.roles.length - 1} more`
-                                                : '' }}
+                                            {{ role.name }} {{ item.roles.length > 1 ? `+ ${item.roles.length - 1} more` : '' }}
                                         </VChip>
                                     </template>
                                     Double click to update role
@@ -200,7 +199,6 @@ const getUserList = async () => {
 
         userList.value = data.map((user) => {
             const role_ids = Array.isArray(user.roles) ? user.roles.map(role => role.id) : [];
-
             return {
                 ...user,
                 roleSelectOptionShow: role_ids.length > 0 ? false : true,

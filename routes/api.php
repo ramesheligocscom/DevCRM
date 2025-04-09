@@ -11,6 +11,7 @@ Route::get('/dropdown-user-list', [UserController::class, 'dropdownUserList'])->
 Route::post('/update-password/{user_id}', [UserController::class, 'updatePassword'])->name('update-password');
 
 Route::middleware(['auth:sanctum'])->group(function () {
+    Route::get('/profile', [AuthController::class, 'getProfile']);
     # User api Name
     Route::group(['prefix' => 'user'], function () {
         Route::get('/', [UserController::class, 'index'])->name('user.index');

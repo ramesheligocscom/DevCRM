@@ -1,31 +1,33 @@
 <script setup>
-import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
+import { panelDetails } from "@layouts/stores/panel";
+import { storeToRefs } from "pinia";
+import { useRouter } from 'vue-router';
+import { PerfectScrollbar } from 'vue3-perfect-scrollbar';
 
-const router = useRouter()
-const ability = useAbility()
+const router = useRouter();
 
-// TODO: Get type from backend
-const userData = useCookie('userData')
+const user = useCookie('userData')
+const panelStore = panelDetails();
+const { getUserDetails } = panelStore;
+const { getUserPermission } = panelStore;
+getUserDetails();
+getUserPermission();
+const { userInfo } = storeToRefs(panelStore);
 
 const logout = async () => {
+  try {
+    await $api(`/logout`, { onResponseError({ response }) { errors.value = response._data.errors; }, });
+    useCookie("userAbilityRules").value = null;
+    useCookie("accessToken").value = null;
+    user.value = null;
+  } catch (err) {
+    console.error(err);
+    useCookie("userAbilityRules").value = null;
+    useCookie("accessToken").value = null;
+  }
 
-  // Remove "accessToken" from cookie
-  useCookie('accessToken').value = null
-
-  // Remove "userData" from cookie
-  userData.value = null
-
-  // Redirect to login page
-  await router.push('/login')
-
-  // ℹ️ We had to remove abilities in then block because if we don't nav menu items mutation is visible while redirecting user to login page
-
-  // Remove "userAbilities" from cookie
-  useCookie('userAbilityRules').value = null
-
-  // Reset ability to initial ability
-  ability.update([])
-}
+  router.replace("/login");
+};
 
 const userProfileList = [
   { type: 'divider' },
@@ -77,8 +79,9 @@ const userProfileList = [
 </script>
 
 <template>
+  {{ userInfo }}
   <VBadge
-    v-if="userData"
+    v-if="user"
     dot
     bordered
     location="bottom right"
@@ -89,12 +92,12 @@ const userProfileList = [
     <VAvatar
       size="38"
       class="cursor-pointer"
-      :color="!(userData && userData.avatar) ? 'primary' : undefined"
-      :variant="!(userData && userData.avatar) ? 'tonal' : undefined"
+      :color="!(user && user.avatar) ? 'primary' : undefined"
+      :variant="!(user && user.avatar) ? 'tonal' : undefined"
     >
       <VImg
-        v-if="userData && userData.avatar"
-        :src="userData.avatar"
+        v-if="user && user.avatar"
+        :src="user.avatar"
       />
       <VIcon
         v-else
@@ -121,12 +124,12 @@ const userProfileList = [
                   bordered
                 >
                   <VAvatar
-                    :color="!(userData && userData.avatar) ? 'primary' : undefined"
-                    :variant="!(userData && userData.avatar) ? 'tonal' : undefined"
+                    :color="!(user && user.avatar) ? 'primary' : undefined"
+                    :variant="!(user && user.avatar) ? 'tonal' : undefined"
                   >
                     <VImg
-                      v-if="userData && userData.avatar"
-                      :src="userData.avatar"
+                      v-if="user && user.avatar"
+                      :src="user.avatar"
                     />
                     <VIcon
                       v-else
@@ -138,10 +141,11 @@ const userProfileList = [
 
               <div>
                 <h6 class="text-h6 font-weight-medium">
-                  {{ userData.fullName || userData.username }}
+                  {{ user.name || user.user_name }} 
                 </h6>
                 <VListItemSubtitle class="text-capitalize text-disabled">
-                  {{ userData.role }}
+                  {{ userInfo.roles }}
+                 <div v-for="role in userInfo ? userInfo.roles : user.roles" :key="role.id" > {{ role.name }}</div>
                 </VListItemSubtitle>
               </div>
             </div>

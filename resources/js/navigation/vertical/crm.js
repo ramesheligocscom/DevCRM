@@ -49,6 +49,13 @@ const menuItems = [
     to: 'invoice-list',
     permission: { action: 'invoice', subject: 'view' },
   },
+  {
+    title: 'Product/Services',
+    icon: { icon: 'tabler-user-circle' },
+    to: 'product-service-list',
+    permission: { action: 'invoice', subject: 'view' },
+  },
+
 ];
 
 const list = () => {

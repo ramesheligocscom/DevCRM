@@ -149,6 +149,23 @@ class ArrayListConst
               ['title' => 'Action', 'key' => 'action', 'sortable' => false, 'align' => 'center', 'checked' => true],
             ]
           ],
+
+          # Product/Service List Sidebar Menu 
+          [
+            'title' => 'Product/Service List',
+            'slug' => 'product-service-list',
+            'table' => 'product_services',
+            'headers' => [
+                ['title' => 'Name', 'key' => 'name', 'sortable' => true, 'align' => 'left', 'minWidth' => '140px', 'checked' => true],
+                ['title' => 'Price', 'key' => 'price', 'sortable' => true, 'align' => 'left', 'checked' => true],
+                // ['title' => 'Attributes', 'key' => 'attributes', 'sortable' => false, 'align' => 'left', 'checked' => true],
+                ['title' => 'Created At', 'key' => 'created_at', 'sortable' => true, 'align' => 'left', 'checked' => true],
+                ['title' => 'Created By', 'key' => 'created_by', 'sortable' => true, 'align' => 'left', 'checked' => true],
+                ['title' => 'Updated At', 'key' => 'updated_at', 'sortable' => true, 'align' => 'left', 'checked' => true],
+                ['title' => 'Last Updated By', 'key' => 'updated_at', 'sortable' => true, 'align' => 'left', 'checked' => true],
+                ['title' => 'Action', 'key' => 'action', 'sortable' => false, 'align' => 'center', 'checked' => true],
+            ]
+          ],
           
     ];
 }

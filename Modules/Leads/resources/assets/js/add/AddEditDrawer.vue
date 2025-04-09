@@ -31,8 +31,6 @@ const lead = ref({
   source: '',
   assigned_user: '',
   note: '',
-  visit_assignee: '',
-  visit_time: '',
   client_id: '',
   quotation_id: '',
   contract_id: '',
@@ -52,8 +50,6 @@ const resetForm = () => {
     source: '',
     assigned_user: '',
     note: '',
-    visit_assignee: '',
-    visit_time: '',
     client_id: '',
     quotation_id: '',
     contract_id: '',
@@ -194,15 +190,6 @@ const onSubmit = async () => {
 
               <VCol cols="12">
                 <AppTextField v-model="lead.note" label="Note" placeholder="Additional information" />
-              </VCol>
-
-              <VCol cols="12">
-                <AppSelect v-model="lead.visit_assignee" :items="[]" label="Visit Assignee*"
-                  placeholder="Employee Name" />
-              </VCol>
-
-              <VCol cols="12">
-                <AppTextField v-model="lead.visit_time" label="Visit Time*" type="datetime-local" />
               </VCol>
 
               <VCol cols="12">

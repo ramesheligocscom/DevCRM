@@ -32,9 +32,8 @@ class LeadStoreRequest extends FormRequest
                 'max:32',
             ],
             'source' => 'nullable|string|max:64',
-            // 'assigned_user' => 'required|uuid|exists:users,id',
+            'assigned_user' => 'nullable|uuid|exists:users,id',
             'note' => 'nullable|string',
-            // 'visit_assignee' => 'nullable|uuid|exists:users,id',
             'visit_time' => 'nullable|date',
         ];
     }
@@ -44,7 +43,6 @@ class LeadStoreRequest extends FormRequest
         return [
             'email.unique' => 'This email is already associated with another lead',
             'assigned_user.exists' => 'The selected user does not exist',
-            'visit_assignee.exists' => 'The selected visit assignee does not exist',
             'status.in' => 'Invalid status value'
         ];
     }

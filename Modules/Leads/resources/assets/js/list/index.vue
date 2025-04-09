@@ -64,7 +64,9 @@ const openDeleteDialog = (item) => {
   isDeleteDialogOpen.value = true;
 }
 
-fetchLeads();
+const refresh = (item) => {
+  fetchLeads();
+}
 
 const makeDateFormat = (date , onlyDate = false) => {
     if(onlyDate)
@@ -120,10 +122,6 @@ const makeDateFormat = (date , onlyDate = false) => {
          <!-- assigned_user -->
          <template #item.assigned_user="{ item }">
           {{ item.assigned_user?.name || '-' }}
-        </template>
-         <!-- visit_assignee -->
-         <template #item.visit_assignee="{ item }">
-          {{ item.visit_assignee?.name || '-' }}
         </template>
         <!-- status -->
         <template #item.status="{ item }">

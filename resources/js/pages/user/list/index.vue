@@ -45,6 +45,26 @@
                         </div>
                     </template>
 
+                    <template #item.role="{ item }">
+                        <template v-if="item.roleSelectOptionShow && $can('users', 'edit-user')">
+                            <VSelect v-model="item.role_ids" :items="roleList" multiple label="Select Role"
+                                item-title="name" item-value="id" @blur="userRoleUpdate(item)" />
+                        </template>
+                        <template v-else>
+                            <template v-for="(role, i) in item.roles" :key="role.id">
+                                <v-tooltip location="left">
+                                    <template v-slot:activator="{ props }">
+                                        <VChip v-if="i == 0" v-bind="props" class="ml-1" :color="'success'"
+                                            variant="tonal" @dblclick="dbClickShowRoleOption(item)">
+                                            {{ role.name }} {{ item.roles.length > 1 ? `+ ${item.roles.length - 1} more`
+                                                : '' }}
+                                        </VChip>
+                                    </template>
+                                    Double click to update role
+                                </v-tooltip>
+                            </template>
+                        </template>
+                    </template>
 
                     <!-- Action -->
                     <template #item.action="{ item }">
@@ -241,7 +261,7 @@ const userRoleUpdate = async (item) => {
     }
 
     const payload = {
-        user_id: item.id,
+        user_id: item.uuid,
         role_ids: item.role_ids,
     };
 

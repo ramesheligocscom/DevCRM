@@ -315,7 +315,6 @@ class UserController extends Controller
         try {
             $user = User::withTrashed()->where('uuid', $request->user_id)->first();
             $roleIds = Role::whereIn('id', $request->role_ids)->pluck('id')->toArray();
-
             $user->roles()->sync($roleIds);
             DB::commit();
             $info = User::where('uuid', $request->user_id)->with('roles')->first();
@@ -331,7 +330,6 @@ class UserController extends Controller
     # Delete, Restore, Force Delete
     public function destroy(Request $request)
     {
-        dd($request->action, $request->user_id);
         $validator = Validator::make(['action' => $request->action, 'uuid' => $request->user_id], [
             'action' => 'required|in:delete,restore,force_delete',
             'uuid' => 'required|exists:users,uuid',
@@ -346,7 +344,7 @@ class UserController extends Controller
             $action = $request->action;
             $user_id = $request->user_id;
 
-            $user = User::withTrashed()->findOrFail($user_id);
+            $user = User::withTrashed()->where('uuid', $user_id)->first();
             switch ($action) {
                 case 'delete':
                     $user->status = 'In-Active';

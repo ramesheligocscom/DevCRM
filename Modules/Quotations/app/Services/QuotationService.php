@@ -17,9 +17,13 @@ class QuotationService
         ?string $createdBy = null,
         ?string $lastUpdatedBy = null
     ): LengthAwarePaginator {
-        return Quotation::query()
-            ->when($withTrashed, fn($q) => $q->withTrashed())
-            ->when($status, fn($q) => $q->where('status', $status))
+
+        $query = Quotation::query()->when($withTrashed, fn($q) => $q->withTrashed());
+
+        # ✅ Apply custom filtering from the helper
+        $query = applyFilteringUser($query, 'created_by');
+
+        return $query->when($status, fn($q) => $q->where('status', $status))
             ->when($clientId, fn($q) => $q->where('client_id', $clientId))
             ->when($leadId, fn($q) => $q->where('lead_id', $leadId))
             ->when($contractId, fn($q) => $q->where('contract_id', $contractId))
@@ -76,7 +80,7 @@ class QuotationService
         $total = collect($items)->sum('total');
         $discount = collect($items)->sum('discount_amount');
         $tax = $subTotal * 0.15;
-        
+
 
         return [
             'sub_total' => $subTotal,

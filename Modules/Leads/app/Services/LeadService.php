@@ -20,9 +20,12 @@ class LeadService
         ?string $lastUpdatedBy = null,
     ): LengthAwarePaginator {
 
-        return Lead::query()
-            ->when($withTrashed, fn($q) => $q->withTrashed())
-            ->when($status, fn($q) => $q->where('status', $status))
+        $query = Lead::query()->when($withTrashed, fn($q) => $q->withTrashed());
+
+        # ✅ Apply custom filtering from the helper
+        $query = applyFilteringUser($query, 'assign_user');
+
+        return $query->when($status, fn($q) => $q->where('status', $status))
             ->when($assignedUser, fn($q) => $q->where('assigned_user', $assignedUser))
             ->when($clientId, fn($q) => $q->where('client_id', $clientId))
             ->when($quotationId, fn($q) => $q->where('quotation_id', $quotationId))
@@ -59,4 +62,3 @@ class LeadService
         $lead->delete();
     }
 }
-

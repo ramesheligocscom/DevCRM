@@ -71,13 +71,21 @@ class Install extends Command
     # 2. Optional - Clear Export Folder (if fresh)
     protected function clearExportsFolder()
     {
-        $exportPath = storage_path('app/public/exports');
+        $folders = [
+            'exports' => 'Exports folder',
+            'UserImages' => 'User Images folder',
+            // 'client/Images' => 'Client Images folder',
+        ];
 
-        if (File::exists($exportPath)) {
-            File::cleanDirectory($exportPath);
-            $this->info('🧹 Exports folder cleared successfully.');
-        } else {
-            $this->warn('⚠️ Exports folder does not exist, skipping...');
+        foreach ($folders as $folder => $label) {
+            $path = storage_path("app/public/{$folder}");
+
+            if (File::exists($path)) {
+                File::cleanDirectory($path);
+                $this->info("🧹 {$label} cleared successfully.");
+            } else {
+                $this->warn("⚠️ {$label} does not exist, skipping...");
+            }
         }
     }
 
@@ -148,8 +156,6 @@ class Install extends Command
         $this->call('config:cache');
         $this->call('optimize:clear');
     }
-
-
 
     # 8. Reverb Setup (Real-time Server)
     /**

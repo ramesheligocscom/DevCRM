@@ -33,10 +33,10 @@ class Notification extends Model
             $search = $filter['search'];
 
             $query->where(function ($que) use ($search) {
-                $que->where('title', 'like', "%{$search}%")->orWhere('module_type', 'like', "%{$search}%")
-                    ->orWhereHas('creator', fn($q) => $q->where('name', 'like', "%{$search}%"))
-                    ->orWhereHas('lead', fn($q) => $q->where('name', 'like', "%{$search}%"))
-                    ->orWhereHas('client', fn($q) => $q->where('name', 'like', "%{$search}%"));
+                $que->where('title', 'ILIKE', "%{$search}%")->orWhere('module_type', 'ILIKE', "%{$search}%")
+                    ->orWhereHas('creator', fn($q) => $q->where('name', 'ILIKE', "%{$search}%"))
+                    ->orWhereHas('lead', fn($q) => $q->where('name', 'ILIKE', "%{$search}%"))
+                    ->orWhereHas('client', fn($q) => $q->where('name', 'ILIKE', "%{$search}%"));
             });
         }
     }

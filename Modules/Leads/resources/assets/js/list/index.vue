@@ -41,6 +41,8 @@ const totalItems = ref(0)
 
 const fetchLeads = async () => {
   try {
+   
+
     const response = await $api(
       `/leads?search=${searchQuery.value ?? ""}&page=${page.value}&sort_key=${sortBy.value ?? ""}&sort_order=${orderBy.value ?? ""}&per_page=${itemsPerPage.value}`
     )

@@ -22,6 +22,7 @@ class SiteVisitService
 
     public function createVisit(array $data): SiteVisit
     {
+        $data['created_by'] = auth()->id(); // or auth()->user()->id
         return SiteVisit::create($data);
     }
 

@@ -14,9 +14,10 @@ class SiteVisitResource extends JsonResource
             'uuid' => $this->uuid,
             'visit_time' => $this->visit_time->toDateTimeString(),
             'visit_assignee' => $this->visit_assignee,
-            'assignee_name' => $this->whenLoaded('assignee', function () {
-                return $this->assignee->name;
-            }),
+            'assignee_name' => "test",
+            // 'assignee_name' => $this->whenLoaded('assignee', function () {
+            //     return $this->assignee->name;
+            // }),
             'created_at' => $this->created_at->toDateTimeString(),
             'created_by' => $this->created_by,
             'status' => $this->status,
@@ -29,12 +30,6 @@ class SiteVisitResource extends JsonResource
             'client_name' => $this->whenLoaded('client', function () {
                 return $this->client->name;
             }),
-            'links' => [
-                'self' => route('site-visits.show', $this->id),
-                'assignee' => $this->visit_assignee ? route('users.show', $this->visit_assignee) : null,
-                'lead' => $this->lead_id ? route('leads.show', $this->lead_id) : null,
-                'client' => $this->client_id ? route('clients.show', $this->client_id) : null,
-            ]
         ];
     }
 }

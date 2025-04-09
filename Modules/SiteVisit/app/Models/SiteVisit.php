@@ -31,18 +31,14 @@ class SiteVisit extends Model
         'client_id' => 'string'
     ];
 
-    public function assignee()
-    {
-        return $this->belongsTo(User::class, 'visit_assignee');
-    }
 
     public function lead()
     {
-        return $this->belongsTo(Lead::class);
+        return $this->belongsTo(\Modules\Clients\Models\Lead::class);
     }
 
     public function client()
     {
-        return $this->belongsTo(Client::class);
+        return $this->belongsTo(\Modules\Clients\Models\Client::class);
     }
 }

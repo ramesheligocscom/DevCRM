@@ -7,7 +7,7 @@ use Modules\SiteVisit\Services\SiteVisitService;
 use Illuminate\Http\JsonResponse;
 use Modules\SiteVisit\Http\Requests\{StoreSiteVisitRequest, UpdateSiteVisitRequest};
 use Modules\SiteVisit\Transformers\SiteVisitResource;
-
+use Symfony\Component\HttpFoundation\Response;
 class SiteVisitController extends Controller
 {
     protected $siteVisitService;
@@ -28,12 +28,12 @@ class SiteVisitController extends Controller
 
     public function store(StoreSiteVisitRequest $request): JsonResponse
     {
-        dd($request->validated());
         $visit = $this->siteVisitService->createVisit($request->validated());
+
         return response()->json([
+            'message' => __('Site visit created successfully'),
             'data' => new SiteVisitResource($visit),
-            'message' => 'Site visit created successfully'
-        ], 201);
+        ], Response::HTTP_CREATED);
     }
 
     public function show(string $id): JsonResponse

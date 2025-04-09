@@ -29,10 +29,10 @@ class StoreSiteVisitRequest extends FormRequest
             ],
             'visit_assignee' => [
                 'nullable',
-                'exists:users,id',
-                Rule::exists('users', 'id')->where(function ($query) {
-                    $query->where('is_active', true);
-                })
+                // 'exists:users,id',
+                // Rule::exists('users', 'id')->where(function ($query) {
+                //     $query->where('is_active', true);
+                // })
             ],
             'status' => [
                 'required',

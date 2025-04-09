@@ -1,176 +1,362 @@
 <script setup>
+import "@vuepic/vue-datepicker/dist/main.css";
+import dayjs from "dayjs";
+import Swal from "sweetalert2";
+import { computed, getCurrentInstance, ref } from "vue";
 import AddDrawer from './AddDrawer.vue';
 
-const searchQuery = ref('')
+const instance = getCurrentInstance();
+const $can = instance?.proxy?.$can;
 
-// Data table options
-const itemsPerPage = ref(10)
-const page = ref(1)
-const sortBy = ref()
+// State
+const searchQuery = ref("");
+const clients = ref([]);
 const currentClient = ref(null);
+const itemsPerPage = ref(10);
+const page = ref(1);
+const sortBy = ref();
+const orderBy = ref();
+const loading = ref(true);
+const filteredClients = ref([]);
+const clientCards = ref([]);
+const statusFilter = ref("active");
 const openClientModal = ref(false);
-const orderBy = ref()
+const openClientFilterModal = ref(false);
+const selectedClient = ref([]);
+const action_bulk = ref(null);
+const selectedCard = ref(0);
 
-const updateOptions = options => {
-  sortBy.value = options.sortBy[0]?.key
-  orderBy.value = options.sortBy[0]?.order
-}
+// Table headers configuration
+const tableHeaderSlug = ref('site-visit-list');
+const headers = ref([]);
+const getFilteredHeaderValue = async (headerList) => { headers.value = headerList; };
 
-const headers = [
-  {
-    title: 'Visit time',
-    key: 'visit_time',
-  },
-  {
-    title: 'visit_assignee',
-    key: 'visit_assignee',
-  },
-  {
-    title: 'created_at',
-    key: 'created_at',
-  },
-  {
-    title: 'created_by',
-    key: 'created_by',
-  },
-  {
-    title: 'status',
-    key: 'status',
-  },
-  {
-    title: 'lead_id',
-    key: 'lead_id',
-  },
-  {
-    title: 'client_id',
-    key: 'client_id',
-  },
-  {
-    title: 'visit_notes',
-    key: 'visit_notes',
-  },
-  {
-    title: 'Actions',
-    key: 'actions',
-    sortable: false,
-  },
-]
+const bulkAction = ref([]);
+const assignedToArray = ref([]);
 
-const resolveStatus = status => {
-  if (status === 'Delivered')
-    return { color: 'success' }
-  if (status === 'Out for Delivery')
-    return { color: 'primary' }
-  if (status === 'Ready to Pickup')
-    return { color: 'info' }
-  if (status === 'Dispatched')
-    return { color: 'warning' }
-}
+const dropdownUserList = async () => {
+  try {
+    const response = await $api(`/dropdown-user-list`);
+    bulkAction.value = [];
+    const userList = response.data || [];
+    if ($can('client', 'delete')) bulkAction.value.push({ id: "delete", name: "Delete" });
+    if ($can('client', 'assign-to')) bulkAction.value = [...bulkAction.value, ...userList];
 
-const {
-  data: ordersData,
-  execute: fetchOrders,
-} = await useApi(createUrl('/apps/ecommerce/orders', {
-  query: {
-    q: searchQuery,
-    page,
-    itemsPerPage,
-    sortBy,
-    orderBy,
-  },
-}))
+    assignedToArray.value = response.data;
+  } catch (error) {
+    console.error("dropdownUserList : " + error);
+  }
+};
 
+// Computed properties
+const searchedClients = computed(() => {
+  if (!searchQuery.value) return filteredClients.value;
 
+  const query = searchQuery.value.toLowerCase();
+  return filteredClients.value.filter(client => {
+    return (
+      (client.name && client.name.toLowerCase().includes(query)) ||
+      (client.email && client.email.toLowerCase().includes(query)) ||
+      (client.contact_person && client.contact_person.toLowerCase().includes(query)) ||
+      (client.phone && client.phone.toLowerCase().includes(query))
+    );
+  });
+});
+
+// Pagination
+const pagination = ref({
+  current_page: 1,
+  per_page: 10,
+  total: 0,
+  last_page: 1,
+});
+
+const fetchClients = async () => {
+  loading.value = true;
+
+  try {
+    const response = await $api(`/sitevisit?status=${statusFilter.value ?? ""}&per_page=${itemsPerPage.value}`);
+
+    filteredClients.value = response.data;
+    clients.value = response.data; // Store all clients for reference
+
+    pagination.value = {
+      current_page: response.meta.current_page,
+      per_page: response.meta.per_page,
+      total: response.meta.total,
+      last_page: response.meta.last_page,
+    };
+
+    clientCards.value = [
+      {
+        title: response.meta.total ?? 0,
+        text: "Total Clients",
+        color: "primary",
+        icon: "tabler-users",
+      },
+      {
+        title: response.data.filter(client => client.status === 'active').length ?? 0,
+        text: "Active",
+        color: "success",
+        icon: "tabler-users-plus",
+      },
+      {
+        title: response.data.filter(client => client.status !== 'active').length ?? 0,
+        text: "In Active",
+        color: "error",
+        icon: "tabler-user-up",
+      },
+    ];
+  } catch (error) {
+    console.error('Error fetching clients:', error);
+  } finally {
+    loading.value = false;
+  }
+};
 
 const editBranch = (item) => {
   currentClient.value = JSON.parse(JSON.stringify(item));
   openClientModal.value = true;
 };
 
+const resolveStatusVariant = (status) => {
+  if (status === "Active") return { color: "success", text: "Active" };
+  else if (status === "In Active") return { color: "error", text: "In Active" };
+  else return { color: "success", text: "Active" };
+};
 
-const orders = computed(() => ordersData.value?.orders || [])
-const totalOrder = computed(() => ordersData.value?.total || 0)
+const deleteClient = async (id) => {
+  try {
+    const { value: inputValue, isConfirmed } = await Swal.fire({
+      title: `Delete Client Info?`,
+      html: `<p style="color: #333; font-size: 14px; margin-top: -10px; margin-bottom: 15px;">
+               Are you sure you want to permanently delete <strong>record</strong>?
+             </p>
+             <label for="swal-input">
+               Type in <strong>"DELETE"</strong> to confirm
+             </label>
+             <input id="swal-input" class="swal2-input" placeholder="Type 'DELETE' to confirm" required />`,
+      focusConfirm: false,
+      showCancelButton: true,
+      confirmButtonText: 'Delete',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#d33',
+      didOpen: () => {
+        const input = document.getElementById('swal-input');
+        const confirmButton = Swal.getConfirmButton();
+        confirmButton.disabled = true;
 
-const deleteOrder = async id => {
-  await $api(`/apps/ecommerce/orders/${id}`, { method: 'DELETE' })
-  fetchOrders()
-}
+        input.addEventListener('input', () => {
+          confirmButton.disabled = input.value.trim() !== 'DELETE';
+        });
+      },
+      preConfirm: () => {
+        const input = document.getElementById('swal-input').value.trim();
+        if (input !== 'DELETE') {
+          Swal.showValidationMessage("You must type 'DELETE' to proceed.");
+          return false;
+        }
+        return { delete_text: input };
+      }
+    });
+
+    if (!isConfirmed) return;
+
+    const response = await $api(`/sitevisit/${id}`, { method: "DELETE" });
+    await Swal.fire({
+      title: response.message || "Deleted!",
+      text: "Client has been deleted.",
+      icon: "success",
+    });
+
+    fetchClients();
+  } catch (error) {
+    console.error("Error deleting Client:", error);
+    Swal.fire({
+      title: "Error",
+      text: "An error occurred while deleting the Client.",
+      icon: "error",
+    });
+  }
+};
+
+// Initial fetch
+dropdownUserList();
+fetchClients();
 </script>
 
 <template>
-  <VCard>
-    <VCardText>
-      <div class="d-flex justify-space-between align-center flex-nowrap w-100">
-        <!-- Left: Title -->
-        <h5 class="text-h5 mb-0">
-          Site Visits
-        </h5>
+  <section v-if="$can('client', 'view')">
+    <VCard class="mb-6">
+      <div class="d-flex justify-lg-space-between" style="margin: 20px">
+        <div>
+          <div class="text-h5">Site Visit</div>
+          <VChip v-for="(data, index) in SelectedFilterValue" :key="index" closable @click:close="removeFilter(index)"
+            style="font-size: x-small; height: 25px" class="mr-2">
+            {{ data }}
+          </VChip>
+        </div>
 
-        <!-- Right: Search + Filter Button Group -->
-        <div class="d-flex align-center gap-2">
-          <AppTextField v-model="searchQuery" placeholder="Search Order"
-            style="max-inline-size: 200px; min-inline-size: 200px;" />
+        <div class="d-flex gap-3">
+          <VSelect v-if="$can('client', 'assign-to') || $can('client', 'delete')" label="Bulk Action"
+            v-model="action_bulk" :items="bulkAction" item-title="name" item-value="id"
+            style="max-inline-size: 200px; min-inline-size: 200px; height: 39px"></VSelect>
 
-          <FilterBtn :menu-list="headers" @update:menuList="toggleHeaderVisibility" />
-          <VBtn rounded icon="tabler-plus" @click="openClientModal = true" />
+          <AppTextField v-model="searchQuery" placeholder="Search"
+            style="max-inline-size: 200px; min-inline-size: 200px" />
+
+          <VBtn class="search-icon-btn" @click="openClientFilterModal = !openClientFilterModal">
+            <VIcon icon="tabler-filter" />
+          </VBtn>
+
+          <VBtn v-if="$can('client', 'export-list')" @click="getClientExportList()" :loading="exportLoader"
+            :disabled="exportLoader">
+            <VIcon icon="tabler-file-spreadsheet" />
+            <VTooltip activator="parent" location="top">Export Client Data</VTooltip>
+          </VBtn>
+
+          <!-- Filter Header Btn FilterHeaderTableBtn -->
+          <FilterHeaderTableBtn :slug="tableHeaderSlug" @filterHeaderValue="getFilteredHeaderValue" />
+          <VBtn v-if="$can('client', 'create')" rounded icon="tabler-plus"
+            @click="openClientModal = true; currentClient = null" />
         </div>
       </div>
 
-    </VCardText>
+      <VDivider />
 
-    <VDivider />
-    <VDataTableServer v-model:items-per-page="itemsPerPage" v-model:page="page" :headers="headers" :items="orders"
-      item-value="id" :items-length="totalOrder" class="text-no-wrap" @update:options="updateOptions">
-      <!-- Order ID -->
-      <template #item.order="{ item }">
-        <RouterLink :to="{ name: 'apps-ecommerce-order-details-id', params: { id: item.order } }">
-          #{{ item.order }}
-        </RouterLink>
-      </template>
+      <!-- Loading spinner -->
+      <BaseSpinner class="d-flex" v-if="loading" />
 
-      <!-- Date -->
-      <template #item.date="{ item }">
-        {{ new Date(item.date).toDateString() }}
-      </template>
+      <!-- Client Data Table -->
+      <VDataTable v-else :items="searchedClients" :items-length="searchedClients.length"
+        :headers="headers.filter((header) => header.checked)" class="text-no-wrap" @update:options="updateOptions"
+        v-model:items-per-page="itemsPerPage" v-model:page="page" show-select v-model="selectedClient">
+        <!-- Name Column -->
+        <template #item.name="{ item }">
+          <v-tooltip location="top">
+            <template v-slot:activator="{ props }">
+              <RouterLink v-if="$can('client', 'show')" :to="`/admin/api/clients/view/${item.id}`" class="custom-link"
+                v-bind="props">
+                <VList class="card-list">
+                  <VListItem>
+                    <VListItemTitle class="font-weight-medium me-4">
+                      <u>{{ item.name }}</u>
+                    </VListItemTitle>
+                    <VListItemSubtitle class="me-4">
+                      {{ item.email }}
+                    </VListItemSubtitle>
+                  </VListItem>
+                </VList>
+              </RouterLink>
+              <VList class="card-list" v-else>
+                <VListItem>
+                  <VListItemTitle class="font-weight-medium me-4">
+                    <u>{{ item.name }}</u>
+                  </VListItemTitle>
+                  <VListItemSubtitle class="me-4">
+                    {{ item.email }}
+                  </VListItemSubtitle>
+                </VListItem>
+              </VList>
+            </template>
+            <span>{{ item.name.split(" - (")[0] }}</span>
+          </v-tooltip>
+        </template>
 
-      <!-- Status -->
-      <template #item.status="{ item }">
-        <VChip label :color="resolveStatus(item.status)?.color" size="small">
-          {{ item.status }}
-        </VChip>
-      </template>
+        <!-- Contact Person Column -->
+        <template #item.contact_person="{ item }">
+          {{ item.contact_person || "Not Available" }}
+        </template>
 
-      <!-- Spent -->
-      <template #item.spent="{ item }">
-        ${{ item.spent }}
-      </template>
+        <!-- Phone Column -->
+        <template #item.phone="{ item }">
+          {{ item.phone ? item.phone.substring(0, 5) + "-" + item.phone.substring(5) : "" }}
+        </template>
 
-      <!-- Actions -->
-      <template #item.actions="{ item }">
-        <IconBtn>
-          <VIcon icon="tabler-dots-vertical" />
-          <VMenu activator="parent">
-            <VList>
-              <VListItem value="view" :to="{ name: 'apps-ecommerce-order-details-id', params: { id: item.order } }">
-                View
-              </VListItem>
-              <VListItem value="delete" @click="deleteOrder(item.id)">
-                Delete
-              </VListItem>
-            </VList>
-          </VMenu>
-        </IconBtn>
-      </template>
+        <!-- Assign To Column -->
+        <template #item.assigned_to="{ item }">
+          <VSelect v-if="item.assigned_to == null && $can('client', 'assign-to')" :items="assignedToArray"
+            v-model="item.assigned_to" item-title="name" item-value="id"
+            @update:modelValue="(value) => onClientAssignUpdate(item, value)" label="Assigned To" />
+
+          <span v-else class="font-weight-medium" size="small" @dblclick="item.assigned_to = null" style="
+              justify-content: center !important;
+              min-width: 90% !important;
+            ">{{ item.assign_user ? item.assign_user.name : item.assigned_to }}
+          </span>
+        </template>
+
+        <!-- Status Column -->
+        <template #item.status="{ item }">
+          <VSelect v-if="item.status == null && $can('client', 'status-update')" :items="status"
+            v-model="leadStatusUpdate[item.id]" @update:modelValue="(value) => onStatusChange(item, value)"
+            label="Update Status" />
+
+          <VChip :color="resolveStatusVariant(item.status).color" class="font-weight-medium" size="small"
+            @dblclick="item.status = null" v-else style="
+              justify-content: center !important;
+              min-width: 90% !important;
+            ">
+            {{ resolveStatusVariant(item.status).text }}
+          </VChip>
+        </template>
+
+        <!-- Date Column -->
+        <template #item.created_at="{ item }">
+          {{ dayjs(item.created_at).format("DD/MM/YYYY") }}
+        </template>
+
+        <!-- Actions Column -->
+        <template #item.action="{ item }">
+          <IconBtn @click="editBranch(item)" v-if="$can('client', 'edit')">
+            <VIcon icon="tabler-pencil" />x
+          </IconBtn>
+
+          <RouterLink v-if="$can('client', 'show')" :to="{
+            name: 'site-visit',
+            params: { type: 'client', id: item.id }
+          }">
+
+            <VIcon color="secondary" icon="tabler-eye" />
+          </RouterLink>
+
+          <IconBtn v-if="$can('client', 'delete')" @click="deleteClient(item.id)">
+            <VIcon icon="tabler-trash" />
+          </IconBtn>
+        </template>
+
+        <!-- Pagination -->
+        <template #bottom>
+          <Pagination :pagination="pagination" :itemsPerPage="itemsPerPage" @update:itemsPerPage="itemsPerPage = $event"
+            @paginate="paginate" />
+        </template>
+      </VDataTable>
+    </VCard>
+
+    <!-- Client Add/Edit Drawer -->
+    <AddDrawer v-model:isDrawerOpen="openClientModal" :currentClient="currentClient" @submit="fetchClients"
+      v-if="openClientModal" :clients="clients" />
 
 
-      <!-- pagination -->
-      <template #bottom>
-        <TablePagination v-model:page="page" :items-per-page="itemsPerPage" :total-items="totalOrder" />
-      </template>
-    </VDataTableServer>
-  </VCard>
-
-  <!-- Client Add/Edit Drawer -->
-  <AddDrawer v-model:isDrawerOpen="openClientModal" :currentClient="currentClient" @submit="fetchClients"
-    v-if="openClientModal" :clients="clients" />
+  </section>
 </template>
+
+<style scoped>
+.industry_card {
+  padding: 30px;
+}
+
+.custom-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.custom-link:hover {
+  text-decoration: underline;
+  color: var(--v-theme-primary);
+}
+
+.highlighted-card {
+  border: 2px solid rgb(var(--v-theme-primary)) !important;
+}
+</style>

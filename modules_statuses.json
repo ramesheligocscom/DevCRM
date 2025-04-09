@@ -8,5 +8,6 @@
     "Quotations": true,
     "Invoices": true,
     "Custom": true,
-    "ProductService": true
+    "ProductService": true,
+    "Setting": true
 }

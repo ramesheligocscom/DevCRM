@@ -53,7 +53,10 @@ const openDeleteDialog = (item) => {
   isDeleteDialogOpen.value = true;
 }
 
-fetchContracts();
+const refresh = () => {
+  fetchContracts();
+}
+ 
 const makeDateFormat = (date , onlyDate = false) => {
     if(onlyDate)
     return moment(date).format('DD-MM-Y');
@@ -168,7 +171,7 @@ const makeDateFormat = (date , onlyDate = false) => {
     <!-- 👉 Confirm Dialog -->
     <ConfirmDialog v-model:isDialogVisible="isDeleteDialogOpen" confirm-title="Delete!"
       confirmation-question="Are you sure want to delete contract?" :currentItem="currentContract"
-      @submit="fetchContracts" :endpoint="`/contracts/${currentContract?.id}`" @close="isDeleteDialogOpen = false" />
+      @submit="refresh" :endpoint="`/contracts/${currentContract?.id}`" @close="isDeleteDialogOpen = false" />
 
   </div>
 </template>

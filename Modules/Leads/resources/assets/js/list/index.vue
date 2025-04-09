@@ -64,7 +64,9 @@ const openDeleteDialog = (item) => {
   isDeleteDialogOpen.value = true;
 }
 
+const refresh = () => {
   fetchLeads();
+}
 
 const makeDateFormat = (date , onlyDate = false) => {
     if(onlyDate)
@@ -155,10 +157,10 @@ const makeDateFormat = (date , onlyDate = false) => {
 
     <!-- 👉 Confirm Dialog -->
     <ConfirmDialog v-model:isDialogVisible="isDeleteDialogOpen" confirm-title="Delete!"
-      confirmation-question="Are you sure want to delete lead?" :currentItem="currentLead" @submit="fetchLeads"
+      confirmation-question="Are you sure want to delete lead?" :currentItem="currentLead" @submit="refresh"
       :endpoint="`/leads/${currentLead?.id}`" @close="isDeleteDialogOpen = false" />
 
-    <AddEditDrawer v-model:is-drawer-open="isAddEditDrawerOpen" :currentLead="currentLead" @submit="fetchLeads"
+    <AddEditDrawer v-model:is-drawer-open="isAddEditDrawerOpen" :currentLead="currentLead" @submit="refresh"
       @close="isAddEditDrawerOpen = false" />
   </div>
 </template>

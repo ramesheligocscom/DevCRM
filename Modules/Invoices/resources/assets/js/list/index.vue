@@ -53,7 +53,9 @@ const openDeleteDialog = (item) => {
   isDeleteDialogOpen.value = true;
 }
 
-fetchInvoices();
+const refresh = () => {
+  fetchInvoices();
+}
 const makeDateFormat = (date , onlyDate = false) => {
     if(onlyDate)
     return moment(date).format('DD-MM-Y');
@@ -162,7 +164,7 @@ const makeDateFormat = (date , onlyDate = false) => {
 
     <!-- 👉 Confirm Dialog -->
     <ConfirmDialog v-model:isDialogVisible="isDeleteDialogOpen" confirm-title="Delete!"
-      confirmation-question="Are you sure want to delete invoice?" :currentItem="currentInvoice" @submit="fetchInvoices"
+      confirmation-question="Are you sure want to delete invoice?" :currentItem="currentInvoice" @submit="refresh"
       :endpoint="`/invoices/${currentInvoice?.id}`" @close="isDeleteDialogOpen = false" />
 
   </div>

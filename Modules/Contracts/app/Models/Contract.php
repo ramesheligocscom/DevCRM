@@ -22,9 +22,9 @@ class Contract extends Model
         'tax',
         'total',
         'status',
-        'client_id',      // Kept as nullable reference
-        'quotation_id',   // Kept as nullable reference
-        'invoice_id',     // Kept as nullable reference
+        'client_id',       
+        'quotation_id',    
+        'invoice_id',      
         'created_by',
         'last_updated_by'
     ];
@@ -63,22 +63,6 @@ class Contract extends Model
         return $this->update(array_merge($attributes, [
             'last_updated_by' => auth()->user()->uuid,
         ]));
-    }
-
-    // Relationships (without foreign constraints)
-    public function client()
-    {
-        return $this->belongsTo(\Modules\Clients\Models\Client::class, 'client_id');
-    }
-
-    public function quotation()
-    {
-        return $this->belongsTo(\Modules\Quotations\Models\Quotation::class, 'quotation_id');
-    }
-
-    public function invoice()
-    {
-        return $this->belongsTo(\Modules\Invoices\Models\Invoice::class, 'invoice_id');
     }
 
     public function creator()

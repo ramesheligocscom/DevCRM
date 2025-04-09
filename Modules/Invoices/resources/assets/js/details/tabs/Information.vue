@@ -52,29 +52,13 @@ const quotationName = computed(() => props.InfoData.quotation?.quotation_number 
                 <span>{{ props.InfoData.updater?.name || '-' }}</span>
               </div>
             </VCol>
-
-            <VCol cols="12" md="4" lg="4">
+            <VCol cols="12" md="8" lg="8">
               <div class="d-flex align-center gap-x-2 mt-1">
-                <strong>Client:</strong>
-                <span>{{ clientName }}</span>
-              </div>
-            </VCol>
-
-            <VCol cols="12" md="4" lg="4">
-              <div class="d-flex align-center gap-x-2 mt-1">
-                <strong>Contract:</strong>
-                <span>{{ contractName }}</span>
-              </div>
-            </VCol>
-
-            <VCol cols="12" md="4" lg="4">
-              <div class="d-flex align-center gap-x-2 mt-1">
-                <strong>Quotation:</strong>
-                <span>{{ quotationName }}</span>
+                <strong>Description</strong>
+                <span>{{ props.InfoData.title || '-' }}</span>
               </div>
             </VCol>
           </VRow>
-
           <VDivider class="my-6" />
 
           <!-- SECTION Items -->

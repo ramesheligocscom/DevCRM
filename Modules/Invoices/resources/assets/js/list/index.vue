@@ -118,10 +118,6 @@ const makeDateFormat = (date , onlyDate = false) => {
           </VChip>
         </template>
 
-        <!-- valid_uptil -->
-        <template #item.valid_uptil="{ item }">
-          {{ item.valid_uptil }}
-        </template>
         <!-- invoice_type -->
         <template #item.invoice_type="{ item }">
           {{ item.invoice_type }}
@@ -142,18 +138,6 @@ const makeDateFormat = (date , onlyDate = false) => {
         <template #item.total="{ item }">
           ${{ item.total || 0 }}
         </template>
-        <!-- client -->
-        <template #item.client_id="{ item }">
-          {{ item.client?.name || '—' }}
-        </template>
-        <!-- contract -->
-        <template #item.contract_id="{ item }">
-          {{ item.contract?.title || '—' }}
-        </template>
-        <!-- quotation -->
-        <template #item.quotation_id="{ item }">
-          {{ item.quotation?.quotation_number || '—' }}
-        </template>
         <!-- creator -->
         <template #item.created_by="{ item }">
           {{ item.creator?.name || '—' }}
@@ -162,14 +146,13 @@ const makeDateFormat = (date , onlyDate = false) => {
         <template #item.last_updated_by="{ item }">
           {{ item.updater?.name || '—' }}
         </template>
-      
+        <!-- created_at -->
         <template #item.created_at="{ item }">
           {{ makeDateFormat(item.created_at )}}
         </template>
-
+        <!-- created_at -->
         <template #item.updated_at="{ item }">
           {{ item.updater ? makeDateFormat(item.updated_at ) : '-'}}
-
         </template>
         <template #bottom>
           <TablePagination v-model:page="page" :items-per-page="itemsPerPage" :total-items="totalItems" />

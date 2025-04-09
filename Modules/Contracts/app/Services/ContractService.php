@@ -11,20 +11,28 @@ class ContractService
         int $perPage = 15,
         bool $withTrashed = false,
         ?string $status = null,
-        ?string $clientId = null
+        ?string $clientId = null,
+        ?string $invoiceId = null,
+        ?string $quotationId = null,
+        ?string $createdBy = null,
+        ?string $lastUpdatedBy = null
     ): LengthAwarePaginator {
         return Contract::query()
             ->when($withTrashed, fn($q) => $q->withTrashed())
             ->when($status, fn($q) => $q->where('status', $status))
             ->when($clientId, fn($q) => $q->where('client_id', $clientId))
-            ->with(['client', 'quotation', 'invoice', 'creator', 'updater'])
+            ->when($invoiceId, fn($q) => $q->where('invoice_id', $invoiceId))
+            ->when($quotationId, fn($q) => $q->where('quotation_id', $quotationId))
+            ->when($createdBy, fn($q) => $q->where('created_by', $createdBy))
+            ->when($lastUpdatedBy, fn($q) => $q->where('last_updated_by', $lastUpdatedBy))
+            ->with(['creator', 'updater'])
             ->latest()
             ->paginate($perPage);
     }
-
+ 
     public function getContractById(string $id): Contract
     {
-        return Contract::with(['client', 'quotation', 'invoice', 'creator', 'updater'])
+        return Contract::with(['creator', 'updater'])
             ->findOrFail($id);
     }
 

@@ -1,12 +1,8 @@
 <script setup>
 import moment from 'moment'
 import { toast } from 'vue3-toastify'
-import Clients from './tabs/Clients.vue'
-import FollowUps from './tabs/FollowUps.vue'
 import Information from './tabs/Information.vue'
-import Quotations from './tabs/Quotations.vue'
-import SiteVisits from './tabs/SiteVisits.vue'
-const route = useRoute('lead-details-id')
+const route = useRoute()
 const InfoData = ref()
 const tab = ref(null)
 
@@ -14,22 +10,6 @@ const tabs = [
  {
     title: 'Information',
     icon: 'tabler-user',
-  },
-  {
-    title: 'Clients',
-    icon: 'tabler-user',
-  },
-  {
-    title: 'Quotations',
-    icon: 'tabler-lock',
-  },
-  {
-    title: 'Follow Ups',
-    icon: 'tabler-map-pin',
-  },
-  {
-    title: 'Site Visits',
-    icon: 'tabler-bell',
   },
 ]
 
@@ -79,18 +59,6 @@ const makeDateFormat = (date , onlyDate = false) => {
         <VWindow v-model="tab" class="disable-tab-transition" :touch="false">
           <VWindowItem>
             <Information :InfoData="InfoData" />
-          </VWindowItem>
-          <VWindowItem>
-            <Clients />
-          </VWindowItem>
-          <VWindowItem>
-            <SiteVisits />
-          </VWindowItem>
-          <VWindowItem>
-            <FollowUps />
-          </VWindowItem>
-          <VWindowItem>
-            <Quotations />
           </VWindowItem>
         </VWindow>
       </VCol>

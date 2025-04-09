@@ -134,18 +134,6 @@ const makeDateFormat = (date , onlyDate = false) => {
         <template #item.total="{ item }">
           ${{ item.total || 0 }}
         </template>
-        <!-- client -->
-        <template #item.client_id="{ item }">
-          {{ item.client?.name || '—' }}
-        </template>
-        <!-- quotation -->
-        <template #item.quotation_id="{ item }">
-          {{ item.quotation?.quotation_number || '—' }}
-        </template>
-        <!-- invoice -->
-        <template #item.invoice_id="{ item }">
-          {{ item.invoice?.invoice_number || '—' }}
-        </template>
         <!-- creator -->
         <template #item.created_by="{ item }">
           {{ item.creator?.name || '—' }}
@@ -154,19 +142,19 @@ const makeDateFormat = (date , onlyDate = false) => {
         <template #item.last_updated_by="{ item }">
           {{ item.updater?.name || '-' }}
         </template>
-       
+        <!-- start_date -->
         <template #item.start_date="{ item }">
           {{ item.start_date ? makeDateFormat(item.start_date, true) : '-'}}
         </template>
-
+        <!-- end_date -->
         <template #item.end_date="{ item }">
           {{ item.end_date ? makeDateFormat(item.end_date, true) : '-'}}
         </template>
-        
+        <!-- created_at -->
         <template #item.created_at="{ item }">
           {{ makeDateFormat(item.created_at )}}
         </template>
-
+        <!-- updated_at -->
         <template #item.updated_at="{ item }">
           {{ item.updater ? makeDateFormat(item.updated_at ) : '-'}}
 

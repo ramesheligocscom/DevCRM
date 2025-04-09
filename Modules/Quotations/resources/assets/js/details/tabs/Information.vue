@@ -1,6 +1,5 @@
 <script setup>
 import moment from 'moment';
-import { computed } from 'vue';
 
 const props = defineProps({
   InfoData: {
@@ -8,10 +7,6 @@ const props = defineProps({
     required: true,
   },
 })
-
-const clientName = computed(() => props.InfoData.client?.name || `-`)
-const quotationName = computed(() => props.InfoData.quotation?.quotation_number || `-`)
-const invoiceName = computed(() => props.InfoData.invoice?.invoice_number || `-`)
 
 const makeDateFormat = (date , onlyDate = false) => {
     if(onlyDate)
@@ -75,26 +70,6 @@ const makeDateFormat = (date , onlyDate = false) => {
               </div>
             </VCol>
 
-            <VCol cols="12" md="4" lg="4">
-              <div class="d-flex align-center gap-x-2 mt-1">
-                <strong>Client:</strong>
-                <span>{{ clientName }}</span>
-              </div>
-            </VCol>
-
-            <VCol cols="12" md="4" lg="4">
-              <div class="d-flex align-center gap-x-2 mt-1">
-                <strong>Quotation:</strong>
-                <span>{{ quotationName }}</span>
-              </div>
-            </VCol>
-
-            <VCol cols="12" md="4" lg="4">
-              <div class="d-flex align-center gap-x-2 mt-1">
-                <strong>Invoice:</strong>
-                <span>{{ invoiceName }}</span>
-              </div>
-            </VCol>
             <VCol cols="12" md="12" lg="12">
               <div class="d-flex align-center gap-x-2 mt-1">
                 <strong>Custom Header Text:</strong>

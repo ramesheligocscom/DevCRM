@@ -11,20 +11,28 @@ class InvoiceService
         int $perPage = 15,
         bool $withTrashed = false,
         ?string $status = null,
-        ?string $clientId = null
+        ?string $clientId = null,
+        ?string $contractId = null,
+        ?string $quotationId = null,
+        ?string $createdBy = null,
+        ?string $lastUpdatedBy = null
     ): LengthAwarePaginator {
         return Invoice::query()
             ->when($withTrashed, fn($q) => $q->withTrashed())
             ->when($status, fn($q) => $q->where('status', $status))
             ->when($clientId, fn($q) => $q->where('client_id', $clientId))
-            ->with(['client', 'contract', 'quotation','creator', 'updater'])
+            ->when($contractId, fn($q) => $q->where('contract_id', $contractId))
+            ->when($quotationId, fn($q) => $q->where('quotation_id', $quotationId))
+            ->when($createdBy, fn($q) => $q->where('created_by', $createdBy))
+            ->when($lastUpdatedBy, fn($q) => $q->where('last_updated_by', $lastUpdatedBy))
+            ->with(['creator', 'updater'])
             ->latest()
             ->paginate($perPage);
     }
 
     public function getInvoiceById(string $id): Invoice
     {
-        return Invoice::with(['client', 'contract', 'quotation', 'creator', 'updater'])
+        return Invoice::with([ 'creator', 'updater'])
             ->findOrFail($id);
     }
 

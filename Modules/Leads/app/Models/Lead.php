@@ -72,27 +72,6 @@ class Lead extends Model
         ]);
     }
 
-
-    public function client()
-    {
-        return $this->belongsTo(\Modules\Clients\Models\Client::class);
-    }
-
-    public function quotation()
-    {
-        return $this->belongsTo(\Modules\Clients\Models\Client::class);
-    }
-    
-    public function contract()
-    {
-        return $this->belongsTo(\Modules\Clients\Models\Client::class);
-    }
-    
-    public function invoice()
-    {
-        return $this->belongsTo(\Modules\Clients\Models\Client::class);
-    }
-
     public function creator()
     {
         return $this->belongsTo(\App\Models\User::class, 'created_by' , 'uuid');
@@ -105,11 +84,11 @@ class Lead extends Model
 
     public function assignedUser()
     {
-        return $this->belongsTo(\App\Models\User::class, 'assigned_user');
+        return $this->belongsTo(\App\Models\User::class, 'assigned_user' , 'uuid');
     }
 
     public function visitAssignee()
     {
-        return $this->belongsTo(\App\Models\User::class, 'visit_assignee');
+        return $this->belongsTo(\App\Models\User::class, 'visit_assignee' , 'uuid');
     }
 }

@@ -17,19 +17,12 @@ const isLoading = ref(false)
 let isSubmitting = false
 
 const record = ref({
-  // invoice_number: '',
   title: '',
   description: '',
-  // sub_total: 0,
-  // discount: 0,
-  // tax: 0,
-  // total: 0,
   status: '',
   items: [],
   client_id: '',
   contract_id: '',
-  // created_by: '',
-  // last_updated_by: '',
 })
 
 // Generate a new empty item

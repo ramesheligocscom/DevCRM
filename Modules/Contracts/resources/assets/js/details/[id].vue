@@ -1,13 +1,9 @@
 <script setup>
 import moment from 'moment';
-import Clients from './tabs/Clients.vue';
-import Information from './tabs/Information.vue';
-import Invoices from './tabs/Invoices.vue';
-import Quotations from './tabs/Quotations.vue';
-
 import { toast } from 'vue3-toastify';
+import Information from './tabs/Information.vue';
 
-const route = useRoute('contract-details-id')
+const route = useRoute()
 const InfoData = ref()
 const tab = ref(null)
 
@@ -15,19 +11,7 @@ const tabs = [
   {
     title: 'Information',
     icon: 'tabler-user',
-  },
-  {
-    title: 'Clients',
-    icon: 'tabler-user',
-  },
-  {
-    title: 'Quotations',
-    icon: 'tabler-lock',
-  },
-  {
-    title: 'Invoices',
-    icon: 'tabler-bell',
-  },
+  }
 ]
 
 try {
@@ -75,15 +59,6 @@ const makeDateFormat = (date , onlyDate = false) => {
         <VWindow v-model="tab" class="disable-tab-transition" :touch="false">
           <VWindowItem>
             <Information :InfoData="InfoData" />
-          </VWindowItem>
-          <VWindowItem>
-            <Clients />
-          </VWindowItem>
-          <VWindowItem>
-            <Invoices />
-          </VWindowItem>
-          <VWindowItem>
-            <Quotations />
           </VWindowItem>
         </VWindow>
       </VCol>

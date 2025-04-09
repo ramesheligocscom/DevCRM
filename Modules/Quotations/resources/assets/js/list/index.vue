@@ -145,18 +145,6 @@ const makeDateFormat = (date , onlyDate = false) => {
         <template #item.total="{ item }">
           ${{ item.total || 0 }}
         </template>
-        <!-- client -->
-        <template #item.client_id="{ item }">
-          {{ item.client?.name || '—' }}
-        </template>
-        <!-- contract -->
-        <template #item.contract_id="{ item }">
-          {{ item.contract?.title || '—' }}
-        </template>
-        <!-- lead -->
-        <template #item.lead_id="{ item }">
-          {{ item.lead?.name || '—' }}
-        </template>
         <!-- creator -->
         <template #item.created_by="{ item }">
           {{ item.creator?.name || '—' }}

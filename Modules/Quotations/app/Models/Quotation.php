@@ -57,22 +57,6 @@ class Quotation extends Model
         ]));
     }
 
-    // Relationships
-    public function lead()
-    {
-        return $this->belongsTo(\Modules\Leads\Models\Lead::class, 'lead_id');
-    }
-
-    public function client()
-    {
-        return $this->belongsTo(\Modules\Clients\Models\Client::class, 'client_id');
-    }
-
-    public function contract()
-    {
-        return $this->belongsTo(\Modules\Contracts\Models\Contract::class, 'contract_id');
-    }
-
     public function creator()
     {
         return $this->belongsTo(\App\Models\User::class, 'created_by' , 'uuid');

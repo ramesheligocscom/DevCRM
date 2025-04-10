@@ -23,8 +23,6 @@ class Lead extends Model
         'source',
         'assigned_user',
         'note',
-        'visit_assignee',
-        'visit_time',
         'created_by',
         'last_updated_by',
         'client_id',
@@ -86,9 +84,5 @@ class Lead extends Model
     {
         return $this->belongsTo(\App\Models\User::class, 'assigned_user' , 'uuid');
     }
-
-    public function visitAssignee()
-    {
-        return $this->belongsTo(\App\Models\User::class, 'visit_assignee' , 'uuid');
-    }
+ 
 }

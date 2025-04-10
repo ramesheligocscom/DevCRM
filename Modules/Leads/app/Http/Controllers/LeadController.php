@@ -25,7 +25,6 @@ class LeadController extends Controller
             $request->boolean('with_trashed'),
             $request->input('status'),
             $request->input('assigned_user'),
-            $request->input('visit_assignee'),
             $request->input('client_id'),
             $request->input('quotation_id'),
             $request->input('contract_id'),

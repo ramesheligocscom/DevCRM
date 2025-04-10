@@ -1,5 +1,6 @@
 <script setup>
 import moment from 'moment';
+import { toast } from 'vue3-toastify';
 
 import ConfirmDialog from '../dialog/ConfirmDialog.vue';
 const searchQuery = ref('')
@@ -53,7 +54,9 @@ const openDeleteDialog = (item) => {
   isDeleteDialogOpen.value = true;
 }
 
-fetchProductServices();
+const refresh = () => {
+  fetchProductServices();
+}
 const makeDateFormat = (date , onlyDate = false) => {
     if(onlyDate)
     return moment(date).format('DD-MM-Y');
@@ -168,7 +171,7 @@ const makeDateFormat = (date , onlyDate = false) => {
     <!-- 👉 Confirm Dialog -->
     <ConfirmDialog v-model:isDialogVisible="isDeleteDialogOpen" confirm-title="Delete!"
       confirmation-question="Are you sure want to delete product/service?" :currentItem="currentProductService"
-      @submit="fetchProductServices" :endpoint="`/product-services/${currentProductService?.id}`" @close="isDeleteDialogOpen = false" />
+      @submit="refresh" :endpoint="`/product-services/${currentProductService?.id}`" @close="isDeleteDialogOpen = false" />
 
   </div>
 </template>

@@ -9,5 +9,6 @@
     "Invoices": true,
     "Custom": true,
     "ProductService": true,
-    "Setting": true
+    "Setting": true,
+    "Dashboard": true
 }

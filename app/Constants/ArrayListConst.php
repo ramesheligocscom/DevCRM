@@ -70,8 +70,6 @@ class ArrayListConst
         ['title' => 'Source', 'key' => 'source', 'sortable' => true, 'align' => 'left', 'checked' => true],
         ['title' => 'Address', 'key' => 'address', 'sortable' => false, 'align' => 'left', 'checked' => true],
         ['title' => 'Assigned To', 'key' => 'assigned_user', 'sortable' => true, 'align' => 'left', 'checked' => true],
-        ['title' => 'Visit Assigned', 'key' => 'visit_assignee', 'sortable' => true, 'align' => 'left', 'checked' => true],
-        ['title' => 'Vite Time', 'key' => 'visit_time', 'sortable' => true, 'align' => 'left', 'checked' => true],
         ['title' => 'Lead Status', 'key' => 'status', 'sortable' => true, 'align' => 'left', 'checked' => true],
         ['title' => 'Created At', 'key' => 'created_at', 'sortable' => true, 'align' => 'left', 'checked' => true],
         ['title' => 'Created By', 'key' => 'created_by', 'sortable' => true, 'align' => 'left', 'checked' => true],

@@ -12,7 +12,6 @@ class LeadService
         bool $withTrashed = false,
         ?string $status = null,
         ?string $assignedUser = null,
-        ?string $visitAssigneeUser = null,
         ?string $clientId = null,
         ?string $quotationId = null,
         ?string $contractId = null,
@@ -28,21 +27,20 @@ class LeadService
 
         return $query->when($status, fn($q) => $q->where('status', $status))
             ->when($assignedUser, fn($q) => $q->where('assigned_user', $assignedUser))
-            ->when($visitAssigneeUser, fn($q) => $q->where('visit_assignee', $visitAssigneeUser))
             ->when($clientId, fn($q) => $q->where('client_id', $clientId))
             ->when($quotationId, fn($q) => $q->where('quotation_id', $quotationId))
             ->when($contractId, fn($q) => $q->where('contract_id', $contractId))
             ->when($invoiceId, fn($q) => $q->where('invoice_id', $invoiceId))
             ->when($createdBy, fn($q) => $q->where('created_by', $createdBy))
             ->when($lastUpdatedBy, fn($q) => $q->where('last_updated_by', $lastUpdatedBy))
-            ->with(['creator', 'updater', 'assignedUser', 'visitAssignee'])
+            ->with(['creator', 'updater' ,'assignedUser'])
             ->latest()
             ->paginate($perPage);
     }
 
     public function getLeadById(string $id): Lead
     {
-        return Lead::with(['assignedUser', 'visitAssignee', 'creator', 'updater'])
+        return Lead::with(['assignedUser', 'creator','updater'])
             ->findOrFail($id);
     }
 

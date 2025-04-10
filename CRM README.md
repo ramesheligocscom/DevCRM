@@ -2,7 +2,7 @@
 
 ## Vuexy Theme Integration
 We are using the Vuexy theme for the admin dashboard.
-- **Theme URL**: [Vuexy Vue.js Admin Template](https://demos.pixinvent.com/vuexy-vuejs-admin-template/demo-1/dashboard/index)
+- **Theme URL**: [Vuexy Vue.js Admin Template](https://demos.pixinvent.com/vuexy-vuejs-admin-template/demo-1/dashboards/crm)
 - **Upgrade**: Upgrading Laravel from version 11 to 12 within the theme.
 
 ## Laravel Modules

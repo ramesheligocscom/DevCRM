@@ -1,5 +1,6 @@
 <script setup>
 import moment from 'moment'
+import { toast } from 'vue3-toastify'
 import AddEditDrawer from '../add/AddEditDrawer.vue'
 import ConfirmDialog from '../dialog/ConfirmDialog.vue'
 const searchQuery = ref('')
@@ -66,7 +67,9 @@ const openDeleteDialog = (item) => {
   isDeleteDialogOpen.value = true;
 }
 
-fetchLeads();
+const refresh = () => {
+  fetchLeads();
+}
 
 const makeDateFormat = (date , onlyDate = false) => {
     if(onlyDate)
@@ -123,10 +126,6 @@ const makeDateFormat = (date , onlyDate = false) => {
          <template #item.assigned_user="{ item }">
           {{ item.assigned_user?.name || '-' }}
         </template>
-         <!-- visit_assignee -->
-         <template #item.visit_assignee="{ item }">
-          {{ item.visit_assignee?.name || '-' }}
-        </template>
         <!-- status -->
         <template #item.status="{ item }">
           <VChip :color="resolveStatusVariant(item.status).color" size="small">
@@ -161,10 +160,10 @@ const makeDateFormat = (date , onlyDate = false) => {
 
     <!-- 👉 Confirm Dialog -->
     <ConfirmDialog v-model:isDialogVisible="isDeleteDialogOpen" confirm-title="Delete!"
-      confirmation-question="Are you sure want to delete lead?" :currentItem="currentLead" @submit="fetchLeads"
+      confirmation-question="Are you sure want to delete lead?" :currentItem="currentLead" @submit="refresh"
       :endpoint="`/leads/${currentLead?.id}`" @close="isDeleteDialogOpen = false" />
 
-    <AddEditDrawer v-model:is-drawer-open="isAddEditDrawerOpen" :currentLead="currentLead" @submit="fetchLeads"
+    <AddEditDrawer v-model:is-drawer-open="isAddEditDrawerOpen" :currentLead="currentLead" @submit="refresh"
       @close="isAddEditDrawerOpen = false" />
   </div>
 </template>

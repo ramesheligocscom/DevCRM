@@ -7,7 +7,6 @@ const props = defineProps({
 })
 
 const assignedUserName = computed(() => props.InfoData.assigned_user?.name || `-`)
-const visitAssigneeName = computed(() => props.InfoData.visit_assignee?.name || `-`)
 
 </script>
 
@@ -90,20 +89,6 @@ const visitAssigneeName = computed(() => props.InfoData.visit_assignee?.name || 
               <div class="d-flex align-center gap-x-2 mt-1">
                 <strong>Note:</strong>
                 <span>{{ props.InfoData.note || '-' }}</span>
-              </div>
-            </VCol> 
-
-            <VCol cols="12" md="4" lg="4">
-              <div class="d-flex align-center gap-x-2 mt-1">
-                <strong>Visit Assignee:</strong>
-                <span>{{ visitAssigneeName }}</span>
-              </div>
-            </VCol> 
-
-            <VCol cols="12" md="4" lg="4">
-              <div class="d-flex align-center gap-x-2 mt-1">
-                <strong>Visit Time:</strong>
-                <span>{{ props.InfoData.visit_time || '-' }}</span>
               </div>
             </VCol> 
 

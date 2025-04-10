@@ -32,9 +32,6 @@ return new class extends Migration
             $table->uuid('assigned_user')->nullable()->comment('User assigned to handle this lead');
             $table->text('note')->nullable()->comment('Additional notes about the lead');
 
-            // Visit information
-            $table->uuid('visit_assignee')->nullable()->comment('User assigned for site visit');
-            $table->timestampTz('visit_time')->nullable()->comment('Scheduled time for site visit');
 
             // Timestamps
             $table->uuid('created_by')->nullable()->comment('User who created the lead');

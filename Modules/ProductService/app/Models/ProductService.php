@@ -31,7 +31,10 @@ class ProductService extends Model
 
     public function scopeSearch($query, $searchTerm)
     {
-        return $query->where('name', 'like', "%{$searchTerm}%");
+        $term = strtolower($searchTerm);
+        return $query->where(function ($q) use ($term) {
+            $q->whereRaw('LOWER(name) LIKE ?', ["%{$term}%"]);
+        });
     }
 
     public function creator()

@@ -34,7 +34,7 @@ const credentials = ref({
 })
 
 const routeList = ref([
-  { route: '/dashboard', action: 'dashboard', slug: 'view' },
+  { route: '/dashboard/crm', action: 'dashboard', slug: 'view' },
   { route: '/leads', action: 'leads', slug: 'view' },
   { route: '/clients', action: 'client', slug: 'view' },
   { route: '/roles', action: 'role', slug: 'view' },
@@ -91,7 +91,7 @@ const login = async () => {
       if (allowedRoute) {
         window.location.href = allowedRoute.route;
       } else {
-        router.push("/leads");
+        router.push("/dashboard/crm");
       }
     } else {
       toast.error(response.message);

@@ -1,4 +1,6 @@
 <script setup>
+import { toast } from 'vue3-toastify';
+
 const props = defineProps({
   currentItem: {
     type: Object,
@@ -18,6 +20,18 @@ const props = defineProps({
   },
 })
 
+const confirmationText = ref('');
+const errorMessage = ref('');
+watch([() => confirmationText.value],
+  () => {
+    if (confirmationText.value !== 'DELETE') {
+      errorMessage.value = "You must type 'DELETE' exactly to confirm."
+      return
+    }
+    errorMessage.value = ''
+  }
+);
+
 const emit = defineEmits([
   'update:isDialogVisible',
   'confirm',
@@ -29,6 +43,11 @@ const updateModelValue = val => {
 }
 
 const onConfirmation = async () => {
+
+  if (confirmationText.value !== 'DELETE') {
+    errorMessage.value = "You must type 'DELETE' exactly to confirm."
+    return toast.error(errorMessage.value);
+  }
   try {
     await $api(`${props.endpoint}`, { method: "DELETE" })
     emit('confirm', true)
@@ -36,9 +55,7 @@ const onConfirmation = async () => {
     updateModelValue(false)
   } catch (error) {
     console.error("Failed to delete item:", error)
-    // Show error toast
-    toast.error(error.response?.data?.message || 'Failed to delete item')
-    updateModelValue(false)
+    // Optionally show toast here
   }
 }
 
@@ -62,6 +79,12 @@ const onCancel = () => {
         <h6 class="text-lg font-weight-medium">
           {{ props.confirmationQuestion }}
         </h6>
+        <label class="d-block mt-4 mb-2 text-body-2">
+          Type in <strong>"DELETE"</strong> to confirm
+        </label>
+
+        <VTextField v-model="confirmationText" placeholder="Type 'DELETE' to confirm" :error-messages="errorMessage"
+          dense outlined hide-details="auto" />
       </VCardText>
 
       <VCardText class="d-flex align-center justify-center gap-2">

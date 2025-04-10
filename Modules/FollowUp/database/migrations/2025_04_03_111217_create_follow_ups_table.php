@@ -32,19 +32,6 @@ return new class extends Migration
             $table->softDeletes(); // Adds a `deleted_at` column
             $table->timestamps(); 
 
-            // Foreign key constraints
-            $table->foreign('lead_id')
-                ->references('id')
-                ->on('leads')
-                ->onDelete('set null')
-                ->comment('Links to leads table');
-
-            $table->foreign('client_id')
-                ->references('id')
-                ->on('clients')
-                ->onDelete('set null')
-                ->comment('Links to clients table');
-
             // Indexes for better performance
             $table->index('call_status');
             $table->index('lead_prospect');

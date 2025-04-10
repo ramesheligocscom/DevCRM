@@ -12,6 +12,9 @@ import UserProfile from '../../pages/profile/UserProfile.vue'
 
 // @layouts plugin
 import { VerticalNavLayout } from '@layouts'
+
+import { useRoute } from 'vue-router'
+const route = useRoute()
 </script>
 
 <template>
@@ -54,6 +57,6 @@ import { VerticalNavLayout } from '@layouts'
     </template>
 
     <!-- 👉 Customizer -->
-    <TheCustomizer />
+    <TheCustomizer v-if="route.name == 'dashboard'"/>
   </VerticalNavLayout>
 </template>

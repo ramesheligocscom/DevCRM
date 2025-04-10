@@ -1,5 +1,3 @@
-
-
 <template>
   <!-- 👉 Profile Information -->
   <VForm @submit.prevent="handleSubmitForm" ref="form" v-model="valid">
@@ -17,16 +15,18 @@
             <app-textarea @input="formatAddress" label="Address" placeholder="Pixinvent" :rules="requiredRule"
               v-model="formData.address" rows="1" auto-grow />
           </VCol>
-        
-          <!-- File Input -->
+
+          <!-- File Input for="company_logo" -->
           <VCol cols="12" md="6">
-            <VFileInput label="Upload Images" prepend-icon="tabler-camera" @change="handleFileChange" />
+            <VLabel>Company logo</VLabel>
+            <VFileInput placeholder="Company logo" prepend-icon="tabler-camera" @change="handleFileChange" />
           </VCol>
 
           <!-- Image Preview -->
           <VCol cols="12" md="6">
             <div v-if="previewImage" class="d-flex">
-              <img :src="previewImage" alt="Preview" class="preview-img" style=" border-radius: 10px;inline-size: 150px;" />
+              <img :src="previewImage" alt="Preview" class="preview-img"
+                style=" border-radius: 10px;inline-size: 150px;" />
               <div class="cutBtn" @click="removeImage">X</div>
             </div>
           </VCol>
@@ -66,7 +66,15 @@ formData.value.name = setting.value.Company_name;
 formData.value.phone = setting.value.Phone;
 formData.value.address = setting.value.Address;
 formData.value.image = setting.value.company_logo;
-previewImage.value = BASE_URL + `/` + setting.value.company_logo;
+previewImage.value = setting.value.company_logo ? BASE_URL + `/` + setting.value.company_logo : null;
+
+watch([() => setting.value], () => {
+  formData.value.name = setting.value.Company_name;
+formData.value.phone = setting.value.Phone;
+formData.value.address = setting.value.Address;
+formData.value.image = setting.value.company_logo;
+previewImage.value = setting.value.company_logo ? BASE_URL + `/` + setting.value.company_logo : null;
+});
 
 // 👉 Update Profile
 const handleFileChange = async (event) => {
@@ -97,12 +105,16 @@ const handleSubmitForm = async () => {
       Phone: formData.value.phone,
       Address: formData.value.address,
       image: selectedFile.value,
+      is_delete: previewImage.value ? false : true,
     };
 
     const data = await $api(`/settings`, { method: "PUT", body: JSON.stringify(payload), headers: { "Content-Type": "application/json" }, });
-     console.log('handleSubmitForm  ' ,JSON.stringify(data));
+    await companyStore.$patch({ companyDetails: null });
     await companyStore.fetchCompanyDetails();
-    await nextTick(() => { toast.success(data?.message); });
+    console.log('handleSubmitForm  ', JSON.stringify(data));
+    await nextTick(() => {
+      toast.success("Settings updated successfully!");
+    });
   } catch (error) {
     console.log(error);
     toast.error("Something went wrong");

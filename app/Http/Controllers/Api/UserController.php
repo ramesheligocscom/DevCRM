@@ -148,6 +148,7 @@ class UserController extends Controller
                 $imageName = time() . '.jpg';
                 $directory = 'UserImages';
                 $imagePath = $directory . '/' . $imageName;
+                addStoragePermission("app/public/UserImages");
 
                 Storage::disk('public')->makeDirectory($directory, 0755, true, true);
                 Storage::disk('public')->put($imagePath, base64_decode($imageData));

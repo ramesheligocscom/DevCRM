@@ -9,13 +9,14 @@ use Illuminate\Database\Eloquent\Model;
 class AdminControlConfig extends Model
 {
     use HasFactory, HasUuids;
-    protected $table = "settings";
+    protected $table = "admin_control_configs";
     protected $fillable = [
         'invoice_footer_text',
         'contract_footer_text',
         'status_for',
         'status_text',
         'status_color',
-        'position'
+        'position',
+        'is_predefined',
     ];
 }

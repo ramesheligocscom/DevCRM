@@ -80,6 +80,7 @@ class UserSeeder extends Seeder
             $progressBar->advance();
         }
 
+
         $progressBar->finish();
         $output->writeln("\nUsers seeded and roles assigned successfully!");
     }

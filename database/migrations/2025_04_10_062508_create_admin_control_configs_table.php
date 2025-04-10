@@ -20,11 +20,13 @@ return new class extends Migration
             $table->string('status_text')->nullable();
             $table->string('status_color', 7)->nullable(); // Expecting hex code like #FF0000
             $table->integer('position')->default(1); // this column to work to way one way to status active inactive and scend position wise filter 0 or -1 active other wise active and 09 t greater to sort order
+            $table->boolean('is_predefined')->default(1)->comment('0-> Not (edit,Delete), 1-> (Delete,edit) Item');
             $table->timestamps();
         });
     }
 
     /**
+     * 
      * Reverse the migrations.
      */
     public function down(): void

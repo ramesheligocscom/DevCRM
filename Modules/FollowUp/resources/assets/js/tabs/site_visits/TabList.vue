@@ -164,23 +164,8 @@ fetchClients();
         </div>
 
         <div class="d-flex gap-3">
-          <VSelect v-if="$can('client', 'assign-to') || $can('client', 'delete')" label="Bulk Action"
-            v-model="action_bulk" :items="bulkAction" item-title="name" item-value="id"
-            style="max-inline-size: 200px; min-inline-size: 200px; height: 39px"></VSelect>
-
           <AppTextField v-model="searchQuery" placeholder="Search"
             style="max-inline-size: 200px; min-inline-size: 200px" />
-
-          <VBtn class="search-icon-btn" @click="openClientFilterModal = !openClientFilterModal">
-            <VIcon icon="tabler-filter" />
-          </VBtn>
-
-          <VBtn v-if="$can('client', 'export-list')" @click="getClientExportList()" :loading="exportLoader"
-            :disabled="exportLoader">
-            <VIcon icon="tabler-file-spreadsheet" />
-            <VTooltip activator="parent" location="top">Export Client Data</VTooltip>
-          </VBtn>
-
           <!-- Filter Header Btn FilterHeaderTableBtn -->
           <FilterHeaderTableBtn :slug="tableHeaderSlug" @filterHeaderValue="getFilteredHeaderValue" />
           <VBtn v-if="$can('client', 'create')" rounded icon="tabler-plus"
@@ -210,14 +195,23 @@ fetchClients();
           {{ item.created_at || '-' }}
         </template>
          <template #item.created_by="{ item }">
-          {{ item.created_by || '-' }}
+          {{ item.creator_name || '-' }}
         </template>
+
+        <template #item.updated_at="{ item }">
+          {{ item.updated_at || '-' }}
+        </template>
+        <template #item.updated_by="{ item }">
+          {{ item.updater_name || '-' }}
+        </template>
+     
+    
 
 
         <!-- Actions Column -->
         <template #item.action="{ item }">
           <IconBtn @click="editBranch(item)" v-if="$can('client', 'edit')">
-            <VIcon icon="tabler-pencil" />x
+            <VIcon icon="tabler-pencil" />
           </IconBtn>
 
           <RouterLink v-if="$can('client', 'show')" :to="{

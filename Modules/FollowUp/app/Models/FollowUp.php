@@ -60,11 +60,11 @@ class FollowUp extends Model
 
     public function creator()
     {
-        return $this->belongsTo(\App\Models\User::class, 'created_by');
+        return $this->belongsTo(\App\Models\User::class, 'created_by','uuid');
     }
 
     public function updater()
     {
-        return $this->belongsTo(\App\Models\User::class, 'last_updated_by');
+        return $this->belongsTo(\App\Models\User::class, 'last_updated_by','uuid');
     }
 }

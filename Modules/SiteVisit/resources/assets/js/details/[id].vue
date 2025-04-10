@@ -47,14 +47,6 @@ const handleTabChange = (tab) => {
           Aug 17, 2020, 5:48 (ET)
         </div>
       </div>
-      <div class="d-flex gap-4">
-        <VBtn variant="tonal" color="error">
-          Delete Clients
-        </VBtn>
-        <VBtn variant="tonal" color="primary" @click="isAddCustomerDrawerOpen = true">
-          Edit Clients
-        </VBtn>
-      </div>
     </div>
     <!-- 👉 Customer Profile  -->
     <VRow>

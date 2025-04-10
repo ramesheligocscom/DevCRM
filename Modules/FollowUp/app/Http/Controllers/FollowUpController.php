@@ -55,6 +55,7 @@ class FollowUpController extends Controller
     public function update(FollowUpUpdateRequest $request, string $id): JsonResponse
     {
         $followUp = $this->followUpService->updateFollowUp($id, $request->validated());
+        
         return response()->json([
             'data' => new FollowUpResource($followUp),
             'message' => 'Follow up updated successfully',

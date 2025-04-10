@@ -1,8 +1,7 @@
 <script setup>
 import "@vuepic/vue-datepicker/dist/main.css";
-import dayjs from "dayjs";
-import Swal from "sweetalert2";
 import { computed, getCurrentInstance, ref } from "vue";
+import ConfirmDialog from '../../dialog/ConfirmDialog.vue';
 import AddDrawer from './AddDrawer.vue';
 
 const instance = getCurrentInstance();
@@ -19,20 +18,29 @@ const orderBy = ref();
 const loading = ref(true);
 const filteredClients = ref([]);
 const clientCards = ref([]);
-const statusFilter = ref("active");
+const statusFilter = ref("");
 const openClientModal = ref(false);
 const openClientFilterModal = ref(false);
 const selectedClient = ref([]);
 const action_bulk = ref(null);
 const selectedCard = ref(0);
-
+const currentLead = ref(null);
+const isDeleteDialogOpen = ref(false)
 // Table headers configuration
-const tableHeaderSlug = ref('site-visit-list');
+const tableHeaderSlug = ref('client-site-visit');
 const headers = ref([]);
 const getFilteredHeaderValue = async (headerList) => { headers.value = headerList; };
 
 const bulkAction = ref([]);
 const assignedToArray = ref([]);
+
+const statusChips = ref([
+  { text: "All", value: "" },
+  { text: "Scheduled", value: "scheduled" },
+  { text: "Completed", value: "completed" },
+  { text: "Canceled", value: "canceled" },
+  { text: "Rescheduled", value: "rescheduled" }
+]);
 
 const dropdownUserList = async () => {
   try {
@@ -90,25 +98,31 @@ const fetchClients = async () => {
     clientCards.value = [
       {
         title: response.meta.total ?? 0,
-        text: "Total Clients",
+        text: "Total Site Visits",
         color: "primary",
         icon: "tabler-users",
       },
       {
-        title: response.data.filter(client => client.status === 'active').length ?? 0,
-        text: "Active",
-        color: "success",
-        icon: "tabler-users-plus",
+        title: response.data.filter(client => client.status === 'scheduled').length ?? 0,
+        text: "Scheduled",
+        color: "info",
+        icon: "tabler-calendar",
       },
       {
-        title: response.data.filter(client => client.status !== 'active').length ?? 0,
-        text: "In Active",
+        title: response.data.filter(client => client.status === 'completed').length ?? 0,
+        text: "Completed",
+        color: "success",
+        icon: "tabler-check",
+      },
+      {
+        title: response.data.filter(client => client.status === 'canceled').length ?? 0,
+        text: "Canceled",
         color: "error",
-        icon: "tabler-user-up",
+        icon: "tabler-x",
       },
     ];
   } catch (error) {
-    console.error('Error fetching clients:', error);
+    console.error('Error fetching site visits:', error);
   } finally {
     loading.value = false;
   }
@@ -125,59 +139,35 @@ const resolveStatusVariant = (status) => {
   else return { color: "success", text: "Active" };
 };
 
-const deleteClient = async (id) => {
-  try {
-    const { value: inputValue, isConfirmed } = await Swal.fire({
-      title: `Delete Client Info?`,
-      html: `<p style="color: #333; font-size: 14px; margin-top: -10px; margin-bottom: 15px;">
-               Are you sure you want to permanently delete <strong>record</strong>?
-             </p>
-             <label for="swal-input">
-               Type in <strong>"DELETE"</strong> to confirm
-             </label>
-             <input id="swal-input" class="swal2-input" placeholder="Type 'DELETE' to confirm" required />`,
-      focusConfirm: false,
-      showCancelButton: true,
-      confirmButtonText: 'Delete',
-      cancelButtonText: 'Cancel',
-      confirmButtonColor: '#d33',
-      didOpen: () => {
-        const input = document.getElementById('swal-input');
-        const confirmButton = Swal.getConfirmButton();
-        confirmButton.disabled = true;
+const openDeleteDialog = (item) => {
+  currentLead.value = JSON.parse(JSON.stringify(item));
+  isDeleteDialogOpen.value = true;
+}
 
-        input.addEventListener('input', () => {
-          confirmButton.disabled = input.value.trim() !== 'DELETE';
-        });
-      },
-      preConfirm: () => {
-        const input = document.getElementById('swal-input').value.trim();
-        if (input !== 'DELETE') {
-          Swal.showValidationMessage("You must type 'DELETE' to proceed.");
-          return false;
-        }
-        return { delete_text: input };
-      }
-    });
-
-    if (!isConfirmed) return;
-
-    const response = await $api(`/sitevisit/${id}`, { method: "DELETE" });
-    await Swal.fire({
-      title: response.message || "Deleted!",
-      text: "Client has been deleted.",
-      icon: "success",
-    });
-
-    fetchClients();
-  } catch (error) {
-    console.error("Error deleting Client:", error);
-    Swal.fire({
-      title: "Error",
-      text: "An error occurred while deleting the Client.",
-      icon: "error",
-    });
+const refresh = async (newData) => {
+  // First fetch fresh data
+  await fetchClients();
+  
+  // Close modals
+  isDeleteDialogOpen.value = false;
+  openClientModal.value = false;
+  
+  // If we have new data, update the local state immediately
+  if (newData) {
+    const index = filteredClients.value.findIndex(item => item.id === newData.id);
+    if (index !== -1) {
+      // Update existing item
+      filteredClients.value[index] = { ...filteredClients.value[index], ...newData };
+    } else {
+      // Add new item to the beginning of the list
+      filteredClients.value.unshift(newData);
+    }
   }
+};
+
+const handleStatusChange = (newStatus) => {
+  statusFilter.value = newStatus;
+  fetchClients();
 };
 
 // Initial fetch
@@ -191,6 +181,18 @@ fetchClients();
       <div class="d-flex justify-lg-space-between" style="margin: 20px">
         <div>
           <div class="text-h5">Site Visit</div>
+          <div class="d-flex align-center mt-2">
+            <VChip
+              v-for="chip in statusChips"
+              :key="chip.value"
+              :color="statusFilter === chip.value ? 'primary' : undefined"
+              class="me-2"
+              @click="handleStatusChange(chip.value)"
+              style="cursor: pointer"
+            >
+              {{ chip.text }}
+            </VChip>
+          </div>
           <VChip v-for="(data, index) in SelectedFilterValue" :key="index" closable @click:close="removeFilter(index)"
             style="font-size: x-small; height: 25px" class="mr-2">
             {{ data }}
@@ -231,101 +233,48 @@ fetchClients();
       <VDataTable v-else :items="searchedClients" :items-length="searchedClients.length"
         :headers="headers.filter((header) => header.checked)" class="text-no-wrap" @update:options="updateOptions"
         v-model:items-per-page="itemsPerPage" v-model:page="page" show-select v-model="selectedClient">
-        <!-- Name Column -->
-        <template #item.name="{ item }">
-          <v-tooltip location="top">
-            <template v-slot:activator="{ props }">
-              <RouterLink v-if="$can('client', 'show')" :to="`/admin/api/clients/view/${item.id}`" class="custom-link"
-                v-bind="props">
-                <VList class="card-list">
-                  <VListItem>
-                    <VListItemTitle class="font-weight-medium me-4">
-                      <u>{{ item.name }}</u>
-                    </VListItemTitle>
-                    <VListItemSubtitle class="me-4">
-                      {{ item.email }}
-                    </VListItemSubtitle>
-                  </VListItem>
-                </VList>
-              </RouterLink>
-              <VList class="card-list" v-else>
-                <VListItem>
-                  <VListItemTitle class="font-weight-medium me-4">
-                    <u>{{ item.name }}</u>
-                  </VListItemTitle>
-                  <VListItemSubtitle class="me-4">
-                    {{ item.email }}
-                  </VListItemSubtitle>
-                </VListItem>
-              </VList>
-            </template>
-            <span>{{ item.name.split(" - (")[0] }}</span>
-          </v-tooltip>
+        
+        <template #item.visit_time="{ item }">
+          {{ item?.visit_time || '-' }}
         </template>
-
-        <!-- Contact Person Column -->
-        <template #item.contact_person="{ item }">
-          {{ item.contact_person || "Not Available" }}
+        
+        <template #item.assignee_name="{ item }">
+          {{ item.assignee_name || '-' }}
         </template>
-
-        <!-- Phone Column -->
-        <template #item.phone="{ item }">
-          {{ item.phone ? item.phone.substring(0, 5) + "-" + item.phone.substring(5) : "" }}
-        </template>
-
-        <!-- Assign To Column -->
-        <template #item.assigned_to="{ item }">
-          <VSelect v-if="item.assigned_to == null && $can('client', 'assign-to')" :items="assignedToArray"
-            v-model="item.assigned_to" item-title="name" item-value="id"
-            @update:modelValue="(value) => onClientAssignUpdate(item, value)" label="Assigned To" />
-
-          <span v-else class="font-weight-medium" size="small" @dblclick="item.assigned_to = null" style="
-              justify-content: center !important;
-              min-width: 90% !important;
-            ">{{ item.assign_user ? item.assign_user.name : item.assigned_to }}
-          </span>
-        </template>
-
-        <!-- Status Column -->
+        
         <template #item.status="{ item }">
-          <VSelect v-if="item.status == null && $can('client', 'status-update')" :items="status"
-            v-model="leadStatusUpdate[item.id]" @update:modelValue="(value) => onStatusChange(item, value)"
-            label="Update Status" />
-
-          <VChip :color="resolveStatusVariant(item.status).color" class="font-weight-medium" size="small"
-            @dblclick="item.status = null" v-else style="
-              justify-content: center !important;
-              min-width: 90% !important;
-            ">
-            {{ resolveStatusVariant(item.status).text }}
-          </VChip>
+          {{ item.status || '-' }}
         </template>
-
-        <!-- Date Column -->
+        
+        <template #item.visit_notes="{ item }">
+          {{ item.visit_notes || '-' }}
+        </template>
+        
         <template #item.created_at="{ item }">
-          {{ dayjs(item.created_at).format("DD/MM/YYYY") }}
+          {{ item.created_at || '-' }}
+        </template>
+        
+        <template #item.created_by="{ item }">
+          {{ item.created_by || '-' }}
         </template>
 
-        <!-- Actions Column -->
         <template #item.action="{ item }">
           <IconBtn @click="editBranch(item)" v-if="$can('client', 'edit')">
-            <VIcon icon="tabler-pencil" />x
+            <VIcon icon="tabler-pencil" />
           </IconBtn>
 
           <RouterLink v-if="$can('client', 'show')" :to="{
             name: 'site-visit',
             params: { type: 'client', id: item.id }
           }">
-
             <VIcon color="secondary" icon="tabler-eye" />
           </RouterLink>
 
-          <IconBtn v-if="$can('client', 'delete')" @click="deleteClient(item.id)">
+          <IconBtn v-if="$can('client', 'delete')" @click="openDeleteDialog(item)">
             <VIcon icon="tabler-trash" />
           </IconBtn>
         </template>
 
-        <!-- Pagination -->
         <template #bottom>
           <Pagination :pagination="pagination" :itemsPerPage="itemsPerPage" @update:itemsPerPage="itemsPerPage = $event"
             @paginate="paginate" />
@@ -333,11 +282,13 @@ fetchClients();
       </VDataTable>
     </VCard>
 
+    <!-- 👉 Confirm Dialog -->
+    <ConfirmDialog v-model:isDialogVisible="isDeleteDialogOpen" confirm-title="Delete!"
+      confirmation-question="Are you sure want to delete lead?" :currentItem="currentLead" @submit="refresh"
+      :endpoint="`/sitevisit/${currentLead?.id}`" @close="isDeleteDialogOpen = false" />
     <!-- Client Add/Edit Drawer -->
-    <AddDrawer v-model:isDrawerOpen="openClientModal" :currentClient="currentClient" @submit="fetchClients"
-      v-if="openClientModal" :clients="clients" />
-
-
+    <AddDrawer v-model:isDrawerOpen="openClientModal" :currentClient="currentClient" @submit="refresh"
+      @statusChange="handleStatusChange" v-if="openClientModal" :clients="clients" />
   </section>
 </template>
 

@@ -117,8 +117,8 @@ const onSubmit = async () => {
 
     const res = await $api(
       props.currentClient
-        ? `api/clients/${props.currentClient.id}?_method=PUT`
-        : `api/clients`,
+        ? `/clients/${props.currentClient.id}?_method=PUT`
+        : `/clients`,
       {
         method: "POST",
         body: payload,
@@ -130,8 +130,11 @@ const onSubmit = async () => {
       toast.success(res?.message);
 
       // Close the modal and reset form
-      emit("submit");
       emit("update:isDrawerOpen", false);
+
+      // Add a delay before emitting submit to ensure backend processing
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      emit("submit");
 
       await new Promise((resolve) => setTimeout(resolve, 500));
 

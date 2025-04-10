@@ -29,11 +29,11 @@ class FollowUpResource extends JsonResource
                 'creator' => $this->whenLoaded('creator'),
                 'updater' => $this->whenLoaded('updater')
             ],
-            'links' => [
-                'self' => route('follow-ups.show', $this->id),
-                'lead' => $this->lead_id ? route('leads.show', $this->lead_id) : null,
-                'client' => $this->client_id ? route('clients.show', $this->client_id) : null
-            ]
+            // 'links' => [
+            //     'self' => route('follow-ups.show', $this->id),
+            //     'lead' => $this->lead_id ? route('leads.show', $this->lead_id) : null,
+            //     'client' => $this->client_id ? route('clients.show', $this->client_id) : null
+            // ]
         ];
     }
 }

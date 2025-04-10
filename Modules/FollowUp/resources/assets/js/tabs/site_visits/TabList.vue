@@ -1,9 +1,9 @@
 <script setup>
 import "@vuepic/vue-datepicker/dist/main.css";
-import dayjs from "dayjs";
 import { computed, getCurrentInstance, ref } from "vue";
-import AddDrawer from '../add/AddDrawer.vue';
-import ConfirmDialog from '../dialog/ConfirmDialog.vue';
+import ConfirmDialog from '../../dialog/ConfirmDialog.vue';
+import AddDrawer from './AddDrawer.vue';
+
 const instance = getCurrentInstance();
 const $can = instance?.proxy?.$can;
 
@@ -26,9 +26,8 @@ const action_bulk = ref(null);
 const selectedCard = ref(0);
 const currentLead = ref(null);
 const isDeleteDialogOpen = ref(false)
-
 // Table headers configuration
-const tableHeaderSlug = ref('client-list');
+const tableHeaderSlug = ref('follow-up');
 const headers = ref([]);
 const getFilteredHeaderValue = async (headerList) => { headers.value = headerList; };
 
@@ -76,7 +75,7 @@ const fetchClients = async () => {
   loading.value = true;
 
   try {
-    const response = await $api(`/clients?status=${statusFilter.value ?? ""}&per_page=${itemsPerPage.value}`);
+    const response = await $api(`/followup?status=${statusFilter.value ?? ""}&per_page=${itemsPerPage.value}`);
 
     filteredClients.value = response.data;
     clients.value = response.data; // Store all clients for reference
@@ -115,6 +114,22 @@ const fetchClients = async () => {
   }
 };
 
+const refresh = async (newData) => {
+  await fetchClients();
+  isDeleteDialogOpen.value = false;
+  openClientModal.value = false;
+  
+  // If we have new data, update the local state immediately
+  if (newData) {
+    const index = filteredClients.value.findIndex(item => item.id === newData.id);
+    if (index !== -1) {
+      filteredClients.value[index] = { ...filteredClients.value[index], ...newData };
+    } else {
+      filteredClients.value.unshift(newData);
+    }
+  }
+};
+
 const editBranch = (item) => {
   currentClient.value = JSON.parse(JSON.stringify(item));
   openClientModal.value = true;
@@ -126,15 +141,9 @@ const resolveStatusVariant = (status) => {
   else return { color: "success", text: "Active" };
 };
 
-
 const openDeleteDialog = (item) => {
   currentLead.value = JSON.parse(JSON.stringify(item));
   isDeleteDialogOpen.value = true;
-}
-
-const refresh = async () => {
-  await fetchClients();
-  isDeleteDialogOpen.value = false;
 }
 
 // Initial fetch
@@ -147,7 +156,7 @@ fetchClients();
     <VCard class="mb-6">
       <div class="d-flex justify-lg-space-between" style="margin: 20px">
         <div>
-          <div class="text-h5">Client</div>
+          <div class="text-h5">Follow Up</div>
           <VChip v-for="(data, index) in SelectedFilterValue" :key="index" closable @click:close="removeFilter(index)"
             style="font-size: x-small; height: 25px" class="mr-2">
             {{ data }}
@@ -189,79 +198,21 @@ fetchClients();
         :headers="headers.filter((header) => header.checked)" class="text-no-wrap" @update:options="updateOptions"
         v-model:items-per-page="itemsPerPage" v-model:page="page" show-select v-model="selectedClient">
         <!-- Name Column -->
-        <template #item.name="{ item }">
-          <v-tooltip location="top">
-            <template v-slot:activator="{ props }">
-              <RouterLink v-if="$can('client', 'show')" :to="`/admin/api/clients/view/${item.id}`" class="custom-link"
-                v-bind="props">
-                <VList class="card-list">
-                  <VListItem>
-                    <VListItemTitle class="font-weight-medium me-4">
-                      <u>{{ item.name }}</u>
-                    </VListItemTitle>
-                    <VListItemSubtitle class="me-4">
-                      {{ item.email }}
-                    </VListItemSubtitle>
-                  </VListItem>
-                </VList>
-              </RouterLink>
-              <VList class="card-list" v-else>
-                <VListItem>
-                  <VListItemTitle class="font-weight-medium me-4">
-                    <u>{{ item.name }}</u>
-                  </VListItemTitle>
-                  <VListItemSubtitle class="me-4">
-                    {{ item.email }}
-                  </VListItemSubtitle>
-                </VListItem>
-              </VList>
-            </template>
-            <span>{{ item.name.split(" - (")[0] }}</span>
-          </v-tooltip>
+   
+        <template #item.call_status="{ item }">
+          {{ item?.call_status || '-' }}
+        </template>
+         <!-- assigned_user -->
+         <template #item.call_summary="{ item }">
+          {{ item.call_summary || '-' }}
+        </template>
+         <template #item.created_at="{ item }">
+          {{ item.created_at || '-' }}
+        </template>
+         <template #item.created_by="{ item }">
+          {{ item.created_by || '-' }}
         </template>
 
-        <!-- Contact Person Column -->
-        <template #item.contact_person="{ item }">
-          {{ item.contact_person || "Not Available" }}
-        </template>
-
-        <!-- Phone Column -->
-        <template #item.phone="{ item }">
-          {{ item.phone ? item.phone.substring(0, 5) + "-" + item.phone.substring(5) : "" }}
-        </template>
-
-        <!-- Assign To Column -->
-        <template #item.assigned_to="{ item }">
-          <VSelect v-if="item.assigned_to == null && $can('client', 'assign-to')" :items="assignedToArray"
-            v-model="item.assigned_to" item-title="name" item-value="id"
-            @update:modelValue="(value) => onClientAssignUpdate(item, value)" label="Assigned To" />
-
-          <span v-else class="font-weight-medium" size="small" @dblclick="item.assigned_to = null" style="
-              justify-content: center !important;
-              min-width: 90% !important;
-            ">{{ item.assign_user ? item.assign_user.name : item.assigned_to }}
-          </span>
-        </template>
-
-        <!-- Status Column -->
-        <template #item.status="{ item }">
-          <VSelect v-if="item.status == null && $can('client', 'status-update')" :items="status"
-            v-model="leadStatusUpdate[item.id]" @update:modelValue="(value) => onStatusChange(item, value)"
-            label="Update Status" />
-
-          <VChip :color="resolveStatusVariant(item.status).color" class="font-weight-medium" size="small"
-            @dblclick="item.status = null" v-else style="
-              justify-content: center !important;
-              min-width: 90% !important;
-            ">
-            {{ resolveStatusVariant(item.status).text }}
-          </VChip>
-        </template>
-
-        <!-- Date Column -->
-        <template #item.created_at="{ item }">
-          {{ dayjs(item.created_at).format("DD/MM/YYYY") }}
-        </template>
 
         <!-- Actions Column -->
         <template #item.action="{ item }">
@@ -291,12 +242,14 @@ fetchClients();
     </VCard>
 
 
+
+    
     <!-- 👉 Confirm Dialog -->
     <ConfirmDialog v-model:isDialogVisible="isDeleteDialogOpen" confirm-title="Delete!"
       confirmation-question="Are you sure want to delete lead?" :currentItem="currentLead" @submit="refresh"
-      :endpoint="`/clients/${currentLead?.id}`" @close="isDeleteDialogOpen = false" />
+      :endpoint="`/followup/${currentLead?.id}`" @close="isDeleteDialogOpen = false" />
     <!-- Client Add/Edit Drawer -->
-    <AddDrawer v-model:isDrawerOpen="openClientModal" :currentClient="currentClient" @submit="fetchClients"
+    <AddDrawer v-model:isDrawerOpen="openClientModal" :currentClient="currentClient" @submit="refresh"
       v-if="openClientModal" :clients="clients" />
 
 

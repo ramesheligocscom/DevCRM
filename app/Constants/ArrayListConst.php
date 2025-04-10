@@ -182,7 +182,6 @@ class ArrayListConst
         ['title' => 'Action', 'key' => 'action', 'sortable' => false, 'align' => 'center', 'checked' => true],
       ]
     ],
-
     # Bell Notification List Navbar Menu 
     [
       'title' => 'Notification List',
@@ -200,6 +199,30 @@ class ArrayListConst
         ['title' => 'Action', 'key' => 'action', 'sortable' => false, 'align' => 'center', 'checked' => true],
       ]
     ],
-
+    [
+        'title' => 'Client Site Visit',
+        'slug' => 'client-site-visit',
+        'table' => 'site_visits',
+        'headers' => [
+          ['title' => 'Visit Time', 'key' => 'visit_time', 'sortable' => true, 'align' => 'left', 'minWidth' => '140px', 'checked' => true],
+          ['title' => 'assignee name', 'key' => 'assignee_name', 'sortable' => true, 'align' => 'left', 'checked' => true],
+          ['title' => 'Created At', 'key' => 'created_at', 'sortable' => true, 'align' => 'left', 'checked' => true],
+          ['title' => 'Created By', 'key' => 'created_by', 'sortable' => false, 'align' => 'left', 'checked' => true],
+          ['title' => 'Action', 'key' => 'action', 'sortable' => false, 'align' => 'center', 'checked' => true],
+        ]
+      ],
+    [
+      'title' => 'Follw up',
+      'slug' => 'follow-up',
+      'table' => 'follow-up',
+        'headers' => [
+          ['title' => 'Call Status', 'key' => 'call_status', 'sortable' => true, 'align' => 'left', 'minWidth' => '140px', 'checked' => true],
+          ['title' => 'Call Summary', 'key' => 'call_summary', 'sortable' => true, 'align' => 'left', 'checked' => true],
+          ['title' => 'Created At', 'key' => 'created_at', 'sortable' => true, 'align' => 'left', 'checked' => true],
+          ['title' => 'Created By', 'key' => 'created_by', 'sortable' => false, 'align' => 'left', 'checked' => true],
+          ['title' => 'Action', 'key' => 'action', 'sortable' => false, 'align' => 'center', 'checked' => true],
+        ]
+      ],
+     
   ];
 }

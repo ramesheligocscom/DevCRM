@@ -7,17 +7,28 @@ use Illuminate\Database\Eloquent\Collection;
 
 class SiteVisitService
 {
-    public function getAllVisits(): Collection
+    public function getAllVisits(?string $status = null): Collection
     {
-        return SiteVisit::with(['assignee', 'lead', 'client'])
-            ->get();
+        $query = SiteVisit::with(['assignee', 'creator', 'lead', 'client']);
+        
+        if ($status) {
+            $query->where('status', $status);
+        }
+        
+        return $query->latest()->get();
     }
 
     public function getVisitById(string $id): SiteVisit
     {
-        return SiteVisit::with(['assignee', 'lead', 'client'])
+        $visit = SiteVisit::with(['assignee', 'creator', 'lead'])
             ->where('id', $id)
-            ->firstOrFail();
+            ->first();
+            
+        if (!$visit) {
+            throw new \Illuminate\Database\Eloquent\ModelNotFoundException("No query results for model [Modules\SiteVisit\Models\SiteVisit] with ID {$id}");
+        }
+        
+        return $visit;
     }
 
     public function createVisit(array $data): SiteVisit
@@ -31,6 +42,13 @@ class SiteVisitService
         $visit = $this->getVisitById($id);
         $visit->update($data);
         return $visit->fresh(); // Return refreshed model
+    }
+
+    public function updateStatus(string $id, string $status): SiteVisit
+    {
+        $visit = $this->getVisitById($id);
+        $visit->update(['status' => $status]);
+        return $visit->fresh();
     }
 
     public function deleteVisit(string $id): bool

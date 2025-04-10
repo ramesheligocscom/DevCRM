@@ -1,8 +1,6 @@
-import { defineConfig } from 'vite';
+import vue from '@vitejs/plugin-vue';
 import laravel from 'laravel-vite-plugin';
-import { readdirSync, statSync } from 'fs';
-import { join,relative,dirname } from 'path';
-import { fileURLToPath } from 'url';
+import { defineConfig } from 'vite';
 
 export default defineConfig({
     build: {
@@ -20,7 +18,20 @@ export default defineConfig({
             ],
             refresh: true,
         }),
+        vue({
+            template: {
+                transformAssetUrls: {
+                    base: null,
+                    includeAbsolute: false,
+                },
+            },
+        }),
     ],
+    resolve: {
+        alias: {
+            '@': '/resources/assets/js',
+        },
+    },
 });
 // Scen all resources for assets file. Return array
 //function getFilePaths(dir) {

@@ -6,12 +6,18 @@ export const useCompanyStore = defineStore('company', () => {
     const loading = ref(false);
 
     const fetchCompanyDetails = async () => {
-        if (companyDetails.value) return; // Prevent duplicate API calls
+        if (companyDetails.value) return;
         loading.value = true;
 
         try {
+
+            console.log('Calling API...');
             const response = await $api('/settings');
-            companyDetails.value = response.data?.settings ?? null;
+            console.log('API response:', response);
+            companyDetails.value = response.data ?? null;
+
+            // const response = await $api('/settings');
+            // companyDetails.value = response.data ?? null;
         } catch (error) {
             console.error('Failed to fetch company details:', error);
         } finally {
@@ -19,16 +25,9 @@ export const useCompanyStore = defineStore('company', () => {
         }
     };
 
-    const getPaymentTerms = () => companyDetails.value?.Payment_Details || "";
-    const getTermsConditions = () => companyDetails.value?.Terms_Condition || "";
-    const getStarterTerms = () => companyDetails.value?.Greeting_Message || "";
-
     return {
         companyDetails,
         loading,
         fetchCompanyDetails,
-        getPaymentTerms,
-        getTermsConditions,
-        getStarterTerms,
     };
 });

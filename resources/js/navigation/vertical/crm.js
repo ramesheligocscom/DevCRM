@@ -17,7 +17,6 @@ const menuItems = [
     icon: { icon: 'tabler-user-circle' },
     to: 'role-list',
     permission: { action: 'role', subject: 'view' },
-    meta: [{ action: 'role', subject: 'view' }]
   },
   {
     title: 'Leads',
@@ -51,11 +50,20 @@ const menuItems = [
   },
   {
     title: 'Product/Services',
-    icon: { icon: 'tabler-user-circle' },
+    icon: { icon: 'tabler-building-warehouse' },
     to: 'product-service-list',
     permission: { action: 'invoice', subject: 'view' },
   },
-
+  {
+    title: 'Setting',
+    icon: { icon: 'tabler-settings' },
+    to: 'settings',
+    permission: null,
+    extra_permission: [
+      { action: "generalSetting", subject: "view" },
+      { action: "status", subject: "view" },
+    ],
+  },
 ];
 
 const list = () => {

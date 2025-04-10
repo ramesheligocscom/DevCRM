@@ -43,7 +43,7 @@
 <script setup>
 import { useCompanyStore } from "@/stores/companyStore";
 import { minLengthRule, requiredRule } from "@/validations/validationRules";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { toast } from "vue3-toastify";
 const companyStore = useCompanyStore();
 
@@ -60,17 +60,13 @@ const formData = ref({
 const selectedFile = ref(null);
 const previewImage = ref(null);
 
-const companyDetails = computed(() => companyStore.companyDetails || {});
+const setting = computed(() => companyStore.companyDetails || {});
 
-console.log(companyDetails.value);
-formData.value.name = companyDetails.value.Company_name;
-formData.value.phone = companyDetails.value.Phone;
-formData.value.address = companyDetails.value.Address;
-formData.value.image = companyDetails.value.company_logo;
-previewImage.value = BASE_URL + `/` + companyDetails.value.company_logo;
-
-const baseUrl = import.meta.env.VITE_API_BASE_URL;
-console.log("Base URL:", baseUrl)
+formData.value.name = setting.value.Company_name;
+formData.value.phone = setting.value.Phone;
+formData.value.address = setting.value.Address;
+formData.value.image = setting.value.company_logo;
+previewImage.value = BASE_URL + `/` + setting.value.company_logo;
 
 // 👉 Update Profile
 const handleFileChange = async (event) => {
@@ -103,13 +99,8 @@ const handleSubmitForm = async () => {
       image: selectedFile.value,
     };
 
-    const data = await $api(`/settings`, {
-      method: "PUT",
-      body: JSON.stringify(payload),
-      headers: { "Content-Type": "application/json" },
-    });
-
-    console.log(data);
+    const data = await $api(`/settings`, { method: "PUT", body: JSON.stringify(payload), headers: { "Content-Type": "application/json" }, });
+     console.log('handleSubmitForm  ' ,JSON.stringify(data));
     await companyStore.fetchCompanyDetails();
     await nextTick(() => { toast.success(data?.message); });
   } catch (error) {
@@ -145,7 +136,6 @@ const removeImage = () => {
 };
 
 onMounted(() => {
-  fetchStates();
   formatAddress();
 });
 </script>

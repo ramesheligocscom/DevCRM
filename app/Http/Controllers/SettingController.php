@@ -22,123 +22,76 @@ use Illuminate\Support\Facades\DB;
 
 use Illuminate\Support\Facades\Log;
 use Exception;
+use Illuminate\Support\Facades\Auth;
 
 class SettingController extends Controller
 {
     const CONTROLLER_NAME = "Setting Controller";
 
-    public function index()
+    public function index(Request $request)
     {
-        $settings = Setting::where('user_id', 1)->pluck('value', 'key');
-
-        return $this->actionSuccess('', ['settings' => $settings]);
+        try {
+            $settings = Setting::pluck('value', 'key') ?? [];
+            return $this->actionSuccess('Setting list get successfully',  $settings);
+        } catch (\Exception $e) {
+            createExceptionError($e, self::CONTROLLER_NAME, __FUNCTION__);
+            return $this->actionFailure($e->getMessage());
+        }
     }
 
     public function update(Request $request)
     {
+        DB::beginTransaction();
+
         try {
-            $settings = $request->except(['image']); 
+            $settings = $request->except(['image']);
+            $userId = Auth::user()->uuid;
 
             foreach ($settings as $key => $value) {
-                Setting::updateOrCreate(
-                    ['key' => $key],
-                    ['value' => $value]
-                );
+                $existingSetting = Setting::where('key', $key)->first();
+
+                if ($existingSetting) {
+                    # Update only value and updated_by
+                    $existingSetting->value = $value;
+                    $existingSetting->updated_by = $userId;
+                    $existingSetting->save();
+                } else {
+                    # Insert with created_by
+                    Setting::create(['key' => $key, 'value' => $value, 'created_by' => $userId,]);
+                }
             }
 
             # Handle Image (Base64)
             if ($request->has('image')) {
                 $image = $request->image;
-                $imageName = time() . '.jpg';  
+                $imageName = time() . '.jpg';
                 $imagePath = 'uploads/' . $imageName;
 
-                # Decode and store the image
                 $decodedImage = base64_decode(preg_replace('/^data:image\/\w+;base64,/', '', $image));
                 Storage::disk('public')->put($imagePath, $decodedImage);
 
-                # Save Image Path in DB
-                Setting::updateOrCreate(
-                    ['key' => 'company_logo'],
-                    ['value' => 'storage/' . $imagePath]
-                );
+                # Same logic for logo setting
+                $logoKey = 'company_logo';
+                $existingLogo = Setting::where('key', $logoKey)->first();
+
+                if ($existingLogo) {
+                    $existingSetting->value = 'storage/' . $imagePath;
+                    $existingSetting->updated_by = $userId;
+                    $existingSetting->save();
+                } else {
+                    Setting::create(['key' => $logoKey, 'value' => 'storage/' . $imagePath, 'created_by' => $userId,]);
+                }
             }
 
-            return response()->json(['message' => 'Settings updated successfully!']);
+            DB::commit();
+            return $this->actionSuccess('Settings updated successfully!');
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Something went wrong!'], 500);
-        }
-    }
-
-    public function fetchQuotationPerfix()
-    {
-        try {
-            $fetch_quotation_perfix = Setting::where('key', 'Quotation_Prefix')->first();
-            if (!$fetch_quotation_perfix) {
-                return $this->actionFailure('Quotation Perfix not found');
-            }
-            return $fetch_quotation_perfix;
-        } catch (\Exception $e) {
+            DB::rollBack();
             return $this->actionFailure($e->getMessage());
         }
     }
 
-    public function fetchInvoicePerfix()
-    {
-        try {
-            $fetch_quotation_perfix = Setting::where('key', 'invoicePrefix')->first();
-            if (!$fetch_quotation_perfix) {
-                return $this->actionFailure('Invoice Perfix not found');
-            }
-            return $fetch_quotation_perfix;
-        } catch (\Exception $e) {
-            return $this->actionFailure($e->getMessage());
-        }
-    }
-
-
-    public function saveTermCondition(Request $request)
-    {
-
-        try {
-            $settings = $request->all();
-
-            foreach ($settings as $key => $value) {
-                Setting::updateOrCreate(
-                    ['key' => $key], # Condition to check existing record
-                    ['value' => $value] # Only update the value field
-                );
-            }
-
-            return response()->json([
-                'status' => 200,
-                'message' => 'Terms and Conditions have been updated successfully.'
-            ]);
-        } catch (Exception $e) {
-            Log::error('Settings update failed: ' . $e->getMessage());
-
-            return response()->json([
-                'status' => 500,
-                'message' => 'Failed to update settings. Please try again.',
-                'error' => $e->getMessage()
-            ], 500);
-        }
-    }
-
-    public function states()
-    {
-        $states = State::get();
-        $states = StateResource::collection($states);
-
-        return $this->actionSuccess('State listing successfully.', $states);
-    }
-
-    public function cities($stateId)
-    {
-        $cities = City::where('state_id', $stateId)->get();
-        $cities = CityResource::collection($cities);
-
-        return $this->actionSuccess('City listing successfully.', $cities);
-    }
+    # Status get list
 
     public function storeStatus(Request $request)
     {

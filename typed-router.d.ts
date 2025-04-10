@@ -136,6 +136,7 @@ declare module 'vue-router/auto-routes' {
     'profile-user-tab-security': RouteRecordInfo<'profile-user-tab-security', '/profile/UserTabSecurity', Record<never, never>, Record<never, never>>,
     'register': RouteRecordInfo<'register', '/register', Record<never, never>, Record<never, never>>,
     'settings': RouteRecordInfo<'settings', '/settings', Record<never, never>, Record<never, never>>,
+    'settings-add-edit-status-drawer': RouteRecordInfo<'settings-add-edit-status-drawer', '/settings/AddEditStatusDrawer', Record<never, never>, Record<never, never>>,
     'settings-setting': RouteRecordInfo<'settings-setting', '/settings/Setting', Record<never, never>, Record<never, never>>,
     'settings-status': RouteRecordInfo<'settings-status', '/settings/Status', Record<never, never>, Record<never, never>>,
     'tables-data-table': RouteRecordInfo<'tables-data-table', '/tables/data-table', Record<never, never>, Record<never, never>>,

@@ -74,10 +74,10 @@
         </VDataTableServer>
       </VCardText>
     </VCard>
-            <!-- 👉 Delete Dialog -->
-            <DeleteDialog v-model:isDialogVisible="isDeleteDialogOpen" confirm-title="Delete!"
-            confirmation-question="Are you sure want to delete Login Log?" :currentItem="currentInfo" @submit="getUserLoginLogList" :action="'force_delete'"
-            :endpoint="`/delete-notification/${currentInfo?.id}`" @close="isDeleteDialogOpen = false" />
+   <!-- 👉 Delete Dialog -->
+   <DeleteDialog v-model:isDialogVisible="isDeleteDialogOpen" confirm-title="Delete!"
+   confirmation-question="Are you sure want to delete Login Log?" :currentItem="currentInfo" @submit="getUserLoginLogList" :action="'force_delete'"
+   :endpoint="`/delete-notification/${currentInfo?.id}`" @close="isDeleteDialogOpen = false" />
   </section>
 </template>
 <script setup>

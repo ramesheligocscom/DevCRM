@@ -10,6 +10,6 @@ use Illuminate\Support\Str;
 class Setting extends Model
 {
     use HasFactory, HasUuids;
-
-    protected $fillable = ['key', 'value', 'created_by', 'last_updated_by'];
+    protected $table = "settings";
+    protected $fillable = ['key', 'value', 'created_by', 'updated_by'];
 }

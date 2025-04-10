@@ -1,10 +1,9 @@
 <script setup>
 import "@vuepic/vue-datepicker/dist/main.css";
 import dayjs from "dayjs";
-import Swal from "sweetalert2";
 import { computed, getCurrentInstance, ref } from "vue";
 import AddDrawer from '../add/AddDrawer.vue';
-
+import ConfirmDialog from '../dialog/ConfirmDialog.vue';
 const instance = getCurrentInstance();
 const $can = instance?.proxy?.$can;
 
@@ -25,6 +24,8 @@ const openClientFilterModal = ref(false);
 const selectedClient = ref([]);
 const action_bulk = ref(null);
 const selectedCard = ref(0);
+const currentLead = ref(null);
+const isDeleteDialogOpen = ref(false)
 
 // Table headers configuration
 const tableHeaderSlug = ref('client-list');
@@ -75,7 +76,7 @@ const fetchClients = async () => {
   loading.value = true;
 
   try {
-    const response = await $api(`/api/clients?status=${statusFilter.value ?? ""}&per_page=${itemsPerPage.value}`);
+    const response = await $api(`/clients?status=${statusFilter.value ?? ""}&per_page=${itemsPerPage.value}`);
 
     filteredClients.value = response.data;
     clients.value = response.data; // Store all clients for reference
@@ -125,60 +126,16 @@ const resolveStatusVariant = (status) => {
   else return { color: "success", text: "Active" };
 };
 
-const deleteClient = async (id) => {
-  try {
-    const { value: inputValue, isConfirmed } = await Swal.fire({
-      title: `Delete Client Info?`,
-      html: `<p style="color: #333; font-size: 14px; margin-top: -10px; margin-bottom: 15px;">
-               Are you sure you want to permanently delete <strong>record</strong>?
-             </p>
-             <label for="swal-input">
-               Type in <strong>"DELETE"</strong> to confirm
-             </label>
-             <input id="swal-input" class="swal2-input" placeholder="Type 'DELETE' to confirm" required />`,
-      focusConfirm: false,
-      showCancelButton: true,
-      confirmButtonText: 'Delete',
-      cancelButtonText: 'Cancel',
-      confirmButtonColor: '#d33',
-      didOpen: () => {
-        const input = document.getElementById('swal-input');
-        const confirmButton = Swal.getConfirmButton();
-        confirmButton.disabled = true;
 
-        input.addEventListener('input', () => {
-          confirmButton.disabled = input.value.trim() !== 'DELETE';
-        });
-      },
-      preConfirm: () => {
-        const input = document.getElementById('swal-input').value.trim();
-        if (input !== 'DELETE') {
-          Swal.showValidationMessage("You must type 'DELETE' to proceed.");
-          return false;
-        }
-        return { delete_text: input };
-      }
-    });
+const openDeleteDialog = (item) => {
+  currentLead.value = JSON.parse(JSON.stringify(item));
+  isDeleteDialogOpen.value = true;
+}
 
-    if (!isConfirmed) return;
-
-    const response = await $api(`/api/clients/${id}`, { method: "DELETE" });
-    await Swal.fire({
-      title: response.message || "Deleted!",
-      text: "Client has been deleted.",
-      icon: "success",
-    });
-
-    fetchClients();
-  } catch (error) {
-    console.error("Error deleting Client:", error);
-    Swal.fire({
-      title: "Error",
-      text: "An error occurred while deleting the Client.",
-      icon: "error",
-    });
-  }
-};
+const refresh = async () => {
+  await fetchClients();
+  isDeleteDialogOpen.value = false;
+}
 
 // Initial fetch
 dropdownUserList();
@@ -320,7 +277,7 @@ fetchClients();
             <VIcon color="secondary" icon="tabler-eye" />
           </RouterLink>
 
-          <IconBtn v-if="$can('client', 'delete')" @click="deleteClient(item.id)">
+          <IconBtn v-if="$can('client', 'delete')" @click="openDeleteDialog(item)">
             <VIcon icon="tabler-trash" />
           </IconBtn>
         </template>
@@ -333,6 +290,11 @@ fetchClients();
       </VDataTable>
     </VCard>
 
+
+    <!-- 👉 Confirm Dialog -->
+    <ConfirmDialog v-model:isDialogVisible="isDeleteDialogOpen" confirm-title="Delete!"
+      confirmation-question="Are you sure want to delete lead?" :currentItem="currentLead" @submit="refresh"
+      :endpoint="`/clients/${currentLead?.id}`" @close="isDeleteDialogOpen = false" />
     <!-- Client Add/Edit Drawer -->
     <AddDrawer v-model:isDrawerOpen="openClientModal" :currentClient="currentClient" @submit="fetchClients"
       v-if="openClientModal" :clients="clients" />

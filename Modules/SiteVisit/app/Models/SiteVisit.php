@@ -21,6 +21,7 @@ class SiteVisit extends Model
         'status',
         'visit_notes',
         'lead_id',
+        'last_updated_by',
     ];
 
     protected $casts = [
@@ -42,7 +43,7 @@ class SiteVisit extends Model
 
     public function creator()
     {
-        return $this->belongsTo(\App\Models\User::class, 'created_by')->withDefault();
+        return $this->belongsTo(\App\Models\User::class, 'created_by', 'uuid')->withDefault();
     }
 
     public function client()
@@ -51,5 +52,9 @@ class SiteVisit extends Model
     }
 
 
+    public function updater()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'last_updated_by','uuid');
+    }
     
 }

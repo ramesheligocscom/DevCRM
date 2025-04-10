@@ -210,17 +210,21 @@ fetchClients();
 
         <!-- Actions Column -->
         <template #item.action="{ item }">
-          <IconBtn @click="editBranch(item)" v-if="$can('client', 'edit')">
-            <VIcon icon="tabler-pencil" />
-          </IconBtn>
 
-          <RouterLink v-if="$can('client', 'show')" :to="{
+          <!-- <RouterLink v-if="$can('client', 'show')" :to="{
             name: 'site-visit',
             params: { type: 'client', id: item.id }
           }">
 
             <VIcon color="secondary" icon="tabler-eye" />
-          </RouterLink>
+          </RouterLink> -->
+
+
+          <IconBtn @click="editBranch(item)" v-if="$can('client', 'edit')">
+            <VIcon icon="tabler-pencil" />
+          </IconBtn>
+
+      
 
           <IconBtn v-if="$can('client', 'delete')" @click="openDeleteDialog(item)">
             <VIcon icon="tabler-trash" />

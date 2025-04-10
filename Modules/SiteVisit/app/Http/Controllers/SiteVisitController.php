@@ -36,8 +36,8 @@ class SiteVisitController extends Controller
         return response()->json([
             'message' => __('Site visit created successfully'),
             'data' => new SiteVisitResource($visit),
-            'status' => Response::HTTP_CREATED
-        ], Response::HTTP_CREATED);
+            'status' => Response::HTTP_OK
+        ], Response::HTTP_OK);
     }
 
     public function show(string $id): JsonResponse

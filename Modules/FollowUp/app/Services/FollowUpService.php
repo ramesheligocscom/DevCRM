@@ -68,7 +68,7 @@ class FollowUpService
 
     public function updateFollowUp(string $id, array $data)
     {
-        $data['last_updated_by'] = auth()->id(); // or auth()->user()->id
+        $data['last_updated_by'] = auth()->user()->uuid; // or auth()->user()->id
         $followUp = $this->getFollowUpById($id);
         $followUp->update($data);
         return $followUp->fresh();

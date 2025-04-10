@@ -15,6 +15,8 @@ const isLoading = ref(false)
 let isSubmitting = false
 
 const record = ref({
+  title:"",
+  description:"",
   items: [],
   start_date: '',
   end_date: '',
@@ -25,7 +27,7 @@ const record = ref({
 })
 
 // Helper for creating new item object
-const newItem = () => ({
+const newItem = (isNew = true) => ({
   item_id: uuidv4(),
   name: '',
   description: '',
@@ -37,7 +39,8 @@ const newItem = () => ({
   discount_amount: 0,
   subtotal: 0,
   total: 0,
-  custom_fields: {},
+  attributes: [],
+  isNew:isNew
 })
 
 // Load existing contract data
@@ -45,8 +48,6 @@ const loadContract = async () => {
   try {
     isLoading.value = true
     const response = await $api(`/contracts/${contractId}`)
-
-    console.log('Fetched contract:', response?.data) // Real data is in .value
 
     const contract = response?.data
 
@@ -59,7 +60,7 @@ const loadContract = async () => {
       ...record.value,
       ...contract,
       items: contract.items?.map(item => ({
-        ...newItem(),
+        ...newItem(false),
         ...item,
       })) ?? [],
     }
@@ -134,10 +135,15 @@ const onSubmit = async () => {
 
   try {
     isLoading.value = true
+    // ✅ Remove `isNew` from each item before sending
+    const payload = {
+          ...record.value,
+          items: record.value.items.map(({ isNew, ...item }) => item),
+        }
 
     const res = await $api(`/contracts/${contractId}`, {
       method: 'PUT',
-      body: JSON.stringify(record.value),
+      body: JSON.stringify(payload),
     })
 
     if (res?.data) {
@@ -150,6 +156,48 @@ const onSubmit = async () => {
     isSubmitting = false
     isLoading.value = false
   }
+}
+
+const loadingAttributes = ref(false)
+const attributeItems = ref([])
+const fetchAttributes = async (search = '') => {
+  loadingAttributes.value = true
+  try {
+    const { data } = await $api('/product-services', {
+      params: { search },
+    })
+    attributeItems.value = data // adapt if your API response is shaped differently
+  } catch (e) {
+    console.error('Failed to load attributeItems', e)
+  } finally {
+    loadingAttributes.value = false
+  }
+}
+
+const onProductSelected = (product, item) => {
+  if (!product) return
+
+  // Set name and price
+  item.name = product.name
+  item.unit_price = parseFloat(product.price)
+
+  // Set custom fields (attributes)
+  item.attributes = product.attributes.map((val) =>{
+    return {
+      key:val.key,
+      value:val.value,
+    }
+  });
+}
+// Remove item attribute by index
+const removeAttribute = (itemIndex, attributeIndex) => {
+  record.value.items[itemIndex].attributes.splice(attributeIndex, 1)
+}
+const addAttribute = (itemIndex) => {
+  record.value.items[itemIndex].attributes.push({
+    key: '',
+    value: '',
+  })
 }
 
 onMounted(loadContract)
@@ -165,6 +213,9 @@ onMounted(loadContract)
               <VRow>
                 <VCol cols="12">
                   <strong class="text-primary">Basic</strong>
+                </VCol>
+                <VCol cols="12" md="6">
+                  <AppTextField v-model="record.title" label="Title"/>
                 </VCol>
                 <VCol cols="12" md="6">
                   <AppTextField v-model="record.start_date" label="Start Date*" type="date" />
@@ -189,6 +240,11 @@ onMounted(loadContract)
                 <VCol cols="12" md="6">
                   <AppSelect v-model="record.invoice_id" label="Invoice ID" :items="[]" />
                 </VCol>
+
+                <VCol cols="12" md="12">
+                  <AppTextField v-model="record.description" label="Description"
+                     />
+                </VCol>
               </VRow>
             </VCol>
 
@@ -198,12 +254,23 @@ onMounted(loadContract)
 
             <VCol cols="12" v-for="(item, index) in record.items" :key="item.item_id">
               <VRow class="border rounded pa-3 mb-3">
-                <VCol cols="12" md="6">
-                  <AppTextField v-model="item.name" label="Name*" />
+                <VCol cols="12" md="12" v-if="item.isNew">
+                  <AppAutocomplete
+                  label="Product/Service"
+                  :items="attributeItems"
+                  item-title="name"
+                  :loading="loadingAttributes"
+                  :searchable="true"
+                  @update:search="fetchAttributes"
+                  return-object
+                  v-model="item.product"
+                  @update:modelValue="val => onProductSelected(val, item)"
+                  placeholder="Search Product Service "
+                />
                 </VCol>
 
-                <VCol cols="12" md="6">
-                  <AppTextField v-model="item.description" label="Description" />
+                <VCol cols="12" md="4">
+                  <AppTextField v-model="item.name" label="Name*" />
                 </VCol>
 
                 <VCol cols="12" md="4">
@@ -230,9 +297,49 @@ onMounted(loadContract)
                   <AppTextField v-model="item.total" label="Total" type="number" readonly />
                 </VCol>
 
+                <VCol cols="12" md="12">
+                  <AppTextField v-model="item.description" label="Description" />
+                </VCol>
+
+                <VCol cols="12">
+                  <VRow align="center" class="mb-2">
+                    <VCol cols="6">
+                      <strong class="text-primary">Attributes</strong>
+                    </VCol>
+                    <VCol cols="6" class="d-flex justify-end">
+                      <VBtn
+                        size="small"
+                        variant="tonal"
+                        color="primary"
+                        prepend-icon="tabler-plus"
+                        @click="addAttribute(index)"
+                      >
+                        Add Attribute
+                      </VBtn>
+                    </VCol>
+                  </VRow>
+                </VCol>
+
+                <VCol cols="12" md="12" v-for="(attribute, i) in item.attributes" :key="i">
+                  <VRow >
+                    <VCol cols="12" lg="6" md="6">
+                      <AppTextField v-model="attribute.key" :label="`${i+1}.Attribute Key`" />
+                    </VCol>
+                    <VCol cols="12" lg="6" md="6" >
+                      <AppTextField v-model="attribute.value" :label="`Attribute Value`">
+                        <template #append>
+                          <VBtn icon="tabler-trash" size="small" color="error" @click="removeAttribute(index , i)" />
+
+                        </template>
+                      </AppTextField>
+                    </VCol>
+                  </VRow>  
+                </VCol>
+
+
                 <VCol cols="12" class="d-flex justify-end">
-                  <VBtn icon color="error" @click="removeItem(index)">
-                    <VIcon icon="tabler-trash" />
+                  <VBtn color="error" @click="removeItem(index)" variant="tonal" prepend-icon="tabler-trash">
+                    Delete Item
                   </VBtn>
                 </VCol>
               </VRow>

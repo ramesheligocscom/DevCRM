@@ -100,5 +100,5 @@ class Contract extends Model
     //   "discount_amount": "decimal",
     //   "subtotal": "decimal",
     //   "total": "decimal"
-    //   "custom_fields": "json" // for module-specific fields
+    //   "attributes": "json" // for module-specific fields
     // }

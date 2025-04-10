@@ -4,7 +4,6 @@ import { themeConfig } from '@themeConfig'
 
 // Components
 import Footer from '@/layouts/components/Footer.vue'
-import NavBarNotifications from '../../pages/notifications/NavBarNotifications.vue'
 
 import NavSearchBar from '@/layouts/components/NavSearchBar.vue'
 import NavbarShortcuts from '@/layouts/components/NavbarShortcuts.vue'
@@ -40,7 +39,7 @@ import UserProfile from '../../pages/profile/UserProfile.vue'
 
       <NavbarThemeSwitcher />
       <NavbarShortcuts />
-      <NavBarNotifications class="me-2" />
+      <!-- <NavBarNotifications class="me-2" /> -->
       <UserProfile />
     </template>
 

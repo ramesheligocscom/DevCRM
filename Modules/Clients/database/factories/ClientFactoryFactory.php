@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Clients\app\Models\Client; // Add this import
 use Illuminate\Support\Str;
 
-class ClientFactory extends Factory
+class ClientFactoryFactory extends Factory
 {
     protected $model = Client::class;
 

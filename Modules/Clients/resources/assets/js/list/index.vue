@@ -129,7 +129,7 @@ const makeDateFormat = (date, onlyDate = false) => {
         <template #item.name="{ item }">
           <RouterLink 
             v-if="$can('client', 'show')" 
-            :to="{ name: 'site-visit', params: { type: 'client', id: item.id } }"
+            :to="{ name: 'client-details-id', params: { id: item.id } }"
             class="text-link font-weight-medium d-inline-block" 
             style="line-height: 1.375rem;"
           >

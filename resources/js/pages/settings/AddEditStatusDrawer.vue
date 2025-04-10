@@ -19,7 +19,7 @@
                           </VCol>
                           <VCol cols="12">
                               <AppSelect :items="pageList" v-model="page_status.status_for" placeholder="Select pages"
-                                  label="Select Page" class="mb-6" chips closable-chips />
+                                  label="Select Page" class="mb-6" multiple chips closable-chips />
                           </VCol>
                           <VCol cols="12">
                               <VBtn type="submit" class="me-3">
@@ -52,8 +52,8 @@ const props = defineProps({
 });
 
 const page_status = ref({
-      id : '',
-      status_for : '',
+      id : null,
+      status_for : null,
       status_text : '',
       status : '',
       position : '',
@@ -78,22 +78,43 @@ onMounted(() => {
         resetFiledInfo();
         page_status.value.status = true;
     }
+    fetchPageList();
 });
 
 const pageList = ref([]);
 
 const fetchPageList = async () => { 
-  // const res = await $api(`/settings/page`); pageList.value = res.page; console.log(res.page);
+  try {
+        const params = { type:'list', };
+        const response = await $api('/settings/page', { params });
+        console.log('fetchPageList ', response.data);
+        pageList.value = response.data;
+    } catch (error) {
+        console.error('Error fetching status list:', error);
+        toast.error(error?.response?.data?.message || 'Error fetching status list.');
+    }  
  }
+ 
+const resetFiledInfo = () => {
+  page_status.value = {
+        id: null,
+        status_for : null,
+      status_text : '',
+      status : '',
+      position : '',
+      invoice_footer_text : '',
+      contract_footer_text : '',
+    };
+};
 
-onMounted(() => {
-    console.log(props.currentInfo);
-    // return;
-    if (props.currentInfo?.status) {
-        page_status.value = _.cloneDeep(props.currentInfo);
-    }
-    fetchPageList();
-});
+// onMounted(() => {
+//     console.log(props.currentInfo);
+//     // return;
+//     if (props.currentInfo?.status) {
+//         page_status.value = _.cloneDeep(props.currentInfo);
+//     }
+//     fetchPageList();
+// });
 
 const emit = defineEmits(["update:isDialogVisible", "submit"]);
 
@@ -109,6 +130,7 @@ const closeNavigationDrawer = () => {
 const handleDrawerModelValueUpdate = (val) => {
     emit("update:isDialogVisible", val);
 };
+
 const isLoading = ref(false);
 let isSubmitting = false;
 const onSubmit = async () => {

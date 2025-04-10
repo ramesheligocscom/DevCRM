@@ -54,11 +54,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/', [SettingController::class, 'index'])->name('settings.index');
         Route::put('/', [SettingController::class, 'update'])->name('settings.update');
         # For status setting
-        // Route::get('/page', [SettingController::class, 'pageList'])->name('settings.pageList');
-        // Route::get('/page-status', [SettingController::class, 'pageStatusList'])->name('settings.pageStatusList');
-        // Route::get('/specific/page-status/{page_name}', [SettingController::class, 'pageStatus'])->name('settings.pageStatusList');
-        // Route::post('/status', [SettingController::class, 'storeStatus'])->name('settings.storeStatus');
-        // Route::put('/status/{id}', [SettingController::class, 'updateStatus'])->name('settings.updateStatus');
-        // Route::delete('/status/{id}', [SettingController::class, 'deleteStatus'])->name('settings.deleteStatus');
+        Route::get('/page', [SettingController::class, 'pageList'])->name('settings.pageList');
+        Route::get('/status-list', [SettingController::class, 'pageStatusList'])->name('settings.pageStatusList');
     });
 });
+ 

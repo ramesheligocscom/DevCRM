@@ -5,6 +5,4 @@ use Modules\Leads\Http\Controllers\LeadController;
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('leads', LeadController::class)->names('leads');
-    Route::get('/leads/{lead}/clients', [LeadController::class, 'clientsByLead']);
-
 });

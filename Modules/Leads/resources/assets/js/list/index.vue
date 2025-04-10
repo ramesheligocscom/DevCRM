@@ -1,10 +1,10 @@
 <script setup>
+import moment from 'moment'
 import AddEditDrawer from '../add/AddEditDrawer.vue'
 import ConfirmDialog from '../dialog/ConfirmDialog.vue'
 const searchQuery = ref('')
 const isAddEditDrawerOpen = ref(false)
 const isDeleteDialogOpen = ref(false)
-
 // Data table options
 
 const itemsPerPage = ref(10)
@@ -41,6 +41,8 @@ const totalItems = ref(0)
 
 const fetchLeads = async () => {
   try {
+   
+
     const response = await $api(
       `/leads?search=${searchQuery.value ?? ""}&page=${page.value}&sort_key=${sortBy.value ?? ""}&sort_order=${orderBy.value ?? ""}&per_page=${itemsPerPage.value}`
     )
@@ -64,8 +66,16 @@ const openDeleteDialog = (item) => {
   isDeleteDialogOpen.value = true;
 }
 
-fetchLeads();
+const refresh = () => {
+  fetchLeads();
+}
 
+const makeDateFormat = (date , onlyDate = false) => {
+    if(onlyDate)
+    return moment(date).format('DD-MM-Y');
+    else
+    return moment(date).format('LLLL');
+};
 </script>
 
 <template>
@@ -97,54 +107,62 @@ fetchLeads();
         class="text-no-wrap" @update:options="updateOptions">
 
         <template #item.name="{ item }">
-          <div class="d-flex align-center gap-x-3">
-            <VAvatar size="34" :variant="!item.avatar ? 'tonal' : undefined">
-              <VImg v-if="item.avatar" :src="item.avatar" />
-              <span v-else>{{ avatarText(item.name) }}</span>
-            </VAvatar>
-            <div class="d-flex flex-column">
-              <RouterLink :to="{ name: 'lead-details-id', params: { id: item.id } }"
-                class="text-link font-weight-medium d-inline-block" style="line-height: 1.375rem;">
-                {{ item.name }}
-              </RouterLink>
-              <div class="text-body-2">
-                {{ item.email }}
-              </div>
-            </div>
-          </div>
+          <RouterLink :to="{ name: 'lead-details-id', params: { id: item.id } }"
+                  class="text-link font-weight-medium d-inline-block" style="line-height: 1.375rem;">
+                  {{ item.name }}
+          </RouterLink>
         </template>
 
+        <!-- creator -->
+        <template #item.created_by="{ item }">
+          {{ item.creator?.name || '—' }}
+        </template>
+        <!-- updater -->
+        <template #item.last_updated_by="{ item }">
+          {{ item.updater?.name || '-' }}
+        </template>
+         <!-- assigned_user -->
+         <template #item.assigned_user="{ item }">
+          {{ item.assigned_user?.name || '-' }}
+        </template>
         <!-- status -->
         <template #item.status="{ item }">
           <VChip :color="resolveStatusVariant(item.status).color" size="small">
             {{ resolveStatusVariant(item.status).text }}
           </VChip>
         </template>
+        <template #item.created_at="{ item }">
+          {{ makeDateFormat(item.created_at )}}
+        </template>
 
+        <template #item.updated_at="{ item }">
+          {{ item.updater ? makeDateFormat(item.updated_at ) : '-'}}
+        </template>
         <!-- Actions Column -->
-        <template #item.actions="{ item }">
+        <template #item.action="{ item }">
+          <IconBtn :to="{ name: 'lead-details-id', params: { id: item.id } }">
+            <VIcon icon="tabler-eye" />
+          </IconBtn>
           <IconBtn v-if="$can('leads', 'edit')" @click="editBranch(item)">
             <VIcon icon="tabler-pencil" />
           </IconBtn>
-
           <IconBtn v-if="$can('leads', 'delete')" @click="openDeleteDialog(item)">
             <VIcon icon="tabler-trash" />
           </IconBtn>
         </template>
-
         <template #bottom>
           <TablePagination v-model:page="page" :items-per-page="itemsPerPage" :total-items="totalItems" />
         </template>
       </VDataTableServer>
     </VCard>
 
-    <!-- 👉 Confirm Dialog -->
-    <ConfirmDialog v-model:isDialogVisible="isDeleteDialogOpen" cancel-title="Delete" confirm-title="Delete!"
-      confirm-msg="Lead deleted successfully." confirmation-question="Are you sure want to delete lead?"
-      cancel-msg="Lead Deletion Cancelled!!" :currentLead="currentLead" @submit="fetchLeads"
-      @close="isDeleteDialogOpen = false" />
 
-    <AddEditDrawer v-model:is-drawer-open="isAddEditDrawerOpen" :currentLead="currentLead" @submit="fetchLeads"
+    <!-- 👉 Confirm Dialog -->
+    <ConfirmDialog v-model:isDialogVisible="isDeleteDialogOpen" confirm-title="Delete!"
+      confirmation-question="Are you sure want to delete lead?" :currentItem="currentLead" @submit="refresh"
+      :endpoint="`/leads/${currentLead?.id}`" @close="isDeleteDialogOpen = false" />
+
+    <AddEditDrawer v-model:is-drawer-open="isAddEditDrawerOpen" :currentLead="currentLead" @submit="refresh"
       @close="isAddEditDrawerOpen = false" />
   </div>
 </template>

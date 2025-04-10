@@ -1,7 +1,7 @@
 <?php
 
 use App\Constants\ArrayListConst;
-use App\Events\SendMessage;
+use App\Events\NotificationMessage;
 use App\Models\ExceptionLog;
 use App\Models\Notification;
 use App\Models\NotificationUser;
@@ -25,6 +25,17 @@ function i($msg)
 function er($msg)
 {
     Log::error($msg);
+}
+
+function getIpAddress()
+{
+    $ip = request()->ip();
+
+    # Replace localhost IP with a test IP (optional)
+    if (in_array($ip, ['127.0.0.1', '::1'])) {
+        $ip = '103.233.24.1';
+    }
+    return $ip;
 }
 
 /* It creates an exception error
@@ -236,10 +247,33 @@ function createNotification($title, $module_type, $module_id = null, $show_ids =
 
     # Send notifications to other users
     foreach ($filtered_show_ids as $receiver_id) {
-        // try {
-        //     event(new SendMessage("You have a new notification!", $receiver_id));
-        // } catch (\Exception $e) {
-        //     createExceptionError($e, COMMON_HELPER, __FUNCTION__);
-        // }
+        try {
+            event(new NotificationMessage("You have a new notification!", $receiver_id));
+        } catch (\Exception $e) {
+            createExceptionError($e, COMMON_HELPER, __FUNCTION__);
+        }
     }
+}
+
+function applyFilteringUser($query, $type = "assign_user")
+{
+    $referer = request()->header('referer');
+    $column = $type === 'assign_user' ? 'assigned_user' : ($type === 'user_id' ? '' : 'created_by');
+
+    # Extract UUID from referer if available
+    if (Str::contains($referer, '/user/view')) {
+        $uuid = Str::afterLast($referer, '/user/view/');
+        if ($uuid) return $query->where($column, $uuid);
+    }
+
+    # Get logged-in user and their roles
+    $user = Auth::user();
+    $roleSlugs = $user->roles()->pluck('slug')->toArray();
+
+    # Check if user is not Super Admin or Admin
+    if (!array_intersect($roleSlugs, [RolePermissionConst::SLUG_SUPER_ADMIN, RolePermissionConst::SLUG_ADMIN])) {
+        $query->where($column, $user->uuid);
+    }
+
+    return $query;
 }

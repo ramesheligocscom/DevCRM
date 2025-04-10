@@ -15,23 +15,23 @@ class ContractUpdateRequest extends FormRequest
 
     public function rules(): array
     {
-        // Changed: Simplified status validation
         return [
+            'title'=> 'nullable|string',
+            'description'=> 'nullable|string',
             'items' => 'sometimes|array',
             'start_date' => 'sometimes|date',
             'end_date' => 'sometimes|date|after:start_date',
             'discount' => 'nullable|numeric|min:0',
             'tax' => 'nullable|numeric|min:0',
-            'status' => 'sometimes|string|max:32',  // No enum validation
-            'client_id' => 'nullable|uuid',        // No exists rule
-            'quotation_id' => 'nullable|uuid',     // No exists rule
-            'invoice_id' => 'nullable|uuid',       // No exists rule
+            'status' => 'sometimes|string|max:32',   
+            'client_id' => 'nullable|uuid',        
+            'quotation_id' => 'nullable|uuid',     
+            'invoice_id' => 'nullable|uuid',       
         ];
     }
 
     public function messages(): array
     {
-        // Changed: Removed reference-specific messages
         return [
             'end_date.after' => 'End date must be after start date',
         ];

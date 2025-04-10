@@ -31,8 +31,8 @@ return new class extends Migration
             $table->uuid('contract_id')->nullable()->comment('Reference to contract if applicable');
             $table->uuid('created_by')->comment('User who created the quotation');
             $table->uuid('last_updated_by')->nullable()->comment('User who last updated');
+            $table->softDeletes()->comment('Timestamps when quotation was created/updated');
             $table->timestamps();
-            $table->softDeletes()->comment('Timestamp when quotation was deleted');
 
             // Indexes
             $table->index('quotation_number');

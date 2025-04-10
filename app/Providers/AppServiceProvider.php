@@ -25,44 +25,59 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        # Common function to log events
-        $logEvent = function ($userId, string $event, bool $success) {
-            $request = request();
-            $ip = $request->ip();
-
-            # Replace localhost IP with a test IP (optional)
-            if (in_array($ip, ['127.0.0.1', '::1'])) {
-                $ip = '66.102.0.0'; # Sample Google IP
-            }
-
+        # Listen to login event
+        Event::listen(Login::class, function ($event) {
+            $ip = getIpAddress();
             $location = Location::get($ip);
 
             UserLoginLog::create([
-                'user_id'    => $userId,
+                'user_id'    => $event->user->uuid,
                 'ip_address' => $ip,
-                'user_agent' => $request->header('User-Agent'),
-                'event'      => $event,
-                'success'    => $success,
+                'user_agent' => request()->header('User-Agent'),
+                'event'      => 'login',
                 'logged_at'  => now(),
-                'country'    => $location?->countryName ?? 'Unknown',
-                'state'      => $location?->regionName ?? 'Unknown',
-                'city'       => $location?->cityName ?? 'Unknown',
+                'country'    => $location?->countryName ?? '',
+                'state'      => $location?->regionName ?? '',
+                'city'       => $location?->cityName ?? '',
             ]);
-        };
-
-        # Listen to login event
-        Event::listen(Login::class, fn($event) => $logEvent($event->user->uuid, 'login', true));
+        });
 
         # Listen to failed login event
-        Event::listen(Failed::class, fn() => $logEvent(null, 'login', false));
+        Event::listen(Failed::class, function ($event) {
+            $ip = getIpAddress();
+            $location = Location::get($ip);
+
+            UserLoginLog::create([
+                'user_id'    => null,
+                'ip_address' => $ip,
+                'user_agent' => request()->header('User-Agent'),
+                'event'      => 'login',
+                'logged_at'  => now(),
+                'country'    => $location?->countryName ?? '',
+                'state'      => $location?->regionName ?? '',
+                'city'       => $location?->cityName ?? '',
+            ]);
+        });
 
         # Listen to logout event
-        Event::listen(Logout::class, fn($event) => $logEvent($event->user->uuid, 'logout', true));
+        Event::listen(Logout::class, function ($event) {
+            $ip = request()->ip();
+            $location = Location::get($ip);
+            UserLoginLog::create([
+                'user_id'    => $event->user->uuid,
+                'ip_address' => $ip,
+                'user_agent' => request()->header('User-Agent'),
+                'event'      => 'logout',
+                'logged_at'  => now(),
+                'country'    => $location?->countryName ?? '',
+                'state'      => $location?->regionName ?? '',
+                'city'       => $location?->cityName ?? '',
+            ]);
+        });
     }
 
     function module_exists(string $moduleName): bool
     {
         return \Module::has($moduleName) && \Module::isEnabled($moduleName);
     }
-    
 }

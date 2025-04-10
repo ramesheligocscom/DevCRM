@@ -1,5 +1,7 @@
 <script setup>
-import ConfirmDialog from '../dialog/ConfirmDialog.vue'
+import moment from 'moment';
+
+import ConfirmDialog from '../dialog/ConfirmDialog.vue';
 const searchQuery = ref('')
 const isDeleteDialogOpen = ref(false)
 
@@ -11,7 +13,7 @@ const orderBy = ref()
 const currentContract = ref(null);
 
 
-const tableHeaderSlug = ref('contact-list');
+const tableHeaderSlug = ref('contract-list');
 const headers = ref([]);
 const getFilteredHeaderValue = async (headerList) => { headers.value = headerList; };
 
@@ -51,8 +53,16 @@ const openDeleteDialog = (item) => {
   isDeleteDialogOpen.value = true;
 }
 
-fetchContracts();
-
+const refresh = () => {
+  fetchContracts();
+}
+ 
+const makeDateFormat = (date , onlyDate = false) => {
+    if(onlyDate)
+    return moment(date).format('DD-MM-Y');
+    else
+    return moment(date).format('LLLL');
+};
 </script>
 
 <template>
@@ -81,6 +91,14 @@ fetchContracts();
       <VDataTableServer v-model:items-per-page="itemsPerPage" v-model:page="page" :items="dataItems" item-value="name"
         :headers="headers.filter((header) => header.checked)" :items-length="totalItems" show-select
         class="text-no-wrap" @update:options="updateOptions">
+
+        <template #item.title="{ item }">
+        <RouterLink :to="{ name: 'contract-details-id', params: { id: item.id } }"
+                class="text-link font-weight-medium d-inline-block" style="line-height: 1.375rem;">
+                {{ item.title }}
+        </RouterLink>
+        </template>
+
         <!-- Actions Column -->
         <template #item.action="{ item }">
 
@@ -119,27 +137,31 @@ fetchContracts();
         <template #item.total="{ item }">
           ${{ item.total || 0 }}
         </template>
-        <!-- client -->
-        <template #item.client_id="{ item }">
-          {{ item.client?.name || '—' }}
-        </template>
-        <!-- quotation -->
-        <template #item.quotation_id="{ item }">
-          {{ item.quotation?.quotation_number || '—' }}
-        </template>
-        <!-- invoice -->
-        <template #item.invoice_id="{ item }">
-          {{ item.invoice?.invoice_number || '—' }}
-        </template>
         <!-- creator -->
         <template #item.created_by="{ item }">
           {{ item.creator?.name || '—' }}
         </template>
         <!-- updater -->
         <template #item.last_updated_by="{ item }">
-          {{ item.updater?.name || 0 }}
+          {{ item.updater?.name || '-' }}
         </template>
+        <!-- start_date -->
+        <template #item.start_date="{ item }">
+          {{ item.start_date ? makeDateFormat(item.start_date, true) : '-'}}
+        </template>
+        <!-- end_date -->
+        <template #item.end_date="{ item }">
+          {{ item.end_date ? makeDateFormat(item.end_date, true) : '-'}}
+        </template>
+        <!-- created_at -->
+        <template #item.created_at="{ item }">
+          {{ makeDateFormat(item.created_at )}}
+        </template>
+        <!-- updated_at -->
+        <template #item.updated_at="{ item }">
+          {{ item.updater ? makeDateFormat(item.updated_at ) : '-'}}
 
+        </template>
         <template #bottom>
           <TablePagination v-model:page="page" :items-per-page="itemsPerPage" :total-items="totalItems" />
         </template>
@@ -149,7 +171,7 @@ fetchContracts();
     <!-- 👉 Confirm Dialog -->
     <ConfirmDialog v-model:isDialogVisible="isDeleteDialogOpen" confirm-title="Delete!"
       confirmation-question="Are you sure want to delete contract?" :currentItem="currentContract"
-      @submit="fetchContracts" :endpoint="`/contracts/${currentContract?.id}`" @close="isDeleteDialogOpen = false" />
+      @submit="refresh" :endpoint="`/contracts/${currentContract?.id}`" @close="isDeleteDialogOpen = false" />
 
   </div>
 </template>

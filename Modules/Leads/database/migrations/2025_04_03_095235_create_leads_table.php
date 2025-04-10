@@ -29,12 +29,9 @@ return new class extends Migration
             // Lead tracking
             $table->string('status', 32)->default('new')->comment('Current status of the lead (new, contacted, qualified, etc.)');
             $table->string('source', 64)->nullable()->comment('How the lead was acquired');
-            $table->string('assigned_user', 32)->nullable()->comment('User assigned to handle this lead');
+            $table->uuid('assigned_user')->nullable()->comment('User assigned to handle this lead');
             $table->text('note')->nullable()->comment('Additional notes about the lead');
 
-            // Visit information
-            $table->string('visit_assignee', 32)->nullable()->comment('User assigned for site visit');
-            $table->timestampTz('visit_time')->nullable()->comment('Scheduled time for site visit');
 
             // Timestamps
             $table->uuid('created_by')->nullable()->comment('User who created the lead');

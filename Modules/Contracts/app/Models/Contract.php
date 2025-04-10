@@ -12,16 +12,19 @@ class Contract extends Model
     use SoftDeletes, HasUuids;
 
     protected $fillable = [
+        'title',
+        'description',
         'items',
         'start_date',
         'end_date',
         'sub_total',
         'discount',
         'tax',
+        'total',
         'status',
-        'client_id',      // Kept as nullable reference
-        'quotation_id',   // Kept as nullable reference
-        'invoice_id',     // Kept as nullable reference
+        'client_id',       
+        'quotation_id',    
+        'invoice_id',      
         'created_by',
         'last_updated_by'
     ];
@@ -62,22 +65,6 @@ class Contract extends Model
         ]));
     }
 
-    // Relationships (without foreign constraints)
-    public function client()
-    {
-        return $this->belongsTo(\Modules\Clients\Models\Client::class, 'client_id');
-    }
-
-    public function quotation()
-    {
-        return $this->belongsTo(\Modules\Quotations\Models\Quotation::class, 'quotation_id');
-    }
-
-    public function invoice()
-    {
-        return $this->belongsTo(\Modules\Invoices\Models\Invoice::class, 'invoice_id');
-    }
-
     public function creator()
     {
         return $this->belongsTo(\App\Models\User::class, 'created_by' , 'uuid');
@@ -88,6 +75,17 @@ class Contract extends Model
         return $this->belongsTo(\App\Models\User::class, 'last_updated_by', 'uuid');
     }
 }
+
+    // invoice table :
+    // invoice_number 
+    // title
+    // description
+    // quotation_id
+
+    // contract table :
+    // title
+    // description
+    // total
 
     // item object may be 
     // {

@@ -24,9 +24,12 @@ class InvoiceController extends Controller
             $request->integer('per_page', 15),
             $request->boolean('with_trashed'),
             $request->input('status'),
-            $request->input('client_id')
+            $request->input('client_id'),
+            $request->input('contract_id'),
+            $request->input('quotation_id'),
+            $request->input('created_by'),
+            $request->input('last_updated_by')
         );
-
         return response()->json([
             'data' => InvoiceResource::collection($paginated->items()),
             'meta' => [

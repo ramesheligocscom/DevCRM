@@ -1,6 +1,4 @@
 <script setup>
-import AppSelect from '@/@core/components/app-form-elements/AppSelect.vue'
-import AppTextField from '@/@core/components/app-form-elements/AppTextField.vue'
 import { v4 as uuidv4 } from 'uuid'
 import { ref, watch, watchEffect } from 'vue'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
@@ -17,6 +15,8 @@ const isLoading = ref(false)
 let isSubmitting = false
 
 const record = ref({
+  title:"",
+  description:"",
   items: [],
   start_date: '',
   end_date: '',
@@ -142,21 +142,27 @@ const onSubmit = async () => {
                   <strong class="text-primary">Basic</strong>
                 </VCol>
                 <VCol cols="12" md="6">
-                  <AppTextField v-model="record.start_date" :rules="[requiredValidator]" label="Start Date*"
-                    type="date" />
-                </VCol>
-
-                <VCol cols="12" md="6">
-                  <AppTextField v-model="record.end_date" :rules="[requiredValidator]" label="End Date*" type="date" />
+                
+                  <AppTextField v-model="record.title" label="Title"
+                     />
                 </VCol>
 
                 <VCol cols="12" md="6">
                   <AppSelect v-model="record.status" :rules="[requiredValidator]" label="Status*"
                     :items="['Pending', 'Approved', 'Rejected']" />
                 </VCol>
+                
+                <VCol cols="12" md="6">
+                  <AppDateTimePicker v-model="record.start_date" :rules="[requiredValidator]" label="Start Date*"
+                     />
+                </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppSelect v-model="record.client_id" :items="[]" label="Client ID*" />
+                  <AppDateTimePicker v-model="record.end_date" :rules="[requiredValidator]" label="End Date*"  />
+                </VCol>
+
+                <VCol cols="12" md="6">
+                  <AppSelect v-model="record.client_id" :items="[]" label="Client ID" />
                 </VCol>
 
                 <VCol cols="12" md="6">
@@ -167,6 +173,10 @@ const onSubmit = async () => {
                   <AppSelect v-model="record.invoice_id" :items="[]" label="Invoice ID" />
                 </VCol>
 
+                <VCol cols="12" md="12">
+                  <AppTextField v-model="record.description" label="Description"
+                     />
+                </VCol>
               </VRow>
             </VCol>
 

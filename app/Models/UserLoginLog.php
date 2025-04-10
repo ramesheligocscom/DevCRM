@@ -18,7 +18,6 @@ class UserLoginLog extends Model
         'city',
         'user_agent',
         'event',
-        'success',
         'logged_at'
     ];
     public $timestamps = false;

@@ -1,7 +1,11 @@
 <script setup>
 const props = defineProps({
-  currentLead: {
+  currentItem: {
     type: Object,
+    required: true,
+  },
+  endpoint: {
+    type: String,
     required: true,
   },
   confirmationQuestion: {
@@ -12,22 +16,6 @@ const props = defineProps({
     type: Boolean,
     required: true,
   },
-  confirmTitle: {
-    type: String,
-    required: true,
-  },
-  confirmMsg: {
-    type: String,
-    required: true,
-  },
-  cancelTitle: {
-    type: String,
-    required: true,
-  },
-  cancelMsg: {
-    type: String,
-    required: true,
-  },
 })
 
 const emit = defineEmits([
@@ -35,8 +23,6 @@ const emit = defineEmits([
   'confirm',
 ])
 
-const confirmed = ref(false)
-const cancelled = ref(false)
 
 const updateModelValue = val => {
   emit('update:isDialogVisible', val)
@@ -44,13 +30,12 @@ const updateModelValue = val => {
 
 const onConfirmation = async () => {
   try {
-    await $api(`/leads/${props.currentLead.id}`, { method: "DELETE" })
-
+    await $api(`${props.endpoint}`, { method: "DELETE" })
     emit('confirm', true)
+    emit('submit')
     updateModelValue(false)
-    confirmed.value = true
   } catch (error) {
-    console.error("Failed to delete lead:", error)
+    console.error("Failed to delete item:", error)
     // Optionally show toast here
   }
 }
@@ -59,7 +44,6 @@ const onConfirmation = async () => {
 const onCancel = () => {
   emit('confirm', false)
   emit('update:isDialogVisible', false)
-  cancelled.value = true
 }
 </script>
 
@@ -82,53 +66,8 @@ const onCancel = () => {
         <VBtn variant="elevated" @click="onConfirmation">
           Confirm
         </VBtn>
-
         <VBtn color="secondary" variant="tonal" @click="onCancel">
           Cancel
-        </VBtn>
-      </VCardText>
-    </VCard>
-  </VDialog>
-
-  <!-- confirmed -->
-  <VDialog v-model="confirmed" max-width="500">
-    <VCard>
-      <VCardText class="text-center px-10 py-6">
-        <VBtn icon variant="outlined" color="success" class="my-4"
-          style=" block-size: 88px;inline-size: 88px; pointer-events: none;">
-          <VIcon icon="tabler-check" size="38" />
-        </VBtn>
-
-        <h1 class="text-h4 mb-4">
-          {{ props.confirmTitle }}
-        </h1>
-
-        <p>{{ props.confirmMsg }}</p>
-
-        <VBtn color="success" @click="confirmed = false">
-          Ok
-        </VBtn>
-      </VCardText>
-    </VCard>
-  </VDialog>
-
-  <!-- Cancelled -->
-  <VDialog v-model="cancelled" max-width="500">
-    <VCard>
-      <VCardText class="text-center px-10 py-6">
-        <VBtn icon variant="outlined" color="error" class="my-4"
-          style=" block-size: 88px;inline-size: 88px; pointer-events: none;">
-          <span class="text-5xl font-weight-light">X</span>
-        </VBtn>
-
-        <h1 class="text-h4 mb-4">
-          {{ props.cancelTitle }}
-        </h1>
-
-        <p>{{ props.cancelMsg }}</p>
-
-        <VBtn color="success" @click="cancelled = false">
-          Ok
         </VBtn>
       </VCardText>
     </VCard>

@@ -24,7 +24,13 @@ class LeadController extends Controller
             $request->integer('per_page', 15),
             $request->boolean('with_trashed'),
             $request->input('status'),
-            $request->input('assigned_user')
+            $request->input('assigned_user'),
+            $request->input('client_id'),
+            $request->input('quotation_id'),
+            $request->input('contract_id'),
+            $request->input('invoice_id'),
+            $request->input('created_by'),
+            $request->input('last_updated_by')
         );
 
         return response()->json([
@@ -80,26 +86,4 @@ class LeadController extends Controller
             'message' => 'Lead deleted successfully'
         ]);
     }
-
-    public function clientsByLead($leadId , Request $request): JsonResponse
-    {
-        $paginated = $this->leadService->getPaginatedClients(
-            $request->integer('per_page', 15),
-            $request->boolean('with_trashed'),
-            $request->input('status'),
-            $leadId
-        );
-
-        return response()->json([
-            'data' => $paginated->items(),
-            'meta' => [
-                'current_page' => $paginated->currentPage(),
-                'per_page' => $paginated->perPage(),
-                'total' => $paginated->total(),
-                'last_page' => $paginated->lastPage(),
-            ],
-            'message' => 'Clients retrieved successfully'
-        ]);
-    }
-
 }

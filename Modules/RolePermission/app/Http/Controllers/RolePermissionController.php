@@ -174,11 +174,11 @@ class RolePermissionController extends Controller
         $query = PermissionType::query();
 
         if ($search) {
-            $query->where('name', 'LIKE', '%' . $search . '%')
+            $query->where('name', 'ILIKE', '%' . $search . '%')
                 ->orWhereHas('permission_category', function ($q) use ($search) {
-                    $q->where('name', 'LIKE', '%' . $search . '%')
+                    $q->where('name', 'ILIKE', '%' . $search . '%')
                         ->orWhereHas('permissions', function ($q) use ($search) {
-                            $q->where('title', 'LIKE', '%' . $search . '%');
+                            $q->where('title', 'ILIKE', '%' . $search . '%');
                         });
                 });
         }
@@ -274,7 +274,6 @@ class RolePermissionController extends Controller
 
     public function roleDelete(Request $request)
     {
-        dd($request->role_id ,$request->delete_text);
         $validator = Validator::make(['role_id' => $request->role_id], [
             'role_id' => 'required|exists:roles,id',
         ]);

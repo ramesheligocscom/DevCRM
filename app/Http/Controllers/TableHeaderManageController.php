@@ -30,7 +30,6 @@ class TableHeaderManageController extends Controller
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()->first()], 422);
         }
-        // dd(Auth::user()->uuid, $this->login_user->uuid);
         try {
             $header = TableHeaderManage::where('user_id', $this->login_user->uuid)->where('slug', $request->slug)->first();
 

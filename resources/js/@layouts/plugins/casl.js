@@ -12,10 +12,9 @@ import { useAbility } from '@casl/vue'
  */
 export const can = (action, subject) => {
   const vm = getCurrentInstance()
-  if (!vm)
-    return false
+  if (!vm) return false
   const localCan = vm.proxy && '$can' in vm.proxy
-    
+  // console.log(" can ", ' action ', action, ' Subject ', subject, ' localCan ', JSON.stringify(localCan));
   // return localCan ? vm.proxy?.$can(action, subject) : true
   return true;
 
@@ -28,19 +27,19 @@ export const can = (action, subject) => {
  */
 export const canViewNavMenuGroup = item => {
   const hasAnyVisibleChild = item.children.some(i => can(i.action, i.subject))
-
+  // console.log(" canViewNavMenuGroup ", JSON.stringify(item));
   // If subject and action is defined in item => Return based on children visibility (Hide group if no child is visible)
   // Else check for ability using provided subject and action along with checking if has any visible child
   if (!(item.action && item.subject))
     return hasAnyVisibleChild
-  
+
   // return can(item.action, item.subject) && hasAnyVisibleChild
   return true;
 
 }
 export const canNavigate = to => {
   const ability = useAbility()
-    
+  // console.log(" canNavigate ", JSON.stringify(to));
   // return to.matched.some(route => ability.can(route.meta.action, route.meta.subject))
   return true;
 }

@@ -3,9 +3,6 @@ import { nextTick, ref } from 'vue'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { VForm } from 'vuetify/components/VForm'
 
-// import AppDrawerHeaderSection from '@/@core/components/app-drawer/AppDrawerHeaderSection.vue'
-import AppSelect from '@/@core/components/app-form-elements/AppSelect.vue'
-import AppTextField from '@/@core/components/app-form-elements/AppTextField.vue'
 import { toast } from 'vue3-toastify'
 
 const props = defineProps({
@@ -31,8 +28,6 @@ const lead = ref({
   source: '',
   assigned_user: '',
   note: '',
-  visit_assignee: '',
-  visit_time: '',
   client_id: '',
   quotation_id: '',
   contract_id: '',
@@ -52,8 +47,6 @@ const resetForm = () => {
     source: '',
     assigned_user: '',
     note: '',
-    visit_assignee: '',
-    visit_time: '',
     client_id: '',
     quotation_id: '',
     contract_id: '',
@@ -117,7 +110,7 @@ const onSubmit = async () => {
       ? `/leads/${props.currentLead.id}?_method=PUT`
       : '/leads'
 
-    const res = await useApi(endpoint, {
+    const res = await $api(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
@@ -197,15 +190,6 @@ const onSubmit = async () => {
               </VCol>
 
               <VCol cols="12">
-                <AppSelect v-model="lead.visit_assignee" :items="[]" label="Visit Assignee*"
-                  placeholder="Employee Name" />
-              </VCol>
-
-              <VCol cols="12">
-                <AppTextField v-model="lead.visit_time" label="Visit Time*" type="datetime-local" />
-              </VCol>
-
-              <VCol cols="12">
                 <AppSelect v-model="lead.client_id" :items="[]" label="Client ID*" placeholder="Client Identifier" />
               </VCol>
 
@@ -228,7 +212,7 @@ const onSubmit = async () => {
                   {{ props.currentLead ? 'Update' : 'Add' }}
                 </VBtn>
                 <VBtn color="error" variant="tonal" @click="resetForm">
-                  Discard
+                  Reset
                 </VBtn>
               </VCol>
             </VRow>

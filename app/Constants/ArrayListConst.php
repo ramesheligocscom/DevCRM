@@ -113,6 +113,7 @@ class ArrayListConst
             'slug' => 'invoice-list',
             'table' => 'invoices',
             'headers' => [
+
               ['title' => 'Invoice Number', 'key' => 'invoice_number', 'sortable' => true, 'align' => 'left', 'checked' => true],
               ['title' => 'Title', 'key' => 'title', 'sortable' => true, 'align' => 'left', 'checked' => true],
               ['title' => 'Sub Total', 'key' => 'sub_total', 'sortable' => true, 'align' => 'left', 'checked' => true],

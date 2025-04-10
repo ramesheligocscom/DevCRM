@@ -3,7 +3,7 @@ import "@vuepic/vue-datepicker/dist/main.css";
 import dayjs from "dayjs";
 import Swal from "sweetalert2";
 import { computed, getCurrentInstance, ref } from "vue";
-import AddDrawer from '../add/AddDrawer.vue';
+import AddDrawer from './AddDrawer.vue';
 
 const instance = getCurrentInstance();
 const $can = instance?.proxy?.$can;
@@ -27,7 +27,7 @@ const action_bulk = ref(null);
 const selectedCard = ref(0);
 
 // Table headers configuration
-const tableHeaderSlug = ref('client-list');
+const tableHeaderSlug = ref('site-visit-list');
 const headers = ref([]);
 const getFilteredHeaderValue = async (headerList) => { headers.value = headerList; };
 
@@ -75,7 +75,7 @@ const fetchClients = async () => {
   loading.value = true;
 
   try {
-    const response = await $api(`/api/clients?status=${statusFilter.value ?? ""}&per_page=${itemsPerPage.value}`);
+    const response = await $api(`/sitevisit?status=${statusFilter.value ?? ""}&per_page=${itemsPerPage.value}`);
 
     filteredClients.value = response.data;
     clients.value = response.data; // Store all clients for reference
@@ -162,7 +162,7 @@ const deleteClient = async (id) => {
 
     if (!isConfirmed) return;
 
-    const response = await $api(`/api/clients/${id}`, { method: "DELETE" });
+    const response = await $api(`/sitevisit/${id}`, { method: "DELETE" });
     await Swal.fire({
       title: response.message || "Deleted!",
       text: "Client has been deleted.",
@@ -190,7 +190,7 @@ fetchClients();
     <VCard class="mb-6">
       <div class="d-flex justify-lg-space-between" style="margin: 20px">
         <div>
-          <div class="text-h5">Client</div>
+          <div class="text-h5">Site Visit</div>
           <VChip v-for="(data, index) in SelectedFilterValue" :key="index" closable @click:close="removeFilter(index)"
             style="font-size: x-small; height: 25px" class="mr-2">
             {{ data }}

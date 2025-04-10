@@ -1,8 +1,8 @@
 <?php
 
-namespace Modules\SiteVisits\Services;
+namespace Modules\SiteVisit\Services;
 
-use App\Modules\SiteVisit\Models\SiteVisit;
+use Modules\SiteVisit\Models\SiteVisit;
 use Illuminate\Database\Eloquent\Collection;
 
 class SiteVisitService
@@ -22,6 +22,7 @@ class SiteVisitService
 
     public function createVisit(array $data): SiteVisit
     {
+        $data['created_by'] = auth()->id(); // or auth()->user()->id
         return SiteVisit::create($data);
     }
 

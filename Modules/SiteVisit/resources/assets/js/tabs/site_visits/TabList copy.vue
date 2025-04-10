@@ -22,7 +22,7 @@ const headers = [
     key: 'visit_time',
   },
   {
-    title: 'visit_assignee',
+    title: 'visit assignee',
     key: 'visit_assignee',
   },
   {
@@ -130,7 +130,7 @@ const deleteOrder = async id => {
 
       <!-- Date -->
       <template #item.date="{ item }">
-        {{ new Date(item.date).toDateString() }}
+        {{ new Date(item.visit_time).toDateString() }}
       </template>
 
       <!-- Status -->

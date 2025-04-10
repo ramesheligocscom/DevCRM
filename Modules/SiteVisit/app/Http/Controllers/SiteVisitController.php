@@ -3,11 +3,11 @@
 namespace Modules\SiteVisit\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Modules\SiteVisits\Services\SiteVisitService;
+use Modules\SiteVisit\Services\SiteVisitService;
 use Illuminate\Http\JsonResponse;
 use Modules\SiteVisit\Http\Requests\{StoreSiteVisitRequest, UpdateSiteVisitRequest};
 use Modules\SiteVisit\Transformers\SiteVisitResource;
-
+use Symfony\Component\HttpFoundation\Response;
 class SiteVisitController extends Controller
 {
     protected $siteVisitService;
@@ -15,9 +15,6 @@ class SiteVisitController extends Controller
     public function __construct(SiteVisitService $siteVisitService)
     {
         $this->siteVisitService = $siteVisitService;
-
-        // Apply middleware if needed
-        $this->middleware('auth:api')->except(['index', 'show']);
     }
 
     public function index(): JsonResponse
@@ -32,10 +29,11 @@ class SiteVisitController extends Controller
     public function store(StoreSiteVisitRequest $request): JsonResponse
     {
         $visit = $this->siteVisitService->createVisit($request->validated());
+
         return response()->json([
+            'message' => __('Site visit created successfully'),
             'data' => new SiteVisitResource($visit),
-            'message' => 'Site visit created successfully'
-        ], 201);
+        ], Response::HTTP_CREATED);
     }
 
     public function show(string $id): JsonResponse
@@ -49,6 +47,7 @@ class SiteVisitController extends Controller
 
     public function update(UpdateSiteVisitRequest $request, string $id): JsonResponse
     {
+        dd($request->validated());
         $visit = $this->siteVisitService->updateVisit($id, $request->validated());
         return response()->json([
             'data' => new SiteVisitResource($visit),

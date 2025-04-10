@@ -1,5 +1,6 @@
 <script setup>
 import moment from 'moment';
+import { toast } from 'vue3-toastify';
 
 import ConfirmDialog from '../dialog/ConfirmDialog.vue';
 const searchQuery = ref('')

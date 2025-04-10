@@ -94,6 +94,22 @@ const quotationName = computed(() => props.InfoData.quotation?.quotation_number 
                       <strong>Description:</strong> {{ item.description || '—' }}
                     </VCol>
 
+                    <!-- ✅ Attribute Key-Value Loop -->
+                    <VCol cols="12" v-if="item.attributes.length">
+                      <strong class="text-primary">Attributes</strong>
+                    </VCol>
+
+                    <VCol cols="12" md="12" v-for="(attribute, i) in item.attributes" :key="i">
+                        <VRow >
+                          <VCol cols="12" lg="6" md="6">
+                            <strong>Key:</strong> {{ attribute.key || '—' }}
+                          </VCol>
+                          <VCol cols="12" lg="6" md="6" >
+                            <strong>Value:</strong> {{ attribute.value || '—' }}
+                          </VCol>
+                        </VRow>  
+                      </VCol>
+
                   </VRow>
                 </VCardText>
               </VCard>

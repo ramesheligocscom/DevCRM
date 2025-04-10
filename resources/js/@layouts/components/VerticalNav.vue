@@ -1,41 +1,30 @@
 <script setup>
-import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
-import { VNodeRenderer } from './VNodeRenderer'
+import { useCompanyStore } from "@/stores/companyStore"
 import { layoutConfig } from '@layouts'
-import {
-  VerticalNavGroup,
-  VerticalNavLink,
-  VerticalNavSectionTitle,
-} from '@layouts/components'
+import { VerticalNavGroup, VerticalNavLink, VerticalNavSectionTitle, } from '@layouts/components'
 import { useLayoutConfigStore } from '@layouts/stores/config'
 import { injectionKeyIsVerticalNavHovered } from '@layouts/symbols'
+import { computed, ref } from "vue"
+import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
+import { VNodeRenderer } from './VNodeRenderer'
+const companyStore = useCompanyStore();
 
 const props = defineProps({
-  tag: {
-    type: null,
-    required: false,
-    default: 'aside',
-  },
-  navItems: {
-    type: null,
-    required: true,
-  },
-  isOverlayNavActive: {
-    type: Boolean,
-    required: true,
-  },
-  toggleIsOverlayNavActive: {
-    type: Function,
-    required: true,
-  },
+  tag: { type: null, required: false, default: 'aside', },
+  navItems: { type: null, required: true, },
+  isOverlayNavActive: { type: Boolean, required: true, },
+  toggleIsOverlayNavActive: { type: Function, required: true, },
 })
 
 const refNav = ref()
 const isHovered = useElementHover(refNav)
 
 provide(injectionKeyIsVerticalNavHovered, isHovered)
-
 const configStore = useLayoutConfigStore()
+
+const BASE_URL = window.location.origin;
+const setting = computed(() => companyStore.companyDetails || {});
+console.log('VerticalNav setting ',setting.value.company_logo);
 
 const resolveNavItemComponent = item => {
   if ('heading' in item)
@@ -82,17 +71,16 @@ const hideTitleAndIcon = configStore.isVerticalNavMini(isHovered)
     <!-- 👉 Header -->
     <div class="nav-header">
       <slot name="nav-header">
-        <RouterLink
-          to="/"
-          class="app-logo app-title-wrapper"
-        >
-          <VNodeRenderer :nodes="layoutConfig.app.logo" />
 
+        <div class="w-100" v-if="setting && setting.company_logo">
+          <RouterLink to="/dashboard" class="app-logo app-title-wrapper justify-center">
+            <img :src="BASE_URL + `/` + setting.company_logo" alt="logo" class="header-logo" >
+          </RouterLink>
+        </div>
+        <RouterLink v-else to="/dashboard" class="app-logo app-title-wrapper" >
+          <VNodeRenderer :nodes="layoutConfig.app.logo" />
           <Transition name="vertical-nav-app-title">
-            <h1
-              v-show="!hideTitleAndIcon"
-              class="app-logo-title"
-            >
+            <h1 v-show="!hideTitleAndIcon" class="app-logo-title" >
               {{ layoutConfig.app.title }}
             </h1>
           </Transition>
@@ -208,12 +196,6 @@ const hideTitleAndIcon = configStore.isVerticalNavMini(isHovered)
 
   .nav-items {
     block-size: 100%;
-
-    // ℹ️ We no loner needs this overflow styles as perfect scrollbar applies it
-    // overflow-x: hidden;
-
-    // // ℹ️ We used `overflow-y` instead of `overflow` to mitigate overflow x. Revert back if any issue found.
-    // overflow-y: auto;
   }
 
   .nav-item-title {

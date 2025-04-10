@@ -19,7 +19,9 @@ class SiteVisitController extends Controller
 
     public function index(): JsonResponse
     {
+        
         $visits = $this->siteVisitService->getAllVisits();
+        // dd($visits);
         return response()->json([
             'data' => SiteVisitResource::collection($visits),
             'message' => 'Site visits retrieved successfully'
@@ -47,7 +49,6 @@ class SiteVisitController extends Controller
 
     public function update(UpdateSiteVisitRequest $request, string $id): JsonResponse
     {
-        dd($request->validated());
         $visit = $this->siteVisitService->updateVisit($id, $request->validated());
         return response()->json([
             'data' => new SiteVisitResource($visit),
@@ -57,9 +58,21 @@ class SiteVisitController extends Controller
 
     public function destroy(string $id): JsonResponse
     {
-        $this->siteVisitService->deleteVisit($id);
-        return response()->json([
-            'message' => 'Site visit deleted successfully'
-        ]);
+        try {
+            $this->siteVisitService->deleteVisit($id);
+            return response()->json([
+                'message' => 'Site visit deleted successfully'
+            ]);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json([
+                'message' => 'Site visit not found',
+                'error' => $e->getMessage()
+            ], 404);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to delete site visit',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }

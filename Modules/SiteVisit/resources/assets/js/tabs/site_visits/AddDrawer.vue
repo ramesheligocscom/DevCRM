@@ -31,16 +31,25 @@ const customer = ref({
 });
 
 const client = ref({
-  name: "",
-  contact_person: "",
-  email: "",
-  phone: "",
-  assign_to: "Unassigned",
+  visit_time: "",
+  visit_assignee: "",
+  status: "",
+  visit_notes: "",
+  lead_id: "",
+  client_id: "",
 });
 
 onMounted(() => {
-  if (props.currentClient?.name) {
-    client.value = _.cloneDeep(props.currentClient);
+  if (props.currentClient) {
+    client.value = _.cloneDeep({
+      visit_time: props.currentClient.visit_time,
+      visit_assignee: props.currentClient.visit_assignee,
+      status: props.currentClient.status,
+      visit_notes: props.currentClient.visit_notes,
+      lead_id: props.currentClient.lead_id,
+      client_id: props.currentClient.client_id,
+    });
+    date.value = props.currentClient.visit_time;
   }
 });
 
@@ -76,23 +85,26 @@ const onSubmit = async () => {
     isLoading.value = true;
 
     const payload = {
-      ...client.value,
       visit_time: date.value,
+      visit_assignee: client.value.visit_assignee,
+      status: client.value.status,
+      visit_notes: client.value.visit_notes,
+      lead_id: client.value.lead_id,
+      client_id: client.value.client_id,
     };
 
     const res = await $api(
       props.currentClient
-        ? `/sitevisit/${props.currentClient.id}?_method=PUT`
+        ? `/sitevisit/${props.currentClient.id}`
         : `/sitevisit`,
       {
-        method: "POST",
+        method: props.currentClient ? "PUT" : "POST",
         body: payload,
       }
     );
-    // console.log("response", res);
 
     if (res?.status === 200) {
-      toast.success(res?.message);
+      toast.success(res?.message || (props.currentClient ? "Site visit updated successfully" : "Site visit created successfully"));
 
       // Close the modal and reset form
       emit("submit");
@@ -102,43 +114,38 @@ const onSubmit = async () => {
 
       // Reset form data
       client.value = {
-        name: "",
-        contact_person: "",
-        email: "",
-        phone: "",
-        assign_to: "Unassigned",
+        visit_time: "",
+        visit_assignee: "",
+        status: "",
+        visit_notes: "",
+        lead_id: "",
+        client_id: "",
       };
+      date.value = "";
 
       // Reset form validation
       await nextTick(() => {
         refForm.value?.reset();
         refForm.value?.resetValidation();
       });
-      isLoading.value = false;
     } else {
-      toast.error(res?.message);
-      isLoading.value = false;
+      toast.error(res?.message || "An error occurred");
     }
   } catch (err) {
-    // Handle errors and show toast
     console.error("Error:", err);
-    isLoading.value = false;
-    toast.error(err?._data.message || "An unexpected error occurred");
+    toast.error(err?._data?.message || "An unexpected error occurred");
   } finally {
-    // Always unlock submitting state
     isSubmitting = false;
     isLoading.value = false;
   }
-
-  isSubmitting = false;
 };
 
 
 const statusOptions = [
-  { text: "Active", value: "active" },
-  { text: "Inactive", value: "inactive" },
-  { text: "Pending", value: "pending" },
-  // Add more options as needed
+  { text: "Scheduled", value: "scheduled" },
+  { text: "Completed", value: "completed" },
+  { text: "Canceled", value: "canceled" },
+  { text: "Rescheduled", value: "rescheduled" },
 ];
 
 
@@ -182,7 +189,7 @@ const date = ref('')
     <div v-if="isDrawerOpen" class="backdrop"></div>
     <VNavigationDrawer permanent :width="500" location="end" class="scrollable-content"
       :model-value="props.isDrawerOpen" @update:model-value="handleDrawerModelValueUpdate">
-      <AppDrawerHeaderSection :title="currentClient ? 'Edit Sites Visit' : 'Add Sites Visit'"
+      <AppDrawerHeaderSection :title="currentClient ? 'Edit Site Visit' : 'Add Site Visit'"
         @cancel="closeNavigationDrawer" />
       <VDivider />
       <PerfectScrollbar :options="{ wheelPropagation: false }">
@@ -190,7 +197,7 @@ const date = ref('')
           <VForm ref="refForm" v-model="valid" @submit.prevent="onSubmit">
             <VRow>
               <VCol cols="12">
-                <AppDateTimePicker v-model="date" label="Date & TIme" placeholder="Select date and time"
+                <AppDateTimePicker v-model="date" label="Date & Time" placeholder="Select date and time"
                   :config="{ enableTime: true, dateFormat: 'Y-m-d H:i' }" />
               </VCol>
               <VCol cols="12">
@@ -209,12 +216,11 @@ const date = ref('')
                   item-title="text" item-value="value" clearable />
               </VCol>
               <VCol cols="12">
-                <AppTextField v-model="visit_time" label="Visit Notes" placeholder=" Visit Notes" autofocus />
+                <AppTextField v-model="client.visit_notes" label="Visit Notes" placeholder="Visit Notes" autofocus />
               </VCol>
               <VCol cols="12">
                 <VSelect v-model="client.client_id" :items="userOptions" label="Client" placeholder="Select Client"
                   item-title="name" item-value="id" clearable>
-                  <!-- Simplified item template -->
                   <template #item="{ item }">
                     <VListItem :title="item.raw.name" :subtitle="item.raw.email" />
                   </template>
@@ -232,22 +238,12 @@ const date = ref('')
                 </VSelect>
               </VCol>
 
-
-              <!-- <VCol cols="12">
-                <VSelect v-model="client.assigned_user" :items="userOptions" label="Assigned User"
-                  placeholder="Select Assigned User *" item-title="name" item-value="id" clearable>
-                  <template #selection="{ item }">
-                    <span>{{ item.title }}</span>
-                  </template>
-                  <template #item="{ props, item }">
-                    <VListItem v-bind="props" :title="item.raw.name" :subtitle="item.raw.email"></VListItem>
-                  </template>
-                </VSelect>
-              </VCol> -->
-
               <VCol cols="12">
-                <VBtn type="submit" class="me-3">
+                <VBtn type="submit" class="me-3" :loading="isLoading">
                   {{ currentClient ? "Update" : "Submit" }}
+                </VBtn>
+                <VBtn variant="tonal" color="secondary" @click="closeNavigationDrawer">
+                  Cancel
                 </VBtn>
               </VCol>
             </VRow>

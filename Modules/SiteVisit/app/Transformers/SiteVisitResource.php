@@ -9,17 +9,20 @@ class SiteVisitResource extends JsonResource
 {
     public function toArray($request)
     {
+        // dd($this);
         return [
             'id' => $this->id,
             'uuid' => $this->uuid,
             'visit_time' => $this->visit_time->toDateTimeString(),
             'visit_assignee' => $this->visit_assignee,
-            'assignee_name' => "test",
-            // 'assignee_name' => $this->whenLoaded('assignee', function () {
-            //     return $this->assignee->name;
-            // }),
+            'assignee_name' => $this->whenLoaded('assignee', function () {
+                return $this->assignee->name;
+            }),
             'created_at' => $this->created_at->toDateTimeString(),
             'created_by' => $this->created_by,
+            'creator_name' => $this->whenLoaded('creator', function () {
+                return $this->creator->name;
+            }),
             'status' => $this->status,
             'visit_notes' => $this->visit_notes,
             'lead_id' => $this->lead_id,

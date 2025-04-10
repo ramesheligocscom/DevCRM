@@ -185,6 +185,20 @@ class ArrayListConst
         ['title' => 'Action', 'key' => 'action', 'sortable' => false, 'align' => 'center', 'checked' => true],
       ]
     ],
+
+
+    [
+        'title' => 'Client Site Visit',
+        'slug' => 'client-site-visit',
+        'table' => 'site_visits',
+        'headers' => [
+          ['title' => 'Visit Time', 'key' => 'visit_time', 'sortable' => true, 'align' => 'left', 'minWidth' => '140px', 'checked' => true],
+          ['title' => 'assignee name', 'key' => 'assignee_name', 'sortable' => true, 'align' => 'left', 'checked' => true],
+          ['title' => 'Created At', 'key' => 'created_at', 'sortable' => true, 'align' => 'left', 'checked' => true],
+          ['title' => 'Created By', 'key' => 'created_by', 'sortable' => false, 'align' => 'left', 'checked' => true],
+          ['title' => 'Action', 'key' => 'action', 'sortable' => false, 'align' => 'center', 'checked' => true],
+        ]
+      ],
      
   ];
 }

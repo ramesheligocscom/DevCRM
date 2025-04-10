@@ -21,24 +21,35 @@ class SiteVisit extends Model
         'status',
         'visit_notes',
         'lead_id',
-        'client_id',
     ];
 
     protected $casts = [
         'visit_time' => 'datetime',
         'id' => 'string',
-        'lead_id' => 'string',
-        'client_id' => 'string'
+        'lead_id' => 'string'
     ];
 
 
     public function lead()
     {
-        return $this->belongsTo(\Modules\Clients\Models\Lead::class);
+        return $this->belongsTo(\Modules\Leads\Models\Lead::class)->withDefault();
+    }
+
+    public function assignee()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'visit_assignee')->withDefault();
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'created_by')->withDefault();
     }
 
     public function client()
     {
-        return $this->belongsTo(\Modules\Clients\Models\Client::class);
+        return $this->belongsTo(\Modules\Clients\Models\Client::class)->withDefault();
     }
+
+
+    
 }

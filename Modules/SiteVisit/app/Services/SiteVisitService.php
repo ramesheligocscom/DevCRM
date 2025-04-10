@@ -9,15 +9,21 @@ class SiteVisitService
 {
     public function getAllVisits(): Collection
     {
-        return SiteVisit::with(['assignee', 'lead', 'client'])
+        return SiteVisit::with(['assignee', 'creator', 'lead'])
             ->get();
     }
 
     public function getVisitById(string $id): SiteVisit
     {
-        return SiteVisit::with(['assignee', 'lead', 'client'])
+        $visit = SiteVisit::with(['assignee', 'creator', 'lead'])
             ->where('id', $id)
-            ->firstOrFail();
+            ->first();
+            
+        if (!$visit) {
+            throw new \Illuminate\Database\Eloquent\ModelNotFoundException("No query results for model [Modules\SiteVisit\Models\SiteVisit] with ID {$id}");
+        }
+        
+        return $visit;
     }
 
     public function createVisit(array $data): SiteVisit

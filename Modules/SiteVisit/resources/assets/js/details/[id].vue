@@ -28,7 +28,7 @@ const handleTabChange = (tab) => {
       name: 'follow-up',
       params: { 
         id: route.params.id,
-        type: 'site-visit'
+        type: 'client'
       }
     })
   }
@@ -38,7 +38,7 @@ const handleTabChange = (tab) => {
 <template>
   <div>
     <!-- 👉 Header  -->
-    <div class="d-flex justify-space-between align-center flex-wrap gap-y-4 mb-6">
+    <!-- <div class="d-flex justify-space-between align-center flex-wrap gap-y-4 mb-6">
       <div>
         <h4 class="text-h4 mb-1">
           Customer ID #{{ route.params.id }}
@@ -47,7 +47,7 @@ const handleTabChange = (tab) => {
           Aug 17, 2020, 5:48 (ET)
         </div>
       </div>
-    </div>
+    </div> -->
     <!-- 👉 Customer Profile  -->
     <VRow>
       <VCol cols="12" md="12" lg="12">

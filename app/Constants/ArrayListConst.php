@@ -200,5 +200,18 @@ class ArrayListConst
         ]
       ],
      
+    [
+      'title' => 'Follw up',
+      'slug' => 'follow-up',
+      'table' => 'follow-up',
+        'headers' => [
+          ['title' => 'Call Status', 'key' => 'call_status', 'sortable' => true, 'align' => 'left', 'minWidth' => '140px', 'checked' => true],
+          ['title' => 'Call Summary', 'key' => 'call_summary', 'sortable' => true, 'align' => 'left', 'checked' => true],
+          ['title' => 'Created At', 'key' => 'created_at', 'sortable' => true, 'align' => 'left', 'checked' => true],
+          ['title' => 'Created By', 'key' => 'created_by', 'sortable' => false, 'align' => 'left', 'checked' => true],
+          ['title' => 'Action', 'key' => 'action', 'sortable' => false, 'align' => 'center', 'checked' => true],
+        ]
+      ],
+     
   ];
 }

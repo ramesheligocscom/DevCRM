@@ -7,10 +7,15 @@ use Illuminate\Database\Eloquent\Collection;
 
 class SiteVisitService
 {
-    public function getAllVisits(): Collection
+    public function getAllVisits(?string $status = null): Collection
     {
-        return SiteVisit::with(['assignee', 'creator', 'lead'])
-            ->get();
+        $query = SiteVisit::with(['assignee', 'creator', 'lead', 'client']);
+        
+        if ($status) {
+            $query->where('status', $status);
+        }
+        
+        return $query->latest()->get();
     }
 
     public function getVisitById(string $id): SiteVisit
@@ -37,6 +42,13 @@ class SiteVisitService
         $visit = $this->getVisitById($id);
         $visit->update($data);
         return $visit->fresh(); // Return refreshed model
+    }
+
+    public function updateStatus(string $id, string $status): SiteVisit
+    {
+        $visit = $this->getVisitById($id);
+        $visit->update(['status' => $status]);
+        return $visit->fresh();
     }
 
     public function deleteVisit(string $id): bool

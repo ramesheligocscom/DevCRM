@@ -14,17 +14,8 @@ return new class extends Migration
         Schema::create('follow_ups', function (Blueprint $table) {
             // Primary key as UUID
             $table->uuid('id')->primary()->comment('Primary key identifier using UUID');
-
-            // Call status tracking
-            $table->enum('call_status', [
-                'completed',
-                'pending',
-                'no_answer',
-                'busy',
-                'failed'
-            ])->comment('Current status of the follow-up call');
-
             // Lead/prospect classification
+            $table->string('call_status', 32)->comment('Current status of the follow-up call');
             $table->string('lead_prospect', 32)->comment('Type of contact (lead/prospect)');
 
             // Call details

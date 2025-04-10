@@ -2,7 +2,9 @@
 
 namespace Modules\FollowUp\Services;
 
-use App\Modules\FollowUp\Models\FollowUp;
+use Modules\FollowUp\Models\FollowUp;
+use Illuminate\Pagination\LengthAwarePaginator;
+
 
 class FollowUpService
 {
@@ -11,6 +13,45 @@ class FollowUpService
         return FollowUp::with(['lead', 'client', 'creator', 'updater'])
             ->latest()
             ->get();
+    }
+
+    public function getPaginatedFollowUps(
+        int $perPage = 15,
+        bool $withTrashed = false,
+        ?string $status = null,
+        ?string $clientId = null,
+        ?string $leadId = null,
+        ?string $createdBy = null,
+        ?string $lastUpdatedBy = null
+    ): LengthAwarePaginator
+    {
+        $query = FollowUp::query()->with(['lead', 'client', 'creator', 'updater']);
+        
+        if ($withTrashed) {
+            $query->withTrashed();
+        }
+        
+        if ($status) {
+            $query->where('status', $status);
+        }
+        
+        if ($clientId) {
+            $query->where('client_id', $clientId);
+        }
+        
+        if ($leadId) {
+            $query->where('lead_id', $leadId);
+        }
+        
+        if ($createdBy) {
+            $query->where('created_by', $createdBy);
+        }
+        
+        if ($lastUpdatedBy) {
+            $query->where('last_updated_by', $lastUpdatedBy);
+        }
+        
+        return $query->latest()->paginate($perPage);
     }
 
     public function getFollowUpById(string $id)

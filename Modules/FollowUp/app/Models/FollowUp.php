@@ -48,21 +48,23 @@ class FollowUp extends Model
 
     public function lead()
     {
-        return $this->belongsTo(Lead::class);
+        return $this->belongsTo(\Modules\Leads\Models\Lead::class)->withDefault();
+    
     }
 
     public function client()
     {
-        return $this->belongsTo(Client::class);
+        return $this->belongsTo(\Modules\Clients\Models\Client::class)->withDefault();
+    
     }
 
     public function creator()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(\App\Models\User::class, 'created_by');
     }
 
     public function updater()
     {
-        return $this->belongsTo(User::class, 'last_updated_by');
+        return $this->belongsTo(\App\Models\User::class, 'last_updated_by');
     }
 }

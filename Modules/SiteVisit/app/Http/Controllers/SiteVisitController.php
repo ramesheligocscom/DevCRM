@@ -24,8 +24,9 @@ class SiteVisitController extends Controller
         // dd($visits);
         return response()->json([
             'data' => SiteVisitResource::collection($visits),
-            'message' => 'Site visits retrieved successfully'
-        ]);
+            'message' => 'Site visits retrieved successfully',
+            'status' => Response::HTTP_OK
+        ], Response::HTTP_OK);
     }
 
     public function store(StoreSiteVisitRequest $request): JsonResponse
@@ -35,6 +36,7 @@ class SiteVisitController extends Controller
         return response()->json([
             'message' => __('Site visit created successfully'),
             'data' => new SiteVisitResource($visit),
+            'status' => Response::HTTP_CREATED
         ], Response::HTTP_CREATED);
     }
 
@@ -43,8 +45,9 @@ class SiteVisitController extends Controller
         $visit = $this->siteVisitService->getVisitById($id);
         return response()->json([
             'data' => new SiteVisitResource($visit),
-            'message' => 'Site visit retrieved successfully'
-        ]);
+            'message' => 'Site visit retrieved successfully',
+            'status' => Response::HTTP_OK
+        ], Response::HTTP_OK);
     }
 
     public function update(UpdateSiteVisitRequest $request, string $id): JsonResponse
@@ -52,8 +55,9 @@ class SiteVisitController extends Controller
         $visit = $this->siteVisitService->updateVisit($id, $request->validated());
         return response()->json([
             'data' => new SiteVisitResource($visit),
-            'message' => 'Site visit updated successfully'
-        ]);
+            'message' => 'Site visit updated successfully',
+            'status' => Response::HTTP_OK
+        ], Response::HTTP_OK);
     }
 
     public function destroy(string $id): JsonResponse
@@ -62,17 +66,17 @@ class SiteVisitController extends Controller
             $this->siteVisitService->deleteVisit($id);
             return response()->json([
                 'message' => 'Site visit deleted successfully'
-            ]);
+            ], Response::HTTP_OK);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json([
                 'message' => 'Site visit not found',
                 'error' => $e->getMessage()
-            ], 404);
+            ], Response::HTTP_NOT_FOUND);
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Failed to delete site visit',
                 'error' => $e->getMessage()
-            ], 500);
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

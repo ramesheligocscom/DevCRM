@@ -18,7 +18,7 @@ const orderBy = ref();
 const loading = ref(true);
 const filteredClients = ref([]);
 const clientCards = ref([]);
-const statusFilter = ref("");
+const statusFilter = ref("active");
 const openClientModal = ref(false);
 const openClientFilterModal = ref(false);
 const selectedClient = ref([]);
@@ -27,20 +27,12 @@ const selectedCard = ref(0);
 const currentLead = ref(null);
 const isDeleteDialogOpen = ref(false)
 // Table headers configuration
-const tableHeaderSlug = ref('client-site-visit');
+const tableHeaderSlug = ref('follow-up');
 const headers = ref([]);
 const getFilteredHeaderValue = async (headerList) => { headers.value = headerList; };
 
 const bulkAction = ref([]);
 const assignedToArray = ref([]);
-
-const statusChips = ref([
-  { text: "All", value: "" },
-  { text: "Scheduled", value: "scheduled" },
-  { text: "Completed", value: "completed" },
-  { text: "Canceled", value: "canceled" },
-  { text: "Rescheduled", value: "rescheduled" }
-]);
 
 const dropdownUserList = async () => {
   try {
@@ -83,7 +75,7 @@ const fetchClients = async () => {
   loading.value = true;
 
   try {
-    const response = await $api(`/sitevisit?status=${statusFilter.value ?? ""}&per_page=${itemsPerPage.value}`);
+    const response = await $api(`/followup?status=${statusFilter.value ?? ""}&per_page=${itemsPerPage.value}`);
 
     filteredClients.value = response.data;
     clients.value = response.data; // Store all clients for reference
@@ -98,33 +90,43 @@ const fetchClients = async () => {
     clientCards.value = [
       {
         title: response.meta.total ?? 0,
-        text: "Total Site Visits",
+        text: "Total Clients",
         color: "primary",
         icon: "tabler-users",
       },
       {
-        title: response.data.filter(client => client.status === 'scheduled').length ?? 0,
-        text: "Scheduled",
-        color: "info",
-        icon: "tabler-calendar",
-      },
-      {
-        title: response.data.filter(client => client.status === 'completed').length ?? 0,
-        text: "Completed",
+        title: response.data.filter(client => client.status === 'active').length ?? 0,
+        text: "Active",
         color: "success",
-        icon: "tabler-check",
+        icon: "tabler-users-plus",
       },
       {
-        title: response.data.filter(client => client.status === 'canceled').length ?? 0,
-        text: "Canceled",
+        title: response.data.filter(client => client.status !== 'active').length ?? 0,
+        text: "In Active",
         color: "error",
-        icon: "tabler-x",
+        icon: "tabler-user-up",
       },
     ];
   } catch (error) {
-    console.error('Error fetching site visits:', error);
+    console.error('Error fetching clients:', error);
   } finally {
     loading.value = false;
+  }
+};
+
+const refresh = async (newData) => {
+  await fetchClients();
+  isDeleteDialogOpen.value = false;
+  openClientModal.value = false;
+  
+  // If we have new data, update the local state immediately
+  if (newData) {
+    const index = filteredClients.value.findIndex(item => item.id === newData.id);
+    if (index !== -1) {
+      filteredClients.value[index] = { ...filteredClients.value[index], ...newData };
+    } else {
+      filteredClients.value.unshift(newData);
+    }
   }
 };
 
@@ -144,32 +146,6 @@ const openDeleteDialog = (item) => {
   isDeleteDialogOpen.value = true;
 }
 
-const refresh = async (newData) => {
-  // First fetch fresh data
-  await fetchClients();
-  
-  // Close modals
-  isDeleteDialogOpen.value = false;
-  openClientModal.value = false;
-  
-  // If we have new data, update the local state immediately
-  if (newData) {
-    const index = filteredClients.value.findIndex(item => item.id === newData.id);
-    if (index !== -1) {
-      // Update existing item
-      filteredClients.value[index] = { ...filteredClients.value[index], ...newData };
-    } else {
-      // Add new item to the beginning of the list
-      filteredClients.value.unshift(newData);
-    }
-  }
-};
-
-const handleStatusChange = (newStatus) => {
-  statusFilter.value = newStatus;
-  fetchClients();
-};
-
 // Initial fetch
 dropdownUserList();
 fetchClients();
@@ -180,19 +156,7 @@ fetchClients();
     <VCard class="mb-6">
       <div class="d-flex justify-lg-space-between" style="margin: 20px">
         <div>
-          <div class="text-h5">Site Visit</div>
-          <div class="d-flex align-center mt-2">
-            <VChip
-              v-for="chip in statusChips"
-              :key="chip.value"
-              :color="statusFilter === chip.value ? 'primary' : undefined"
-              class="me-2"
-              @click="handleStatusChange(chip.value)"
-              style="cursor: pointer"
-            >
-              {{ chip.text }}
-            </VChip>
-          </div>
+          <div class="text-h5">Follow Up</div>
           <VChip v-for="(data, index) in SelectedFilterValue" :key="index" closable @click:close="removeFilter(index)"
             style="font-size: x-small; height: 25px" class="mr-2">
             {{ data }}
@@ -233,40 +197,34 @@ fetchClients();
       <VDataTable v-else :items="searchedClients" :items-length="searchedClients.length"
         :headers="headers.filter((header) => header.checked)" class="text-no-wrap" @update:options="updateOptions"
         v-model:items-per-page="itemsPerPage" v-model:page="page" show-select v-model="selectedClient">
-        
-        <template #item.visit_time="{ item }">
-          {{ item?.visit_time || '-' }}
+        <!-- Name Column -->
+   
+        <template #item.call_status="{ item }">
+          {{ item?.call_status || '-' }}
         </template>
-        
-        <template #item.assignee_name="{ item }">
-          {{ item.assignee_name || '-' }}
+         <!-- assigned_user -->
+         <template #item.call_summary="{ item }">
+          {{ item.call_summary || '-' }}
         </template>
-        
-        <template #item.status="{ item }">
-          {{ item.status || '-' }}
-        </template>
-        
-        <template #item.visit_notes="{ item }">
-          {{ item.visit_notes || '-' }}
-        </template>
-        
-        <template #item.created_at="{ item }">
+         <template #item.created_at="{ item }">
           {{ item.created_at || '-' }}
         </template>
-        
-        <template #item.created_by="{ item }">
+         <template #item.created_by="{ item }">
           {{ item.created_by || '-' }}
         </template>
 
+
+        <!-- Actions Column -->
         <template #item.action="{ item }">
           <IconBtn @click="editBranch(item)" v-if="$can('client', 'edit')">
-            <VIcon icon="tabler-pencil" />
+            <VIcon icon="tabler-pencil" />x
           </IconBtn>
 
           <RouterLink v-if="$can('client', 'show')" :to="{
             name: 'site-visit',
             params: { type: 'client', id: item.id }
           }">
+
             <VIcon color="secondary" icon="tabler-eye" />
           </RouterLink>
 
@@ -275,6 +233,7 @@ fetchClients();
           </IconBtn>
         </template>
 
+        <!-- Pagination -->
         <template #bottom>
           <Pagination :pagination="pagination" :itemsPerPage="itemsPerPage" @update:itemsPerPage="itemsPerPage = $event"
             @paginate="paginate" />
@@ -282,13 +241,18 @@ fetchClients();
       </VDataTable>
     </VCard>
 
+
+
+    
     <!-- 👉 Confirm Dialog -->
     <ConfirmDialog v-model:isDialogVisible="isDeleteDialogOpen" confirm-title="Delete!"
       confirmation-question="Are you sure want to delete lead?" :currentItem="currentLead" @submit="refresh"
-      :endpoint="`/sitevisit/${currentLead?.id}`" @close="isDeleteDialogOpen = false" />
+      :endpoint="`/followup/${currentLead?.id}`" @close="isDeleteDialogOpen = false" />
     <!-- Client Add/Edit Drawer -->
     <AddDrawer v-model:isDrawerOpen="openClientModal" :currentClient="currentClient" @submit="refresh"
-      @statusChange="handleStatusChange" v-if="openClientModal" :clients="clients" />
+      v-if="openClientModal" :clients="clients" />
+
+
   </section>
 </template>
 

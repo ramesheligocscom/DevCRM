@@ -25,7 +25,7 @@ const isAddCustomerDrawerOpen = ref(false)
 const handleTabChange = (tab) => {
   if (tab === 1) { // Follow Up tab
     router.push({
-      name: 'follow-up',
+      name: 'site-visit',
       params: { 
         id: route.params.id,
         type: 'site-visit'

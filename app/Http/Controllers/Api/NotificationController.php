@@ -49,14 +49,14 @@ class NotificationController extends Controller
             # Base query with user filtering
             $query = Notification::query();
             if (!array_intersect($roleSlugs, [RolePermissionConst::SLUG_SUPER_ADMIN, RolePermissionConst::SLUG_ADMIN])) {
-                $query->where('show_ids', 'LIKE', '%' . $user->id . '%');
+                $query->where('show_ids', 'LIKE', '%' . $user->uuid . '%');
             }
 
             # Get total notifications count
             $total = $query->count();
 
             # Get read notifications count
-            $query_1 = NotificationUser::query()->where('user_id', $this->login_user->id);
+            $query_1 = NotificationUser::query()->where('user_id', $this->login_user->uuid);
             $read_count = $query_1->where('is_read', true)
                 ->whereIn('notification_id', $query->pluck('id')) # Get only relevant notifications
                 ->count();
@@ -79,13 +79,13 @@ class NotificationController extends Controller
     {
         try {
             $query = Notification::query()->search($request)->with(['creator:id,name', 'lead:id,name', 'client:id,name', 'read' => function ($que) {
-                $que->where('user_id', $this->login_user->id);
+                $que->where('user_id', $this->login_user->uuid);
             }]);
 
             $user = $this->login_user;
             $roleSlugs = $user->roles()->pluck('slug')->toArray();
             if (!array_intersect($roleSlugs, [RolePermissionConst::SLUG_SUPER_ADMIN, RolePermissionConst::SLUG_ADMIN])) {
-                $query->where('show_ids', 'LIKE', '%' . $user->id . '%');
+                $query->where('show_ids', 'LIKE', '%' . $user->uuid . '%');
             }
 
             $list = $query->latest()->limit(5)->get();
@@ -105,13 +105,13 @@ class NotificationController extends Controller
             $endDate = $request->endDate ?? null;
             $user = $this->login_user;
             $roleSlugs = $user->roles()->pluck('slug')->toArray();
-            
+
             $query = Notification::query()->search($request)->with(['creator:id,name', 'lead:id,name', 'client:id,name', 'read' => function ($que) {
-                $que->where('user_id', $this->login_user->id);
+                $que->where('user_id', $this->login_user->uuid);
             }]);
 
             if (!array_intersect($roleSlugs, [RolePermissionConst::SLUG_SUPER_ADMIN, RolePermissionConst::SLUG_ADMIN])) {
-                $query->where('show_ids', 'LIKE', '%' . $user->id . '%');
+                $query->where('show_ids', 'LIKE', '%' . $user->uuid . '%');
             }
 
             $query->when($startDate && $endDate, function ($query) use ($startDate, $endDate) {
@@ -145,7 +145,7 @@ class NotificationController extends Controller
             if (!$notificationUser) {
                 $notificationUser = new NotificationUser();
                 $notificationUser->notification_id = $request->notification_id;
-                $notificationUser->user_id = $request->user_id ? $request->user_id : Auth::id();
+                $notificationUser->user_id = $request->user_id ? $request->user_id : Auth::user()->uuid;
             }
             $notificationUser->is_read = $request->is_read;
             $notificationUser->save();
@@ -175,23 +175,23 @@ class NotificationController extends Controller
 
             $query = Notification::query();
             if (!array_intersect($roleSlugs, [RolePermissionConst::SLUG_SUPER_ADMIN, RolePermissionConst::SLUG_ADMIN])) {
-                $query->where('show_ids', 'LIKE', '%' . $user->id . '%');
+                $query->where('show_ids', 'LIKE', '%' . $user->uuid . '%');
             }
 
             if ($request->is_read) {
-                $read_ids = NotificationUser::where('user_id', $user->id)->where('is_read', false)->pluck('notification_id')->toArray();
+                $read_ids = NotificationUser::where('user_id', $user->uuid)->where('is_read', false)->pluck('notification_id')->toArray();
             } else {
-                $read_ids = NotificationUser::where('user_id', $user->id)->where('is_read', true)->pluck('notification_id')->toArray();
+                $read_ids = NotificationUser::where('user_id', $user->uuid)->where('is_read', true)->pluck('notification_id')->toArray();
             }
 
             $notificationIds = $query->whereIn('id', $read_ids)->pluck('id')->toArray();
 
             foreach ($notificationIds as $key => $notification_id) {
-                $notificationUser = NotificationUser::where('notification_id', $notification_id)->where('user_id', $user->id)->first();
+                $notificationUser = NotificationUser::where('notification_id', $notification_id)->where('user_id', $user->uuid)->first();
                 if (!$notificationUser) {
                     $notificationUser = new NotificationUser();
                     $notificationUser->notification_id = $notification_id;
-                    $notificationUser->user_id = $user->id;
+                    $notificationUser->user_id = $user->uuid;
                 }
                 $notificationUser->is_read = $request->is_read;
                 $notificationUser->save();

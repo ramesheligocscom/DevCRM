@@ -126,6 +126,15 @@ class RolePermissionConst
                         ["name" => 'Save General Setting', "action" => "generalSetting", "slug" => 'save'],
                     ]
                 ],
+                [
+                    'name' => 'Status',
+                    "permission_list" => [
+                        ["name" => 'View Status', "action" => "status", "slug" => 'view'],
+                        ["name" => 'Create Status', "action" => "status", "slug" => 'create'],
+                        ["name" => 'Update Status', "action" => "status", "slug" => 'update'],
+                        ["name" => 'Delete Status', "action" => "status", "slug" => 'delete'],
+                    ]
+                ],
             ]
         ],
     ];

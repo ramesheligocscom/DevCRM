@@ -7,6 +7,22 @@ class ArrayListConst
 
   # TODO: this list Slug Plz make Unique And Change slug to plz Check Vue or js file in change slug 
   const HEADER_MANAGE_LIST = [
+    # Setting Status List Header 
+    [
+      'title' => 'Setting Status List',
+      'slug' => 'setting-status-list',
+      'table' => 'admin_control_configs',
+      'headers' => [
+        ['title' => 'Page Name', 'key' => 'status_for', 'sortable' => true, 'align' => 'left', 'minWidth' => '140px', 'checked' => true],
+        ['title' => 'Status Name', 'key' => 'status_text', 'sortable' => false, 'align' => 'left', 'checked' => true],
+        ['title' => 'Color', 'key' => 'status_color', 'sortable' => false, 'align' => 'left', 'checked' => true],
+        ['title' => 'Position', 'key' => 'position', 'sortable' => false, 'align' => 'left', 'checked' => true],
+        ['title' => 'Status', 'key' => 'status', 'sortable' => false, 'align' => 'left', 'checked' => true],
+        ['title' => 'Invoice Footer Text', 'key' => 'invoice_footer_text', 'sortable' => false, 'align' => 'left', 'checked' => false],
+        ['title' => 'Contract Footer Text', 'key' => 'contract_footer_text', 'sortable' => false, 'align' => 'left', 'checked' => false],
+        ['title' => 'Actions', 'key' => 'actions', 'sortable' => false, 'align' => 'center', 'checked' => true],
+      ]
+    ],
     # Login Log List Header 
     [
       'title' => 'Login Log List',
@@ -39,7 +55,7 @@ class ArrayListConst
         ['title' => 'Actions', 'key' => 'action', 'sortable' => false, 'align' => 'center', 'checked' => true],
       ]
     ],
-    
+
     # Lead List Sidebar Menu 
     [
       'title' => 'lead List',
@@ -81,71 +97,70 @@ class ArrayListConst
       ]
     ],
 
-        # Quotation List Sidebar Menu 
-        [
-            'title' => 'Quotation List',
-            'slug' => 'quotation-list',
-            'table' => 'quotations',
-            'headers' => [
-              ['title' => 'Quotation Number', 'key' => 'quotation_number', 'sortable' => true, 'align' => 'left', 'checked' => true],
-              ['title' => 'Valid Up Till', 'key' => 'valid_uptil', 'sortable' => true, 'align' => 'left', 'checked' => true],
-              ['title' => 'Quotation Type', 'key' => 'quotation_type', 'sortable' => true, 'align' => 'left', 'checked' => true],
-              ['title' => 'Title', 'key' => 'title', 'sortable' => true, 'align' => 'left', 'checked' => true],
-              ['title' => 'Sub Total', 'key' => 'sub_total', 'sortable' => true, 'align' => 'left', 'checked' => true],
-              ['title' => 'Discount', 'key' => 'discount', 'sortable' => true, 'align' => 'left', 'checked' => true],
-              ['title' => 'Tax', 'key' => 'tax', 'sortable' => true, 'align' => 'left', 'checked' => true],
-              ['title' => 'Total', 'key' => 'total', 'sortable' => true, 'align' => 'left', 'checked' => true],
-              ['title' => 'Status', 'key' => 'status', 'sortable' => true, 'align' => 'left', 'checked' => true],
-              ['title' => 'Custom Header Text', 'key' => 'custom_header_text', 'sortable' => false, 'align' => 'left', 'checked' => true],
-              ['title' => 'Payment Terms', 'key' => 'payment_terms', 'sortable' => false, 'align' => 'left', 'checked' => true],
-              ['title' => 'Terms & Conditions', 'key' => 'terms_conditions', 'sortable' => false, 'align' => 'left', 'checked' => true],
-              ['title' => 'Created At', 'key' => 'created_at', 'sortable' => true, 'align' => 'left', 'checked' => true],
-              ['title' => 'Created By', 'key' => 'created_by', 'sortable' => true, 'align' => 'left', 'checked' => true],
-              ['title' => 'Last Updated At', 'key' => 'updated_at', 'sortable' => true, 'align' => 'left', 'checked' => true],
-              ['title' => 'Last Updated By', 'key' => 'last_updated_by', 'sortable' => true, 'align' => 'left', 'checked' => true],
-              ['title' => 'Action', 'key' => 'action', 'sortable' => false, 'align' => 'center', 'checked' => true],
-            ]
-          ],
-          
-        # Invoices List Sidebar Menu 
-          [
-            'title' => 'Invoice List',
-            'slug' => 'invoice-list',
-            'table' => 'invoices',
-            'headers' => [
+    # Quotation List Sidebar Menu 
+    [
+      'title' => 'Quotation List',
+      'slug' => 'quotation-list',
+      'table' => 'quotations',
+      'headers' => [
+        ['title' => 'Quotation Number', 'key' => 'quotation_number', 'sortable' => true, 'align' => 'left', 'checked' => true],
+        ['title' => 'Valid Up Till', 'key' => 'valid_uptil', 'sortable' => true, 'align' => 'left', 'checked' => true],
+        ['title' => 'Quotation Type', 'key' => 'quotation_type', 'sortable' => true, 'align' => 'left', 'checked' => true],
+        ['title' => 'Title', 'key' => 'title', 'sortable' => true, 'align' => 'left', 'checked' => true],
+        ['title' => 'Sub Total', 'key' => 'sub_total', 'sortable' => true, 'align' => 'left', 'checked' => true],
+        ['title' => 'Discount', 'key' => 'discount', 'sortable' => true, 'align' => 'left', 'checked' => true],
+        ['title' => 'Tax', 'key' => 'tax', 'sortable' => true, 'align' => 'left', 'checked' => true],
+        ['title' => 'Total', 'key' => 'total', 'sortable' => true, 'align' => 'left', 'checked' => true],
+        ['title' => 'Status', 'key' => 'status', 'sortable' => true, 'align' => 'left', 'checked' => true],
+        ['title' => 'Custom Header Text', 'key' => 'custom_header_text', 'sortable' => false, 'align' => 'left', 'checked' => true],
+        ['title' => 'Payment Terms', 'key' => 'payment_terms', 'sortable' => false, 'align' => 'left', 'checked' => true],
+        ['title' => 'Terms & Conditions', 'key' => 'terms_conditions', 'sortable' => false, 'align' => 'left', 'checked' => true],
+        ['title' => 'Created At', 'key' => 'created_at', 'sortable' => true, 'align' => 'left', 'checked' => true],
+        ['title' => 'Created By', 'key' => 'created_by', 'sortable' => true, 'align' => 'left', 'checked' => true],
+        ['title' => 'Last Updated At', 'key' => 'updated_at', 'sortable' => true, 'align' => 'left', 'checked' => true],
+        ['title' => 'Last Updated By', 'key' => 'last_updated_by', 'sortable' => true, 'align' => 'left', 'checked' => true],
+        ['title' => 'Action', 'key' => 'action', 'sortable' => false, 'align' => 'center', 'checked' => true],
+      ]
+    ],
 
-              ['title' => 'Invoice Number', 'key' => 'invoice_number', 'sortable' => true, 'align' => 'left', 'checked' => true],
-              ['title' => 'Title', 'key' => 'title', 'sortable' => true, 'align' => 'left', 'checked' => true],
-              ['title' => 'Sub Total', 'key' => 'sub_total', 'sortable' => true, 'align' => 'left', 'checked' => true],
-              ['title' => 'Tax', 'key' => 'tax', 'sortable' => true, 'align' => 'left', 'checked' => true],
-              ['title' => 'Discount', 'key' => 'discount', 'sortable' => true, 'align' => 'left', 'checked' => true],
-              ['title' => 'Total', 'key' => 'total', 'sortable' => true, 'align' => 'left', 'checked' => true],
-              ['title' => 'Status', 'key' => 'status', 'sortable' => true, 'align' => 'left', 'checked' => true],
-              ['title' => 'Created At', 'key' => 'created_at', 'sortable' => true, 'align' => 'left', 'checked' => true],
-              ['title' => 'Created By', 'key' => 'created_by', 'sortable' => true, 'align' => 'left', 'checked' => true],
-              ['title' => 'Last Updated At', 'key' => 'updated_at', 'sortable' => true, 'align' => 'left', 'checked' => true],
-              ['title' => 'Last Updated By', 'key' => 'last_updated_by', 'sortable' => true, 'align' => 'left', 'checked' => true],
-              ['title' => 'Action', 'key' => 'action', 'sortable' => false, 'align' => 'center', 'checked' => true],
-            ]
-          ],
+    # Invoices List Sidebar Menu 
+    [
+      'title' => 'Invoice List',
+      'slug' => 'invoice-list',
+      'table' => 'invoices',
+      'headers' => [
+        ['title' => 'Invoice Number', 'key' => 'invoice_number', 'sortable' => true, 'align' => 'left', 'checked' => true],
+        ['title' => 'Title', 'key' => 'title', 'sortable' => true, 'align' => 'left', 'checked' => true],
+        ['title' => 'Sub Total', 'key' => 'sub_total', 'sortable' => true, 'align' => 'left', 'checked' => true],
+        ['title' => 'Tax', 'key' => 'tax', 'sortable' => true, 'align' => 'left', 'checked' => true],
+        ['title' => 'Discount', 'key' => 'discount', 'sortable' => true, 'align' => 'left', 'checked' => true],
+        ['title' => 'Total', 'key' => 'total', 'sortable' => true, 'align' => 'left', 'checked' => true],
+        ['title' => 'Status', 'key' => 'status', 'sortable' => true, 'align' => 'left', 'checked' => true],
+        ['title' => 'Created At', 'key' => 'created_at', 'sortable' => true, 'align' => 'left', 'checked' => true],
+        ['title' => 'Created By', 'key' => 'created_by', 'sortable' => true, 'align' => 'left', 'checked' => true],
+        ['title' => 'Last Updated At', 'key' => 'updated_at', 'sortable' => true, 'align' => 'left', 'checked' => true],
+        ['title' => 'Last Updated By', 'key' => 'last_updated_by', 'sortable' => true, 'align' => 'left', 'checked' => true],
+        ['title' => 'Action', 'key' => 'action', 'sortable' => false, 'align' => 'center', 'checked' => true],
+      ]
+    ],
 
-          # Product/Service List Sidebar Menu 
-          [
-            'title' => 'Product/Service List',
-            'slug' => 'product-service-list',
-            'table' => 'product_services',
-            'headers' => [
-                ['title' => 'Name', 'key' => 'name', 'sortable' => true, 'align' => 'left', 'minWidth' => '140px', 'checked' => true],
-                ['title' => 'Price', 'key' => 'price', 'sortable' => true, 'align' => 'left', 'checked' => true],
-                // ['title' => 'Attributes', 'key' => 'attributes', 'sortable' => false, 'align' => 'left', 'checked' => true],
-                ['title' => 'Created At', 'key' => 'created_at', 'sortable' => true, 'align' => 'left', 'checked' => true],
-                ['title' => 'Created By', 'key' => 'created_by', 'sortable' => true, 'align' => 'left', 'checked' => true],
-                ['title' => 'Updated At', 'key' => 'updated_at', 'sortable' => true, 'align' => 'left', 'checked' => true],
-                ['title' => 'Last Updated By', 'key' => 'updated_at', 'sortable' => true, 'align' => 'left', 'checked' => true],
-                ['title' => 'Action', 'key' => 'action', 'sortable' => false, 'align' => 'center', 'checked' => true],
-            ]
-          ],
-          
+    # Product/Service List Sidebar Menu 
+    [
+      'title' => 'Product/Service List',
+      'slug' => 'product-service-list',
+      'table' => 'product_services',
+      'headers' => [
+        ['title' => 'Name', 'key' => 'name', 'sortable' => true, 'align' => 'left', 'minWidth' => '140px', 'checked' => true],
+        ['title' => 'Price', 'key' => 'price', 'sortable' => true, 'align' => 'left', 'checked' => true],
+        // ['title' => 'Attributes', 'key' => 'attributes', 'sortable' => false, 'align' => 'left', 'checked' => true],
+        ['title' => 'Created At', 'key' => 'created_at', 'sortable' => true, 'align' => 'left', 'checked' => true],
+        ['title' => 'Created By', 'key' => 'created_by', 'sortable' => true, 'align' => 'left', 'checked' => true],
+        ['title' => 'Updated At', 'key' => 'updated_at', 'sortable' => true, 'align' => 'left', 'checked' => true],
+        ['title' => 'Last Updated By', 'key' => 'updated_at', 'sortable' => true, 'align' => 'left', 'checked' => true],
+        ['title' => 'Action', 'key' => 'action', 'sortable' => false, 'align' => 'center', 'checked' => true],
+      ]
+    ],
+
     # Contract List Sidebar Menu 
     [
       'title' => 'Contract List',
@@ -185,6 +200,6 @@ class ArrayListConst
         ['title' => 'Action', 'key' => 'action', 'sortable' => false, 'align' => 'center', 'checked' => true],
       ]
     ],
-     
+
   ];
 }

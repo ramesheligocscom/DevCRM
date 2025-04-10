@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\TableHeaderManageController;
 use Illuminate\Support\Facades\Route;
 
@@ -46,5 +47,18 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/get', [TableHeaderManageController::class, 'getTableHeaders']);
         Route::post('/save', [TableHeaderManageController::class, 'saveTableHeaders']);
         Route::post('/sync', [TableHeaderManageController::class, 'tableHeaderSync']);
+    });
+
+    # Settings api Name
+    Route::prefix('settings')->group(function () {
+        Route::get('/', [SettingController::class, 'index'])->name('settings.index');
+        Route::put('/', [SettingController::class, 'update'])->name('settings.update');
+        # For status setting
+        // Route::get('/page', [SettingController::class, 'pageList'])->name('settings.pageList');
+        // Route::get('/page-status', [SettingController::class, 'pageStatusList'])->name('settings.pageStatusList');
+        // Route::get('/specific/page-status/{page_name}', [SettingController::class, 'pageStatus'])->name('settings.pageStatusList');
+        // Route::post('/status', [SettingController::class, 'storeStatus'])->name('settings.storeStatus');
+        // Route::put('/status/{id}', [SettingController::class, 'updateStatus'])->name('settings.updateStatus');
+        // Route::delete('/status/{id}', [SettingController::class, 'deleteStatus'])->name('settings.deleteStatus');
     });
 });

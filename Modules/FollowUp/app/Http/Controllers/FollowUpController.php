@@ -21,11 +21,16 @@ class FollowUpController extends Controller
 
     }
 
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $followUps = $this->followUpService->getAllFollowUps();
+        $followUps = $this->followUpService->getAllFollowUps()
+            ->when($request->boolean('with_trashed'), fn($q) => $q->withTrashed())
+            ->latest()
+            ->paginate($request->integer('per_page', 15));
+
         return response()->json([
             'data' => FollowUpResource::collection($followUps),
+            'meta' => $this->buildPaginationMeta($followUps),
             'message' => 'Follow ups retrieved successfully',
             'status' => Response::HTTP_OK
         ], Response::HTTP_OK);
@@ -70,5 +75,15 @@ class FollowUpController extends Controller
             'message' => 'Follow up deleted successfully',
             'status' => Response::HTTP_OK
         ], Response::HTTP_OK);
+    }
+
+    protected function buildPaginationMeta($paginator): array
+    {
+        return [
+            'current_page' => $paginator->currentPage(),
+            'per_page' => $paginator->perPage(),
+            'total' => $paginator->total(),
+            'last_page' => $paginator->lastPage(),
+        ];
     }
 }

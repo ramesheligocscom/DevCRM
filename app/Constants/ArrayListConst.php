@@ -208,10 +208,12 @@ class ArrayListConst
         'headers' => [
           ['title' => 'Visit Time', 'key' => 'visit_time', 'sortable' => true, 'align' => 'left', 'minWidth' => '140px', 'checked' => true],
           ['title' => 'assignee name', 'key' => 'assignee_name', 'sortable' => true, 'align' => 'left', 'checked' => true],
+          ['title' => 'Status', 'key' => 'status', 'sortable' => true, 'align' => 'left', 'checked' => true],
+          ['title' => 'Visit Notes', 'key' => 'visit_notes', 'sortable' => true, 'align' => 'left', 'checked' => true],
           ['title' => 'Created At', 'key' => 'created_at', 'sortable' => true, 'align' => 'left', 'checked' => true],
-          ['title' => 'Created By', 'key' => 'created_by', 'sortable' => false, 'align' => 'left', 'checked' => true],
-          ['title' => 'Updated By', 'key' => 'updated_by', 'sortable' => false, 'align' => 'left', 'checked' => true],
-          ['title' => 'Updated At', 'key' => 'updated_at', 'sortable' => true, 'align' => 'left', 'checked' => true],
+          ['title' => 'Created By', 'key' => 'created_by', 'sortable' => true, 'align' => 'left', 'checked' => true],
+          ['title' => 'Last Updated At', 'key' => 'updated_at', 'sortable' => true, 'align' => 'left', 'checked' => true],
+          ['title' => 'Last Updated By', 'key' => 'last_updated_by', 'sortable' => true, 'align' => 'left', 'checked' => true],
           ['title' => 'Action', 'key' => 'action', 'sortable' => false, 'align' => 'center', 'checked' => true],
         ]
       ],
@@ -220,12 +222,13 @@ class ArrayListConst
       'slug' => 'follow-up',
       'table' => 'follow-up',
         'headers' => [
+          ['title' => 'Lead Prospect', 'key' => 'lead_prospect', 'sortable' => true, 'align' => 'left', 'minWidth' => '140px', 'checked' => true],
           ['title' => 'Call Status', 'key' => 'call_status', 'sortable' => true, 'align' => 'left', 'minWidth' => '140px', 'checked' => true],
           ['title' => 'Call Summary', 'key' => 'call_summary', 'sortable' => true, 'align' => 'left', 'checked' => true],
           ['title' => 'Created At', 'key' => 'created_at', 'sortable' => true, 'align' => 'left', 'checked' => true],
-          ['title' => 'Created By', 'key' => 'created_by', 'sortable' => false, 'align' => 'left', 'checked' => true],
-          ['title' => 'Updated By', 'key' => 'updated_by', 'sortable' => false, 'align' => 'left', 'checked' => true],
-          ['title' => 'Updated At', 'key' => 'updated_at', 'sortable' => true, 'align' => 'left', 'checked' => true],
+          ['title' => 'Created By', 'key' => 'created_by', 'sortable' => true, 'align' => 'left', 'checked' => true],
+          ['title' => 'Last Updated At', 'key' => 'updated_at', 'sortable' => true, 'align' => 'left', 'checked' => true],
+          ['title' => 'Last Updated By', 'key' => 'last_updated_by', 'sortable' => true, 'align' => 'left', 'checked' => true],
           ['title' => 'Action', 'key' => 'action', 'sortable' => false, 'align' => 'center', 'checked' => true],
         ]
       ],

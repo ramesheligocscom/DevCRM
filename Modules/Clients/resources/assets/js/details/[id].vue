@@ -1,7 +1,10 @@
 <script setup>
+import Followup from '@modules/FollowUp/resources/assets/js/list/index.vue';
+import SiteVisit from '@modules/SiteVisit/resources/assets/js/list/index.vue';
 import moment from 'moment';
 import { toast } from 'vue3-toastify';
 import Information from './tabs/Information.vue';
+
 
 const route = useRoute()
 const InfoData = ref()
@@ -10,6 +13,14 @@ const tab = ref(null)
 const tabs = [
   {
     title: 'Information',
+    icon: 'tabler-user',
+  },
+  {
+    title: 'Site Visit',
+    icon: 'tabler-user',
+  },
+  {
+    title: 'Follow UP',
     icon: 'tabler-user',
   }
 ]
@@ -59,6 +70,12 @@ const makeDateFormat = (date , onlyDate = false) => {
         <VWindow v-model="tab" class="disable-tab-transition" :touch="false">
           <VWindowItem>
             <Information :InfoData="InfoData" />
+          </VWindowItem>
+          <VWindowItem>
+            <SiteVisit />
+          </VWindowItem>
+          <VWindowItem>
+            <Followup />
           </VWindowItem>
         </VWindow>
       </VCol>

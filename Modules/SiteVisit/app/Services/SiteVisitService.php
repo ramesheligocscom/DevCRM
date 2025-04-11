@@ -10,7 +10,7 @@ class SiteVisitService
 {
     public function getAllVisits(?string $status = null): Builder
     {
-        $query = SiteVisit::with(['assignee', 'creator', 'lead', 'client']);
+        $query = SiteVisit::with(['assignee', 'creator', 'updater']);
         
         if ($status) {
             $query->where('status', $status);
@@ -21,7 +21,7 @@ class SiteVisitService
 
     public function getVisitById(string $id): SiteVisit
     {
-        $visit = SiteVisit::with(['assignee', 'creator', 'lead'])
+        $visit = SiteVisit::with(['assignee', 'creator', 'updater'])
             ->where('id', $id)
             ->first();
             

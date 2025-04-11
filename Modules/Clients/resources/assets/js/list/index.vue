@@ -183,7 +183,7 @@ const makeDateFormat = (date, onlyDate = false) => {
 
           <RouterLink 
             v-if="$can('client', 'show')" 
-            :to="{ name: 'site-visit', params: { type: 'client', id: item.id } }"
+            :to="{ name: 'client-details-id', params: { id: item.id } }"
           >
             <VIcon color="secondary" icon="tabler-eye" />
           </RouterLink>

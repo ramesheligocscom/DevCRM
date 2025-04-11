@@ -116,7 +116,7 @@ const onSubmit = async () => {
     }
   } catch (err) {
     console.error(err)
-    toast.error(err?.response?.data?.message || 'An error occurred while saving.')
+    toast.error(err?._data?.message || 'An error occurred while saving.')
   } finally {
     isSubmitting = false
     isLoading.value = false

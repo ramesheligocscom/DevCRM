@@ -202,8 +202,8 @@ class ArrayListConst
       ]
     ],
     [
-        'title' => 'Client Site Visit',
-        'slug' => 'client-site-visit',
+        'title' => 'Site Visit',
+        'slug' => 'site-visit',
         'table' => 'site_visits',
         'headers' => [
           ['title' => 'Visit Time', 'key' => 'visit_time', 'sortable' => true, 'align' => 'left', 'minWidth' => '140px', 'checked' => true],

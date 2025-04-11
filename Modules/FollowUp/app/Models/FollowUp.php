@@ -46,6 +46,14 @@ class FollowUp extends Model
         });
     }
 
+    public function scopeSearch($query, $searchTerm)
+    {
+        $term = strtolower($searchTerm);
+        return $query->where(function ($q) use ($term) {
+            $q->whereRaw('LOWER(call_summary) LIKE ?', ["%{$term}%"]);
+        });
+    }
+
     public function creator()
     {
         return $this->belongsTo(\App\Models\User::class, 'created_by','uuid');

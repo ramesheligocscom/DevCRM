@@ -33,12 +33,13 @@ class SiteVisitService
 
     public function createVisit(array $data): SiteVisit
     {
-        $data['created_by'] = auth()->id(); // or auth()->user()->id
+        $data['created_by'] = auth()->user()->uuid; // or auth()->user()->id
         return SiteVisit::create($data);
     }
 
     public function updateVisit(string $id, array $data): SiteVisit
     {
+        $data['last_updated_by'] = auth()->user()->uuid; // or auth()->user()->id
         $visit = $this->getVisitById($id);
         $visit->update($data);
         return $visit->fresh(); // Return refreshed model
@@ -46,6 +47,7 @@ class SiteVisitService
 
     public function updateStatus(string $id, string $status): SiteVisit
     {
+       
         $visit = $this->getVisitById($id);
         $visit->update(['status' => $status]);
         return $visit->fresh();

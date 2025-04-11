@@ -26,6 +26,7 @@ return new class extends Migration
             // Optional notes about the visit
             $table->text('visit_notes')->nullable()->comment('Additional notes about the visit');
             // Optional reference to a lead (if this visit is related to a sales lead)
+            $table->uuid('last_updated_by')->nullable()->comment('User who last updated this record');
             $table->uuid('lead_id')->nullable()->comment('Associated lead ID if applicable');
             // Optional reference to a client (if this visit is for an existing client)
             $table->uuid('client_id')->nullable()->comment('Associated client ID if applicable');

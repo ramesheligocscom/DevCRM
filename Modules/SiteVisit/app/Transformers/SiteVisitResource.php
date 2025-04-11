@@ -18,12 +18,12 @@ class SiteVisitResource extends JsonResource
             'assignee_name' => $this->whenLoaded('assignee', function () {
                 return $this->assignee->name;
             }),
-            'created_at' => $this->created_at->toDateTimeString(),
+            'created_at' => $this->created_at->format('l, F j, Y g:i A'),
             'created_by' => $this->created_by,
-            'creator_name' => $this->whenLoaded('creator', function () {
-                return $this->creator->name;
-            }),
+            'creator_name' => $this->creator?->name,
             'status' => $this->status,
+            'updater_name' => $this->updater?->name,
+            'updated_at' => $this->updated_at?->format('l, F j, Y g:i A'),
             'visit_notes' => $this->visit_notes,
             'lead_id' => $this->lead_id,
             'lead_name' => $this->whenLoaded('lead', function () {

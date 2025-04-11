@@ -168,8 +168,10 @@ fetchClients();
             style="max-inline-size: 200px; min-inline-size: 200px" />
           <!-- Filter Header Btn FilterHeaderTableBtn -->
           <FilterHeaderTableBtn :slug="tableHeaderSlug" @filterHeaderValue="getFilteredHeaderValue" />
-          <VBtn v-if="$can('client', 'create')" rounded icon="tabler-plus"
-            @click="openClientModal = true; currentClient = null" />
+          <VBtn v-if="$can('client', 'create')" prepend-icon="tabler-plus"
+            @click="openClientModal = true; currentClient = null" >
+            Add New
+            </VBtn>
         </div>
       </div>
 
@@ -210,17 +212,21 @@ fetchClients();
 
         <!-- Actions Column -->
         <template #item.action="{ item }">
-          <IconBtn @click="editBranch(item)" v-if="$can('client', 'edit')">
-            <VIcon icon="tabler-pencil" />
-          </IconBtn>
 
-          <RouterLink v-if="$can('client', 'show')" :to="{
+          <!-- <RouterLink v-if="$can('client', 'show')" :to="{
             name: 'site-visit',
             params: { type: 'client', id: item.id }
           }">
 
             <VIcon color="secondary" icon="tabler-eye" />
-          </RouterLink>
+          </RouterLink> -->
+
+
+          <IconBtn @click="editBranch(item)" v-if="$can('client', 'edit')">
+            <VIcon icon="tabler-pencil" />
+          </IconBtn>
+
+      
 
           <IconBtn v-if="$can('client', 'delete')" @click="openDeleteDialog(item)">
             <VIcon icon="tabler-trash" />

@@ -181,18 +181,7 @@ fetchClients();
       <div class="d-flex justify-lg-space-between" style="margin: 20px">
         <div>
           <div class="text-h5">Site Visit</div>
-          <div class="d-flex align-center mt-2">
-            <VChip
-              v-for="chip in statusChips"
-              :key="chip.value"
-              :color="statusFilter === chip.value ? 'primary' : undefined"
-              class="me-2"
-              @click="handleStatusChange(chip.value)"
-              style="cursor: pointer"
-            >
-              {{ chip.text }}
-            </VChip>
-          </div>
+
           <VChip v-for="(data, index) in SelectedFilterValue" :key="index" closable @click:close="removeFilter(index)"
             style="font-size: x-small; height: 25px" class="mr-2">
             {{ data }}
@@ -200,27 +189,18 @@ fetchClients();
         </div>
 
         <div class="d-flex gap-3">
-          <VSelect v-if="$can('client', 'assign-to') || $can('client', 'delete')" label="Bulk Action"
-            v-model="action_bulk" :items="bulkAction" item-title="name" item-value="id"
-            style="max-inline-size: 200px; min-inline-size: 200px; height: 39px"></VSelect>
+        
 
           <AppTextField v-model="searchQuery" placeholder="Search"
             style="max-inline-size: 200px; min-inline-size: 200px" />
 
-          <VBtn class="search-icon-btn" @click="openClientFilterModal = !openClientFilterModal">
-            <VIcon icon="tabler-filter" />
-          </VBtn>
-
-          <VBtn v-if="$can('client', 'export-list')" @click="getClientExportList()" :loading="exportLoader"
-            :disabled="exportLoader">
-            <VIcon icon="tabler-file-spreadsheet" />
-            <VTooltip activator="parent" location="top">Export Client Data</VTooltip>
-          </VBtn>
 
           <!-- Filter Header Btn FilterHeaderTableBtn -->
           <FilterHeaderTableBtn :slug="tableHeaderSlug" @filterHeaderValue="getFilteredHeaderValue" />
-          <VBtn v-if="$can('client', 'create')" rounded icon="tabler-plus"
-            @click="openClientModal = true; currentClient = null" />
+          <VBtn v-if="$can('client', 'create')" prepend-icon="tabler-plus"
+            @click="openClientModal = true; currentClient = null" >
+            Add New
+            </VBtn>
         </div>
       </div>
 
@@ -255,20 +235,23 @@ fetchClients();
         </template>
         
         <template #item.created_by="{ item }">
-          {{ item.created_by || '-' }}
+          {{ item.creator_name || '-' }}
         </template>
+
+
+        <template #item.updated_at="{ item }">
+          {{ item.updated_at || '-' }}
+        </template>
+        <template #item.updated_by="{ item }">
+          {{ item.updater_name || '-' }}
+        </template>
+     
 
         <template #item.action="{ item }">
           <IconBtn @click="editBranch(item)" v-if="$can('client', 'edit')">
             <VIcon icon="tabler-pencil" />
           </IconBtn>
 
-          <RouterLink v-if="$can('client', 'show')" :to="{
-            name: 'site-visit',
-            params: { type: 'client', id: item.id }
-          }">
-            <VIcon color="secondary" icon="tabler-eye" />
-          </RouterLink>
 
           <IconBtn v-if="$can('client', 'delete')" @click="openDeleteDialog(item)">
             <VIcon icon="tabler-trash" />

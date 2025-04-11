@@ -28,17 +28,24 @@ const handleTabChange = (tab) => {
       name: 'site-visit',
       params: { 
         id: route.params.id,
-        type: 'site-visit'
+        type: 'client'
       }
     })
   }
 }
+
+// Set initial active tab based on route
+onMounted(() => {
+  if (route.name === 'site-visit') {
+    userTab.value = 2 // Set to Follow Up tab
+  }
+})
 </script>
 
 <template>
   <div>
     <!-- 👉 Header  -->
-    <div class="d-flex justify-space-between align-center flex-wrap gap-y-4 mb-6">
+    <!-- <div class="d-flex justify-space-between align-center flex-wrap gap-y-4 mb-6">
       <div>
         <h4 class="text-h4 mb-1">
           Customer ID #{{ route.params.id }}
@@ -48,7 +55,7 @@ const handleTabChange = (tab) => {
         </div>
       </div>
 
-    </div>
+    </div> -->
     <!-- 👉 Customer Profile  -->
     <VRow>
       <VCol cols="12" md="12" lg="12">

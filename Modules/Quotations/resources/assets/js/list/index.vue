@@ -72,7 +72,10 @@ const makeDateFormat = (date , onlyDate = false) => {
       <VCardText>
         <div class="d-flex justify-space-between flex-wrap gap-y-4">
           <AppTextField v-model="searchQuery" style="max-inline-size: 280px; min-inline-size: 280px;"
-            placeholder="Search Name" />
+            placeholder="Search Title" 
+            @input="fetchQuotations"
+            
+            />
           <div class="d-flex flex-row gap-4 align-center flex-wrap">
             <AppSelect v-model="itemsPerPage" :items="[5, 10, 20, 50, 100]" />
 

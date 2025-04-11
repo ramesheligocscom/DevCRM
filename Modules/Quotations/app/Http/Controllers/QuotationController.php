@@ -28,7 +28,8 @@ class QuotationController extends Controller
             $request->input('lead_id'),
             $request->input('contract_id'),
             $request->input('created_by'),
-            $request->input('last_updated_by')
+            $request->input('last_updated_by'),
+            $request->input('search')
         );
 
         return response()->json([

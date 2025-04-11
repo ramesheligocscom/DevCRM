@@ -15,7 +15,8 @@ class InvoiceService
         ?string $contractId = null,
         ?string $quotationId = null,
         ?string $createdBy = null,
-        ?string $lastUpdatedBy = null
+        ?string $lastUpdatedBy = null,
+        ?string $search = null,
     ): LengthAwarePaginator {
         $query = Invoice::query()->when($withTrashed, fn($q) => $q->withTrashed());
 
@@ -28,6 +29,7 @@ class InvoiceService
             ->when($quotationId, fn($q) => $q->where('quotation_id', $quotationId))
             ->when($createdBy, fn($q) => $q->where('created_by', $createdBy))
             ->when($lastUpdatedBy, fn($q) => $q->where('last_updated_by', $lastUpdatedBy))
+            ->when($search, fn($q) => $q->search($search))
             ->with(['creator', 'updater'])
             ->latest()
             ->paginate($perPage);

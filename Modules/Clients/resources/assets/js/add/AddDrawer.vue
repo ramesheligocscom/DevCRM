@@ -93,12 +93,7 @@ const onSubmit = async () => {
 
       // Close the modal and reset form
       emit("update:isDrawerOpen", false);
-
-      // Add a delay before emitting submit to ensure backend processing
-      await new Promise((resolve) => setTimeout(resolve, 1000));
       emit("submit");
-
-      await new Promise((resolve) => setTimeout(resolve, 500));
 
       // Reset form data
       client.value = {
@@ -112,7 +107,6 @@ const onSubmit = async () => {
       // Reset form validation
       await nextTick(() => {
         refForm.value?.reset();
-        refForm.value?.resetValidation();
       });
       isLoading.value = false;
     } else {
@@ -149,7 +143,6 @@ const clientName = computed({
 const statusOptions = [
   { text: "Active", value: "active" },
   { text: "Inactive", value: "inactive" },
-  { text: "Pending", value: "pending" },
   // Add more options as needed
 ];
 

@@ -15,7 +15,8 @@ class QuotationService
         ?string $leadId = null,
         ?string $contractId = null,
         ?string $createdBy = null,
-        ?string $lastUpdatedBy = null
+        ?string $lastUpdatedBy = null,
+        ?string $search = null,
     ): LengthAwarePaginator {
 
         $query = Quotation::query()->when($withTrashed, fn($q) => $q->withTrashed());
@@ -29,6 +30,7 @@ class QuotationService
             ->when($contractId, fn($q) => $q->where('contract_id', $contractId))
             ->when($createdBy, fn($q) => $q->where('created_by', $createdBy))
             ->when($lastUpdatedBy, fn($q) => $q->where('last_updated_by', $lastUpdatedBy))
+            ->when($search, fn($q) => $q->search($search))
             ->with(['creator', 'updater'])
             ->latest()
             ->paginate($perPage);

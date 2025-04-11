@@ -26,8 +26,8 @@ class FollowUpController extends Controller
         $followUps = $this->followUpService->getAllFollowUps()
             ->when($request->boolean('with_trashed'), fn($q) => $q->withTrashed())
             ->when($request->search, fn($q) => $q->search($request->search))
-            ->when($request->client_id, fn($q) => $q->where($request->client_id))
-            ->when($request->lead_id, fn($q) => $q->where($request->lead_id))
+            ->when($request->client_id, fn($q) => $q->where('client_id', $request->client_id))
+            ->when($request->lead_id, fn($q) => $q->where('lead_id', $request->lead_id))
             ->latest()
             ->paginate($request->integer('per_page', 15));
 

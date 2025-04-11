@@ -1,5 +1,6 @@
 <script setup>
 import moment from 'moment';
+import { useRoute } from "vue-router";
 import { toast } from 'vue3-toastify';
 import AddDrawer from '../add/AddDrawer.vue';
 import ConfirmDialog from '../dialog/ConfirmDialog.vue';
@@ -7,13 +8,12 @@ const searchQuery = ref('')
 const isAddEditDrawerOpen = ref(false)
 const isDeleteDialogOpen = ref(false)
 // Data table options
-
 const itemsPerPage = ref(10)
 const page = ref(1)
 const sortBy = ref()
 const orderBy = ref()
 const currentFollowup = ref(null);
-
+const route = useRoute();
 // Data table Headers
 const tableHeaderSlug = ref('follow-up');
 const headers = ref([]);
@@ -57,9 +57,15 @@ const fetchFollowups = async () => {
     let url = `/followup?search=${searchQuery.value ?? ""}&page=${page.value}&sort_key=${sortBy.value ?? ""}&sort_order=${orderBy.value ?? ""}&per_page=${itemsPerPage.value}`;
     
     // Add type filter if specified
-    if (props.type) {
-      url += `&type=${props.type}`;
+
+    if (props.type === 'lead') {
+      url += `&lead_id=${route.params.id}`;
+    } else if (props.type === 'client') {
+      url += `&client_id=${route.params.id}`;
     }
+
+
+
 
     const response = await $api(url)
 

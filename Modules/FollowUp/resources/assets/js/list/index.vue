@@ -25,12 +25,14 @@ const editBranch = (item) => {
 };
 
 const resolveStatusVariant = status => {
-  if (status === 1) return { color: 'primary', text: 'Current' }
-  else if (status === 2) return { color: 'success', text: 'Professional' }
-  else if (status === 3) return { color: 'error', text: 'Rejected' }
-  else if (status === 4) return { color: 'warning', text: 'Resigned' }
-  else return { color: 'info', text: 'Applied' }
+  if (status === 'pending') return { color: 'warning', text: 'Pending' }
+  else if (status === 'completed') return { color: 'success', text: 'Completed' }
+  else if (status === 'no_answer') return { color: 'info', text: 'No answer' }
+  else if (status === 'busy') return { color: 'primary', text: 'Busy' }
+  else if (status === 'failed') return { color: 'error', text: 'Failed' }
+  else return { color: 'secondary', text: 'Unknown' }
 }
+
 
 const updateOptions = options => {
   sortBy.value = options.sortBy[0]?.key
@@ -120,9 +122,9 @@ const makeDateFormat = (date , onlyDate = false) => {
           {{ item.assigned_user?.name || '-' }}
         </template>
         <!-- status -->
-        <template #item.status="{ item }">
-          <VChip :color="resolveStatusVariant(item.status).color" size="small">
-            {{ resolveStatusVariant(item.status).text }}
+        <template #item.call_status="{ item }">
+          <VChip :color="resolveStatusVariant(item.call_status).color" size="small">
+            {{ resolveStatusVariant(item.call_status).text }}
           </VChip>
         </template>
 

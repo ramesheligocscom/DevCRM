@@ -16,6 +16,7 @@ class ClientController extends Controller
         $clients = Client::query()
             ->when($request->boolean('with_trashed'), fn($q) => $q->withTrashed())
             ->when($request->has('status'), fn($q) => $q->filterByStatus($request->status))
+            ->when($request->search, fn($q) => $q->search($request->search))
             // ->when($request->has('assigned_user'), fn($q) => $q->whereAssignedUser($request->assigned_user))
             ->latest()
             ->with(['creator', 'updater','assignedUser'])

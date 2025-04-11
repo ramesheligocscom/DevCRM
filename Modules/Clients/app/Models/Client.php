@@ -26,6 +26,13 @@ class Client extends Model
         'last_updated_by',
     ];
 
+    public function scopeSearch($query, $searchTerm)
+    {
+        $term = strtolower($searchTerm);
+        return $query->where(function ($q) use ($term) {
+            $q->whereRaw('LOWER(name) LIKE ?', ["%{$term}%"]);
+        });
+    }
 
     // Custom query scopes
     public function scopeFilterByStatus($query, $status)

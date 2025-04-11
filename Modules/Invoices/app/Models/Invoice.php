@@ -38,6 +38,15 @@ class Invoice extends Model
         'updated_at' => 'datetime'
     ];
 
+    
+    public function scopeSearch($query, $searchTerm)
+    {
+        $term = strtolower($searchTerm);
+        return $query->where(function ($q) use ($term) {
+            $q->whereRaw('LOWER(title) LIKE ?', ["%{$term}%"]);
+        });
+    }
+
     public function scopeFilterByStatus($query, $status)
     {
         return $query->where('status', $status);

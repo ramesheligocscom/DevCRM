@@ -37,6 +37,7 @@ class ClientUpdateRequest extends FormRequest
             'assigned_user' => [
                 'sometimes',
                 'uuid',
+                'nullable',
                 // Rule::exists('users', 'id')
             ],
             'lead_id' => [

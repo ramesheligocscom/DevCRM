@@ -4,10 +4,11 @@ namespace Modules\SiteVisit\Services;
 
 use Modules\SiteVisit\Models\SiteVisit;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Builder;
 
 class SiteVisitService
 {
-    public function getAllVisits(?string $status = null): Collection
+    public function getAllVisits(?string $status = null): Builder
     {
         $query = SiteVisit::with(['assignee', 'creator', 'lead', 'client']);
         
@@ -15,7 +16,7 @@ class SiteVisitService
             $query->where('status', $status);
         }
         
-        return $query->latest()->get();
+        return $query;
     }
 
     public function getVisitById(string $id): SiteVisit

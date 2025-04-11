@@ -8,6 +8,10 @@ import {
   isNavLinkActive,
 } from '@layouts/utils'
 
+
+import { useRoute } from 'vue-router'
+const route = useRoute();
+
 const props = defineProps({
   item: {
     type: null,
@@ -20,11 +24,11 @@ const hideTitleAndBadge = configStore.isVerticalNavMini()
 </script>
 
 <template>
-  <li
-    v-if="can(item.action, item.subject)"
-    class="nav-link"
-    :class="{ disabled: item.disable }"
-  >
+  <!-- {{ route.name }} -->
+  <li v-if="can(item.action, item.subject)" class="nav-link" :class="{ disabled: item.disable }" >
+    <!-- {{ item.to }} -->
+    <!-- {{ getComputedNavLinkToProp(item) }} -->
+  <!-- {{ isNavLinkActive(item, $router) }} -->
     <Component
       :is="item.to ? 'RouterLink' : 'a'"
       v-bind="getComputedNavLinkToProp(item)"

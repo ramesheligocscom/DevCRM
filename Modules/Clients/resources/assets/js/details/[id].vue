@@ -72,10 +72,10 @@ const makeDateFormat = (date , onlyDate = false) => {
             <Information :InfoData="InfoData" />
           </VWindowItem>
           <VWindowItem>
-            <SiteVisit />
+            <SiteVisit type="client" />
           </VWindowItem>
           <VWindowItem>
-            <Followup />
+            <Followup  type="client" />
           </VWindowItem>
         </VWindow>
       </VCol>

@@ -11,42 +11,49 @@ const menuItems = [
     icon: { icon: 'tabler-user-circle' },
     to: 'user-list',
     permission: { action: 'user', subject: 'view' },
+    otherRouteList: ["user-view-id"]
   },
   {
     title: 'Role and Permission',
     icon: { icon: 'tabler-user-circle' },
     to: 'role-list',
     permission: { action: 'role', subject: 'view' },
+    otherRouteList: ["role-edit"]
   },
   {
     title: 'Leads',
     icon: { icon: 'tabler-user' },
     to: 'lead-list',
     permission: { action: 'leads', subject: 'view' },
+    otherRouteList: ["lead-details-id"]
   },
   {
     title: 'Clients',
     icon: { icon: 'tabler-users' },
     to: 'clients-list',
     permission: { action: 'client', subject: 'view' },
+    otherRouteList: ["client-details-id"]
   },
   {
     title: 'Contracts',
     icon: { icon: 'tabler-file-stack' },
     to: 'contract-list',
     permission: { action: 'contract', subject: 'view' },
+    otherRouteList: ["contract-details-id"]
   },
   {
     title: 'Quotations',
     icon: { icon: 'tabler-brand-asana' },
     to: 'quotation-list',
     permission: { action: 'quotation', subject: 'view' },
+    otherRouteList: ["quotation-details-id"]
   },
   {
     title: 'Invoices',
     icon: { icon: 'tabler-user-circle' },
     to: 'invoice-list',
     permission: { action: 'invoice', subject: 'view' },
+    otherRouteList: ["invoice-details-id"]
   },
   {
     title: 'Product/Services',

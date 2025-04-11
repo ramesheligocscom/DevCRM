@@ -5,7 +5,7 @@
                 <div class="d-flex justify-space-between align-center mb-5">
                     <h2>Edit Role Permission </h2>
                     <div class="d-flex gap-2">
-                        <VBtn v-if="$can('role', 'edit') && role_name != 'Super Admin'" color="primary" type="submit">
+                        <VBtn v-if="$can('role', 'edit')" color="primary" type="submit" :disabled="role_name == 'Super Admin' ? true : false">
                             Save</VBtn>
                         <Router-link to="/roles">
                             <VBtn prepend-icon="tabler-arrow-back-up" variant="tonal" color="secondary">Back</VBtn>
@@ -218,12 +218,12 @@ const onSubmit = async () => {
 
 <style scoped>
 .grid_parent_checkbox {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .grid_checkbox {
-    display: grid;
-    grid-template-columns: auto auto;
+  display: grid;
+  grid-template-columns: auto auto;
 }
 </style>

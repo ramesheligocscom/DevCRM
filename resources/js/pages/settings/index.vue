@@ -7,7 +7,7 @@
         class="v-tabs-pill disable-tab-transition"
       >
         <VTab
-          v-for="(tab, index) in tabs"
+          v-for="(tab, index) in filterTabs"
           :key="index"
           :prepend-icon="tab.icon"
         >
@@ -31,24 +31,38 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
-import Setting from "./Setting.vue"
-import Status from "./Status.vue"
+import { computed, getCurrentInstance, ref } from "vue";
+import Setting from "./Setting.vue";
+import Status from "./Status.vue";
+const instance = getCurrentInstance();
+const $can = instance?.proxy?.$can;
 
 const tabs = [
   {
     icon: "tabler-settings",
     title: "General Settings",
     component: Setting,
+    action:'generalSetting' ,
+    subject:'view' 
   },
   {
     icon: "tabler-list-details",
     title: "Status Details",
     component: Status,
+    action:'status' ,
+    subject:'view' 
   },
 ]
 
 const activeTab = ref(0)
+
+const filterTabs = computed(() => {
+  return tabs.filter((item) => {
+    const hasPermission = $can?.(item.action, item.subject);
+    const hasExtraPermission = item.extraPermissions?.some((extra) => $can?.(item.action, extra) );
+    return hasPermission || hasExtraPermission;
+  });
+});
 </script>
 
 <style lang="scss">

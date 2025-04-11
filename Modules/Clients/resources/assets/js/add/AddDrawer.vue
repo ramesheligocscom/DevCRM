@@ -12,7 +12,7 @@ import {
   validateMobileNumber,
 } from "../validations/validationRules";
 const valid = ref(true);
-const refForm = ref(false);
+const refForm = ref(null);
 
 const props = defineProps({
   isDrawerOpen: {
@@ -40,7 +40,7 @@ const client = ref({
 onMounted(() => {
   if (props.currentClient?.name) {
     client.value = _.cloneDeep(props.currentClient);
-  }
+  } 
 });
 
 const emit = defineEmits(["update:isDrawerOpen", "submit"]);
@@ -162,8 +162,8 @@ const statusOptions = [
           <VForm ref="refForm" v-model="valid" @submit.prevent="onSubmit">
             <VRow>
               <VCol cols="12">
-                <AppTextField v-model="clientName" :rules="[...requiredRule]" label="Name" placeholder="Name"
-                  autofocus />
+                <AppTextField v-model="clientName" :rules="requiredRule" label="Name" placeholder="Name" />
+                    <!-- autofocus -->
               </VCol>
               <VCol cols="12">
                 <AppTextField :rules="onlyAlphabetsRule" v-model="client.contact_person" label="Contact Person *"

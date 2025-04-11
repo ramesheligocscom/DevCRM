@@ -56,6 +56,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
         # For status setting
         Route::get('/page', [SettingController::class, 'pageList'])->name('settings.pageList');
         Route::get('/status-list', [SettingController::class, 'pageStatusList'])->name('settings.pageStatusList');
+        Route::post('/page-status-create', [SettingController::class, 'pageStatusCreate'])->name('settings.pageStatusCreate');
+        Route::post('/status-update/{status_id}', [SettingController::class, 'statusUpdate'])->name('settings.statusUpdate');
+        Route::post('/change-color-status/{status_id}', [SettingController::class, 'changeColorStatus'])->name('settings.changeColorStatus');
+        Route::put('/page-status-update/{status_id}', [SettingController::class, 'pageStatusUpdate'])->name('settings.pageStatusUpdate');
+        Route::delete('/page-status-delete/{status_id}', [SettingController::class, 'pageStatusDelete'])->name('settings.pageStatusDelete');
     });
 });
- 

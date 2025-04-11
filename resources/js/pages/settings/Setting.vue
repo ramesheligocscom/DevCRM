@@ -43,7 +43,7 @@
 <script setup>
 import { useCompanyStore } from "@/stores/companyStore";
 import { minLengthRule, requiredRule } from "@/validations/validationRules";
-import { computed, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { toast } from "vue3-toastify";
 const companyStore = useCompanyStore();
 
@@ -62,18 +62,13 @@ const previewImage = ref(null);
 
 const setting = computed(() => companyStore.companyDetails || {});
 
-formData.value.name = setting.value.Company_name;
-formData.value.phone = setting.value.Phone;
-formData.value.address = setting.value.Address;
-formData.value.image = setting.value.company_logo;
-previewImage.value = setting.value.company_logo ? BASE_URL + `/` + setting.value.company_logo : null;
-
 watch([() => setting.value], () => {
   formData.value.name = setting.value.Company_name;
-formData.value.phone = setting.value.Phone;
-formData.value.address = setting.value.Address;
-formData.value.image = setting.value.company_logo;
-previewImage.value = setting.value.company_logo ? BASE_URL + `/` + setting.value.company_logo : null;
+  formData.value.phone = setting.value.Phone;
+  formData.value.address = setting.value.Address;
+  formData.value.image = setting.value.company_logo;
+  previewImage.value = setting.value.company_logo ? BASE_URL + `/` + setting.value.company_logo : null;
+  formatAddress();
 });
 
 // 👉 Update Profile
@@ -82,6 +77,24 @@ const handleFileChange = async (event) => {
   if (file) {
     selectedFile.value = await convertToBase64(file);
     previewImage.value = URL.createObjectURL(file);
+  }
+};
+
+const fetchCompanyDetails = async () => {
+  try {
+    console.log('Calling API...');
+    const response = await $api('/settings');
+    setting.value = response.data ?? null;
+    console.log('Calling API... response ');
+    if (setting.value) {
+      formData.value.name = setting.value.Company_name;
+      formData.value.phone = setting.value.Phone;
+      formData.value.address = setting.value.Address;
+      formData.value.image = setting.value.company_logo;
+      previewImage.value = setting.value.company_logo ? BASE_URL + `/` + setting.value.company_logo : null;
+    }
+  } catch (error) {
+    console.error('Failed to fetch company details:', error);
   }
 };
 
@@ -130,7 +143,7 @@ const filterInput = (maxLength, field, event) => {
   formData.value[field] = filteredValue;
 };
 
-const formatAddress = () => {
+const formatAddress = async () => {
   if (formData.value.address != "") {
     const words = formData.value?.address?.split(/\s+/);
     const lines = [];
@@ -147,8 +160,9 @@ const removeImage = () => {
   selectedFile.value = null;
 };
 
-onMounted(() => {
-  formatAddress();
+onMounted(async () => {
+  // await fetchCompanyDetails();
+  await formatAddress();
 });
 </script>
 

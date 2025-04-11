@@ -197,8 +197,10 @@ fetchClients();
 
           <!-- Filter Header Btn FilterHeaderTableBtn -->
           <FilterHeaderTableBtn :slug="tableHeaderSlug" @filterHeaderValue="getFilteredHeaderValue" />
-          <VBtn v-if="$can('client', 'create')" rounded icon="tabler-plus"
-            @click="openClientModal = true; currentClient = null" />
+          <VBtn v-if="$can('client', 'create')" prepend-icon="tabler-plus"
+            @click="openClientModal = true; currentClient = null" >
+            Add New
+            </VBtn>
         </div>
       </div>
 

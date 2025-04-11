@@ -129,7 +129,7 @@ const makeDateFormat = (date , onlyDate = false) => {
         </template>
 
         <template #item.visit_time="{ item }">
-          {{ item.updater ? makeDateFormat(item.visit_time ) : '-'}}
+          {{ item.visit_time ? makeDateFormat(item.visit_time ) : '-'}}
         </template>
         
         <template #item.created_at="{ item }">

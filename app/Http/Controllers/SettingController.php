@@ -4,24 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Storage;
 
-use Symfony\Component\HttpFoundation\Response;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\CityResource;
-use App\Http\Resources\StateResource;
 use App\Models\AdminControlConfig;
-use App\Models\State;
 use App\Models\Setting;
-use App\Models\City;
-use App\Models\Page;
-use App\Models\PageStatus;
-use App\Models\Source;
-use App\Models\Status;
-use App\Models\Unit;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\DB;
-
-use Illuminate\Support\Facades\Log;
 use Exception;
 use Illuminate\Support\Facades\Auth;
 
@@ -80,7 +68,7 @@ class SettingController extends Controller
             }
 
             # Handle Image (Base64)
-            if ($request->has('image')) {
+            if ($request->has('image') && $request->image) {
                 $image = $request->image;
                 $imageName = time() . '.jpg';
                 $imagePath = 'uploads/' . $imageName;
@@ -132,10 +120,7 @@ class SettingController extends Controller
             if ($type != 'All') $query->where('status_for', $type);
 
             # Sort results
-            if ($sortKey = $request->input('sort_key')) {
-                $sortOrder = $request->input('sort_order', 'asc');
-                $query->orderBy($sortKey, $sortOrder);
-            }
+            $query->orderBy('position', 'asc');
 
             # Pagination
             $perPage = $request->input('per_page', 10);
@@ -150,10 +135,50 @@ class SettingController extends Controller
 
     public function pageStatusCreate(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'status_text'         => 'required|string|max:255',
+            'status_color'        => 'required|string',
+            'position'            => 'required|integer',
+            'status'              => 'required|boolean',
+            'status_for'          => 'required|array|min:1',
+            'status_for.*'        => 'string|distinct',
+            'invoice_footer_text' => 'nullable|string',
+            'contract_footer_text' => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->actionFailure($validator->errors()->first());
+        }
+
+        // Check uniqueness of status_text for each status_for value
+        foreach ($request->status_for as $statusFor) {
+            $exists = AdminControlConfig::where('status_text', $request->status_text)->where('status_for', $statusFor)->exists();
+
+            if ($exists) {
+                return $this->actionFailure("Status '{$request->status_text}' already exists for '{$statusFor}'.");
+            }
+        }
+
+        DB::beginTransaction();
         try {
-            $info = null;
-            return $this->actionSuccess('Status Create successfully',  $info);
+            foreach ($request->status_for as $statusFor) {
+                $config = new AdminControlConfig([
+                    'status_text'         => $request->status_text,
+                    'status_color'        => $request->status_color,
+                    'position'            => $request->position,
+                    'is_predefined'       => $request->status,
+                    'status_for'          => $statusFor,
+                    'invoice_footer_text' => $request->invoice_footer_text,
+                    'contract_footer_text' => $request->contract_footer_text,
+                ]);
+
+                $config->save();
+            }
+
+            DB::commit();
+            return $this->actionSuccess('Status Create successfully',  $config);
         } catch (\Exception $e) {
+            DB::rollBack();
             createExceptionError($e, self::CONTROLLER_NAME, __FUNCTION__);
             return $this->actionFailure($e->getMessage());
         }
@@ -161,10 +186,99 @@ class SettingController extends Controller
 
     public function pageStatusUpdate(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'id'         => 'required',
+            'status_text'         => 'required|string|max:255',
+            'status_color'        => 'required|string',
+            'position'            => 'required|integer',
+            'status'              => 'required|boolean',
+            'status_for'          => 'required|array|min:1',
+            'status_for.*'        => 'string|distinct',
+            'invoice_footer_text' => 'nullable|string',
+            'contract_footer_text' => 'nullable|string',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->actionFailure($validator->errors()->first());
+        }
+
+        // Check uniqueness of status_text for each status_for value
+        foreach ($request->status_for as $statusFor) {
+            $exists = AdminControlConfig::where('id', '!=', $request->id)->where('status_text', $request->status_text)->where('status_for', $statusFor)->exists();
+
+            if ($exists) {
+                return $this->actionFailure("Status '{$request->status_text}' already exists for '{$statusFor}'.");
+            }
+        }
+
+        DB::beginTransaction();
         try {
-            $info = null;
-            return $this->actionSuccess('Status Update successfully',  $info);
+            foreach ($request->status_for as $statusFor) {
+                $config = new AdminControlConfig([
+                    'status_text'         => $request->status_text,
+                    'status_color'        => $request->status_color,
+                    'position'            => $request->position,
+                    'is_predefined'       => $request->status,
+                    'status_for'          => $statusFor,
+                    'invoice_footer_text' => $request->invoice_footer_text,
+                    'contract_footer_text' => $request->contract_footer_text,
+                ]);
+
+                $config->save();
+            }
+            DB::commit();
+            return $this->actionSuccess('Status Update successfully',  $config);
         } catch (\Exception $e) {
+            DB::rollBack();
+            createExceptionError($e, self::CONTROLLER_NAME, __FUNCTION__);
+            return $this->actionFailure($e->getMessage());
+        }
+    }
+    public function statusUpdate(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'status'         => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->actionFailure($validator->errors()->first());
+        }
+
+        DB::beginTransaction();
+        try {
+            $update = AdminControlConfig::where('id', $request->status_id)->first();
+            if (!$update)  return $this->actionFailure('Status info not Found!');
+            $update->position = (int) $request->status;
+            $update->save();
+            DB::commit();
+            return $this->actionSuccess('Status Update successfully',  $update);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            createExceptionError($e, self::CONTROLLER_NAME, __FUNCTION__);
+            return $this->actionFailure($e->getMessage());
+        }
+    }
+
+    public function changeColorStatus(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'status_color'         => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->actionFailure($validator->errors()->first());
+        }
+
+        DB::beginTransaction();
+        try {
+            $update = AdminControlConfig::where('id', $request->status_id)->first();
+            if (!$update) return $this->actionFailure('Status info not Found!');
+            $update->status_color = $request->status_color;
+            $update->save();
+            DB::commit();
+            return $this->actionSuccess('Change Color Status successfully',  $update);
+        } catch (\Exception $e) {
+            DB::rollBack();
             createExceptionError($e, self::CONTROLLER_NAME, __FUNCTION__);
             return $this->actionFailure($e->getMessage());
         }
@@ -172,10 +286,15 @@ class SettingController extends Controller
 
     public function pageStatusDelete(Request $request)
     {
+        DB::beginTransaction();
         try {
-            $info = null;
+            $info = AdminControlConfig::where('id', $request->status_id)->first();
+            if (!$info) return $this->actionFailure('Status info not Found!');
+            $info->delete();
+            DB::commit();
             return $this->actionSuccess('Status Delete successfully',  $info);
         } catch (\Exception $e) {
+            DB::rollBack();
             createExceptionError($e, self::CONTROLLER_NAME, __FUNCTION__);
             return $this->actionFailure($e->getMessage());
         }

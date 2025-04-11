@@ -39,21 +39,21 @@ const menuItems = [
     icon: { icon: 'tabler-file-stack' },
     to: 'contract-list',
     permission: { action: 'contract', subject: 'view' },
-    otherRouteList: ["contract-details-id"]
+    otherRouteList: ["contract-details-id", "contract-edit", "contract-create"]
   },
   {
     title: 'Quotations',
     icon: { icon: 'tabler-brand-asana' },
     to: 'quotation-list',
     permission: { action: 'quotation', subject: 'view' },
-    otherRouteList: ["quotation-details-id"]
+    otherRouteList: ["quotation-details-id", "quotation-edit", "quotation-create"]
   },
   {
     title: 'Invoices',
     icon: { icon: 'tabler-user-circle' },
     to: 'invoice-list',
     permission: { action: 'invoice', subject: 'view' },
-    otherRouteList: ["invoice-details-id"]
+    otherRouteList: ["invoice-details-id", "invoice-edit", "invoice-create"]
   },
   {
     title: 'Product/Services',

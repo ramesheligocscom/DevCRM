@@ -21,18 +21,21 @@ const props = defineProps({
 
 const configStore = useLayoutConfigStore()
 const hideTitleAndBadge = configStore.isVerticalNavMini()
+
+const checkRoute = (item) =>{
+  if(item.otherRouteList && item.otherRouteList.includes(route.name)){
+    return true;
+  }
+  return false;
+};
 </script>
 
 <template>
-  <!-- {{ route.name }} -->
   <li v-if="can(item.action, item.subject)" class="nav-link" :class="{ disabled: item.disable }" >
-    <!-- {{ item.to }} -->
-    <!-- {{ getComputedNavLinkToProp(item) }} -->
-  <!-- {{ isNavLinkActive(item, $router) }} -->
     <Component
       :is="item.to ? 'RouterLink' : 'a'"
       v-bind="getComputedNavLinkToProp(item)"
-      :class="{ 'router-link-active router-link-exact-active': isNavLinkActive(item, $router) }"
+      :class="{ 'router-link-active router-link-exact-active': isNavLinkActive(item, $router) || checkRoute(item) }"
     >
       <Component
         :is="layoutConfig.app.iconRenderer || 'div'"

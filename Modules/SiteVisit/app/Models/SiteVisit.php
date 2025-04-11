@@ -21,24 +21,36 @@ class SiteVisit extends Model
         'status',
         'visit_notes',
         'lead_id',
-        'client_id',
+        'last_updated_by',
     ];
 
     protected $casts = [
         'visit_time' => 'datetime',
         'id' => 'string',
-        'lead_id' => 'string',
-        'client_id' => 'string'
+        'lead_id' => 'string'
     ];
 
-
-    public function lead()
+    public function scopeSearch($query, $searchTerm)
     {
-        return $this->belongsTo(\Modules\Clients\Models\Lead::class);
+        $term = strtolower($searchTerm);
+        return $query->where(function ($q) use ($term) {
+            $q->whereRaw('LOWER(visit_notes) LIKE ?', ["%{$term}%"]);
+        });
+    }
+    
+    public function assignee()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'visit_assignee', 'uuid');
     }
 
-    public function client()
+    public function creator()
     {
-        return $this->belongsTo(\Modules\Clients\Models\Client::class);
+        return $this->belongsTo(\App\Models\User::class, 'created_by', 'uuid');
     }
+
+    public function updater()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'last_updated_by','uuid');
+    }
+    
 }

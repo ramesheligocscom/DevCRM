@@ -26,6 +26,13 @@ class Client extends Model
         'last_updated_by',
     ];
 
+    public function scopeSearch($query, $searchTerm)
+    {
+        $term = strtolower($searchTerm);
+        return $query->where(function ($q) use ($term) {
+            $q->whereRaw('LOWER(name) LIKE ?', ["%{$term}%"]);
+        });
+    }
 
     // Custom query scopes
     public function scopeFilterByStatus($query, $status)
@@ -67,22 +74,21 @@ class Client extends Model
     // Relationship loading
     public function loadRelations()
     {
-        return $this->load(['parentClient', 'childClients']);
+        return $this->load([]);
     }
 
-    // Relationships
-    // public function parentClient()
-    // {
-    //     return $this->belongsTo(Client::class, 'lead_id');
-    // }
+    public function creator()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'created_by' , 'uuid');
+    }
 
-    // public function childClients()
-    // {
-    //     return $this->hasMany(Client::class, 'lead_id');
-    // }
-
-    // public function assignedUser()
-    // {
-    //     return $this->belongsTo(User::class, 'assigned_user');
-    // }
+    public function updater()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'last_updated_by', 'uuid');
+    }
+    public function assignedUser()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'assigned_user' , 'uuid');
+    }
+     
 }

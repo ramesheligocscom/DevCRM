@@ -56,15 +56,24 @@
 
         <!-- Color -->
         <template #item.status_color="{ item }">
-          <div v-if="editingColorId === item.id">
-            <VTextField type="color" v-model="item.status_color" style="border: none; background: transparent;"
-              @input="(e) => updateStatusColor(item, e.target.value)" @blur="editingColorId = null" />
-          </div>
-          <div v-else :style="{ backgroundColor: item.status_color }" class="color-circle"
-            :title="`Double-click to edit.`"
-           @dblclick="editingColorId = item.id"></div>
-           <!-- Click to copy: ${item.status_color}.  @click="copyColorCode(item.status_color)"  -->
+            <div v-if="editingColorId === item.id">
+              <VTextField
+                type="color"
+                v-model="item.status_color"
+                style="border: none; background: transparent;"
+                @change="(e) => updateStatusColor(item, e.target.value)" 
+                @blur="editingColorId = null"
+              />
+            </div>
+            <div
+              v-else
+              :style="{ backgroundColor: item.status_color }"
+              class="color-circle"
+              :title="`Double-click to edit.`"
+              @dblclick="editingColorId = item.id"
+            ></div>
         </template>
+
 
         <!-- Actions -->
         <template #item.actions="{ item }">
@@ -222,7 +231,7 @@ const updateStatus = async (item) => {
     });
     toast.success(res?.message || "Status updated successfully");
   } catch (err) {
-    toast.error(err?.response?.data?.message || "Error updating status");
+    toast.error(err?._data?.message || "Error updating status");
   } finally {
     editingStatusId.value = null;
   }
@@ -239,7 +248,7 @@ const updateStatusColor = async (item, newColor) => {
     toast.success(res?.message || "Color updated successfully");
     await pageStatusList();
   } catch (err) {
-    toast.error(err?.response?.data?.message || "Error updating color");
+    toast.error(err?._data?.message || "Error updating color");
   } finally {
     editingColorId.value = null;
   }

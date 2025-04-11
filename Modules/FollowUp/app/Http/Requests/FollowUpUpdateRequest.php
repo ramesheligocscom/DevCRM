@@ -23,17 +23,20 @@ class FollowUpUpdateRequest extends FormRequest
             'lead_id' => [
                 'nullable',
                 'exists:leads,id',
-                Rule::requiredIf(function () {
-                    return empty($this->client_id);
-                })
             ],
             'client_id' => [
                 'nullable',
                 'exists:clients,id',
-                Rule::requiredIf(function () {
-                    return empty($this->lead_id);
-                })
             ],
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'call_status.in' => 'Invalid call status. Must be: completed, pending, no_answer, busy, or failed.',
+            'lead_prospect.max' => 'Lead prospect cannot exceed 32 characters.',
+            'call_summary.max' => 'Call summary cannot exceed 2000 characters.',
         ];
     }
 

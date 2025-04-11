@@ -124,7 +124,7 @@ const onSubmit = async () => {
     }
   } catch (err) {
     console.error(err)
-    toast.error(err?.response?.data?.message || 'Error occurred')
+    toast.error(err?._data?.message || 'Error occurred')
   } finally {
     isSubmitting = false
     isLoading.value = false
@@ -146,7 +146,9 @@ const onSubmit = async () => {
           <VForm ref="refForm" v-model="valid" @submit.prevent="onSubmit">
             <VRow>
               <VCol cols="12">
-                <AppTextField v-model="lead.name" label="Name*" :rules="[requiredValidator]" placeholder="John Doe" />
+
+                
+                <AppTextField v-model="lead.name" label="Name*"  placeholder="John Doe" :rules="[requiredValidator]" />
               </VCol>
 
               <VCol cols="12">

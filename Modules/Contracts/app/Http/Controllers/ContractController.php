@@ -28,7 +28,8 @@ class ContractController extends Controller
             $request->input('invoice_id'),
             $request->input('quotation_id'),
             $request->input('created_by'),
-            $request->input('last_updated_by')
+            $request->input('last_updated_by'),
+            $request->input('search')
         );
 
         return response()->json([

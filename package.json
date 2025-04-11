@@ -33,6 +33,7 @@
     "cookie-es": "1.2.2",
     "dayjs": "^1.11.13",
     "eslint-plugin-regexp": "2.6.0",
+    "fresh": "^0.5.2",
     "jwt-decode": "4.0.0",
     "laravel-echo": "^2.0.2",
     "mapbox-gl": "3.5.2",

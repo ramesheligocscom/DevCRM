@@ -28,7 +28,8 @@ class InvoiceController extends Controller
             $request->input('contract_id'),
             $request->input('quotation_id'),
             $request->input('created_by'),
-            $request->input('last_updated_by')
+            $request->input('last_updated_by'),
+            $request->input('search')
         );
         return response()->json([
             'data' => InvoiceResource::collection($paginated->items()),

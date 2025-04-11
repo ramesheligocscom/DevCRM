@@ -1,12 +1,14 @@
 <script setup>
 import { v4 as uuidv4 } from 'uuid'
 import { onMounted, ref, watch, watchEffect } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { toast } from 'vue3-toastify'
 import { VForm } from 'vuetify/components'
 
 const route = useRoute()
+const router = useRouter()
+
 const contractId = route.params.id
 
 const refForm = ref()
@@ -148,10 +150,12 @@ const onSubmit = async () => {
 
     if (res?.data) {
       toast.success(res?.data?.message || 'Contract updated successfully!')
+      router.push({ name: 'contract-list' })
+
     }
   } catch (err) {
     console.error(err)
-    toast.error(err?.response?.data?.message || 'An error occurred while updating.')
+    toast.error(err?._data?.message || 'An error occurred while updating.')
   } finally {
     isSubmitting = false
     isLoading.value = false
@@ -218,11 +222,11 @@ onMounted(loadContract)
                   <AppTextField v-model="record.title" label="Title"/>
                 </VCol>
                 <VCol cols="12" md="6">
-                  <AppTextField v-model="record.start_date" label="Start Date*" type="date" />
+                  <AppDateTimePicker v-model="record.start_date" label="Start Date*" />
                 </VCol>
 
                 <VCol cols="12" md="6">
-                  <AppTextField v-model="record.end_date" label="End Date*" type="date" />
+                  <AppDateTimePicker v-model="record.end_date" label="End Date*" />
                 </VCol>
 
                 <VCol cols="12" md="6">

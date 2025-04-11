@@ -71,21 +71,27 @@ const pagination = ref({
   last_page: 1,
 });
 
+const totalItems = ref(0);
+
 const fetchClients = async () => {
   loading.value = true;
 
   try {
-    const response = await $api(`/followup?status=${statusFilter.value ?? ""}&per_page=${itemsPerPage.value}`);
+    const response = await $api(`/followup?status=${statusFilter.value ?? ""}&page=${page.value}&per_page=${itemsPerPage.value}`);
 
     filteredClients.value = response.data;
     clients.value = response.data; // Store all clients for reference
 
+    // Update pagination data
     pagination.value = {
       current_page: response.meta.current_page,
       per_page: response.meta.per_page,
       total: response.meta.total,
       last_page: response.meta.last_page,
     };
+
+    // Set total items for pagination
+    totalItems.value = response.meta.total;
 
     clientCards.value = [
       {
@@ -181,69 +187,61 @@ fetchClients();
       <BaseSpinner class="d-flex" v-if="loading" />
 
       <!-- Client Data Table -->
-      <VDataTable v-else :items="searchedClients" :items-length="searchedClients.length"
-        :headers="headers.filter((header) => header.checked)" class="text-no-wrap" @update:options="updateOptions"
-        v-model:items-per-page="itemsPerPage" v-model:page="page" show-select v-model="selectedClient">
-        <!-- Name Column -->
-   
+      <VDataTableServer v-else 
+        v-model:items-per-page="itemsPerPage" 
+        v-model:page="page" 
+        :items="searchedClients" 
+        :items-length="totalItems"
+        :headers="headers.filter((header) => header.checked)" 
+        class="text-no-wrap" 
+        @update:options="updateOptions"
+        show-select 
+        v-model="selectedClient">
+        
         <template #item.call_status="{ item }">
           {{ item?.call_status || '-' }}
         </template>
-         <!-- assigned_user -->
-         <template #item.call_summary="{ item }">
+        
+        <template #item.call_summary="{ item }">
           {{ item.call_summary || '-' }}
         </template>
-         <template #item.created_at="{ item }">
+        
+        <template #item.created_at="{ item }">
           {{ item.created_at || '-' }}
         </template>
-         <template #item.created_by="{ item }">
+        
+        <template #item.created_by="{ item }">
           {{ item.creator_name || '-' }}
         </template>
 
         <template #item.updated_at="{ item }">
           {{ item.updated_at || '-' }}
         </template>
+        
         <template #item.updated_by="{ item }">
           {{ item.updater_name || '-' }}
         </template>
-     
-    
 
-
-        <!-- Actions Column -->
         <template #item.action="{ item }">
-
-          <!-- <RouterLink v-if="$can('client', 'show')" :to="{
-            name: 'site-visit',
-            params: { type: 'client', id: item.id }
-          }">
-
-            <VIcon color="secondary" icon="tabler-eye" />
-          </RouterLink> -->
-
-
           <IconBtn @click="editBranch(item)" v-if="$can('client', 'edit')">
             <VIcon icon="tabler-pencil" />
           </IconBtn>
-
-      
 
           <IconBtn v-if="$can('client', 'delete')" @click="openDeleteDialog(item)">
             <VIcon icon="tabler-trash" />
           </IconBtn>
         </template>
 
-        <!-- Pagination -->
         <template #bottom>
-          <Pagination :pagination="pagination" :itemsPerPage="itemsPerPage" @update:itemsPerPage="itemsPerPage = $event"
-            @paginate="paginate" />
+          <TablePagination 
+            v-model:page="page" 
+            :items-per-page="itemsPerPage" 
+            :total-items="totalItems" 
+          />
         </template>
-      </VDataTable>
+      </VDataTableServer>
     </VCard>
 
-
-
-    
     <!-- 👉 Confirm Dialog -->
     <ConfirmDialog v-model:isDialogVisible="isDeleteDialogOpen" confirm-title="Delete!"
       confirmation-question="Are you sure want to delete lead?" :currentItem="currentLead" @submit="refresh"
@@ -251,8 +249,6 @@ fetchClients();
     <!-- Client Add/Edit Drawer -->
     <AddDrawer v-model:isDrawerOpen="openClientModal" :currentClient="currentClient" @submit="refresh"
       v-if="openClientModal" :clients="clients" />
-
-
   </section>
 </template>
 

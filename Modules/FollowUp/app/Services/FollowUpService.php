@@ -11,8 +11,7 @@ class FollowUpService
     public function getAllFollowUps()
     {
         return FollowUp::with(['lead', 'client', 'creator', 'updater'])
-            ->latest()
-            ->get();
+            ->latest();
     }
 
     public function getPaginatedFollowUps(

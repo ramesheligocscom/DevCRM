@@ -24,13 +24,15 @@ const editBranch = (item) => {
   isAddEditDrawerOpen.value = true;
 };
 
+
 const resolveStatusVariant = status => {
-  if (status === 1) return { color: 'primary', text: 'Current' }
-  else if (status === 2) return { color: 'success', text: 'Professional' }
-  else if (status === 3) return { color: 'error', text: 'Rejected' }
-  else if (status === 4) return { color: 'warning', text: 'Resigned' }
-  else return { color: 'info', text: 'Applied' }
+  if (status === 'scheduled') return { color: 'primary', text: 'Scheduled' }
+  else if (status === 'completed') return { color: 'success', text: 'Completed' }
+  else if (status === 'canceled') return { color: 'error', text: 'Canceled' }
+  else if (status === 'rescheduled') return { color: 'warning', text: 'Rescheduled' }
+  else return { color: 'secondary', text: 'Unknown' }
 }
+
 
 const updateOptions = options => {
   sortBy.value = options.sortBy[0]?.key

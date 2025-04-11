@@ -24,7 +24,6 @@ const configStore = useLayoutConfigStore()
 
 const BASE_URL = window.location.origin;
 const setting = computed(() => companyStore.companyDetails || {});
-console.log('VerticalNav setting ',setting.value.company_logo);
 
 const resolveNavItemComponent = item => {
   if ('heading' in item)

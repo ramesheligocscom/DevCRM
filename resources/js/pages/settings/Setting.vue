@@ -84,10 +84,8 @@ const handleFileChange = async (event) => {
 
 const fetchCompanyDetails = async () => {
   try {
-    console.log('Calling API...');
     const response = await $api('/settings');
     setting.value = response.data ?? null;
-    console.log('Calling API... response ');
     if (setting.value) {
       formData.value.name = setting.value.Company_name;
       formData.value.phone = setting.value.Phone;

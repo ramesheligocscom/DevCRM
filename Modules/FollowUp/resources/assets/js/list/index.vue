@@ -155,7 +155,7 @@ const makeDateFormat = (date , onlyDate = false) => {
 
     <!-- 👉 Confirm Dialog -->
     <ConfirmDialog v-model:isDialogVisible="isDeleteDialogOpen" confirm-title="Delete!"
-      confirmation-question="Are you sure want to delete lead?" :currentItem="currentFollowup" @submit="refresh"
+      confirmation-question="Are you sure want to delete follow up?" :currentItem="currentFollowup" @submit="refresh"
       :endpoint="`/followup/${currentFollowup?.id}`" @close="isDeleteDialogOpen = false" />
 
     <AddDrawer v-model:is-drawer-open="isAddEditDrawerOpen" :currentItem="currentFollowup" @submit="refresh"

@@ -43,8 +43,8 @@ class FollowUpController extends Controller
         return response()->json([
             'data' => new FollowUpResource($followUp),
             'message' => 'Follow up created successfully',
-            'status' => Response::HTTP_CREATED
-        ], Response::HTTP_CREATED);
+            'status' => Response::HTTP_OK
+        ], Response::HTTP_OK);
     }
 
     public function show(string $id): JsonResponse

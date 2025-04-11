@@ -20,6 +20,7 @@ class SiteVisit extends Model
         'created_by',
         'status',
         'visit_notes',
+        'client_id',
         'lead_id',
         'last_updated_by',
     ];

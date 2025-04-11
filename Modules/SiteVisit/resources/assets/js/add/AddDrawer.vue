@@ -1,5 +1,6 @@
 <script setup>
 import { ref, watch } from "vue";
+import { useRoute } from "vue-router";
 import { PerfectScrollbar } from "vue3-perfect-scrollbar";
 import { toast } from "vue3-toastify";
 import { VForm } from "vuetify/components/VForm";
@@ -16,6 +17,11 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  type: {
+    type: String,
+    default: null,
+    validator: (value) => ['lead', 'client'].includes(value)
+  }
 });
  
 
@@ -95,14 +101,22 @@ const onSubmit = async () => {
   try {
     isLoading.value = true;
 
+    // Get the ID from the route based on type
+    const routeId = route.params.id;
+
     const payload = {
       visit_time: date.value,
       visit_assignee: siteVisitItem.value.visit_assignee,
       status: siteVisitItem.value.status,
       visit_notes: siteVisitItem.value.visit_notes,
-      lead_id: siteVisitItem.value.lead_id,
-      client_id: siteVisitItem.value.client_id,
     };
+
+    // Add the appropriate ID based on type
+    if (props.type === 'lead') {
+      payload.lead_id = routeId;
+    } else if (props.type === 'client') {
+      payload.client_id = routeId;
+    }
 
     const res = await $api(
       props.currentItem
@@ -162,6 +176,8 @@ const statusOptions = [
 ];
  
 const date = ref('')
+
+const route = useRoute();
 </script>
 
 <template>
@@ -196,7 +212,7 @@ const date = ref('')
                   </template>
                 </VSelect>
               </VCol>
-              <VCol cols="12">
+              <!-- <VCol cols="12">
                 <AppTextField v-model="siteVisitItem.visit_notes" label="Visit Notes" placeholder="Visit Notes" autofocus />
               </VCol>
               <VCol cols="12">
@@ -217,7 +233,7 @@ const date = ref('')
                     <VListItem v-bind="props" :title="item.raw.name" :subtitle="item.raw.email"></VListItem>
                   </template>
                 </VSelect>
-              </VCol>
+              </VCol> -->
 
               <VCol cols="12">
                 <VBtn type="submit" class="me-3" :loading="isLoading">

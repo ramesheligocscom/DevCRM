@@ -24,6 +24,13 @@ const editBranch = (item) => {
   isAddEditDrawerOpen.value = true;
 };
 
+const props = defineProps({
+  type: {
+    type: String,
+    default: null,
+    validator: (value) => ['lead', 'client'].includes(value)
+  }
+});
 
 const resolveStatusVariant = status => {
   if (status === 'scheduled') return { color: 'primary', text: 'Scheduled' }
@@ -32,7 +39,6 @@ const resolveStatusVariant = status => {
   else if (status === 'rescheduled') return { color: 'warning', text: 'Rescheduled' }
   else return { color: 'secondary', text: 'Unknown' }
 }
-
 
 const updateOptions = options => {
   sortBy.value = options.sortBy[0]?.key
@@ -44,18 +50,19 @@ const totalItems = ref(0)
 
 const fetchSiteVisits = async () => {
   try {
-   
+    let url = `/sitevisit?search=${searchQuery.value ?? ""}&page=${page.value}&sort_key=${sortBy.value ?? ""}&sort_order=${orderBy.value ?? ""}&per_page=${itemsPerPage.value}`;
+    
+    // Add type filter if type prop is provided
+    if (props.type) {
+      url += `&type=${props.type}`;
+    }
 
-    const response = await $api(
-      `/sitevisit?search=${searchQuery.value ?? ""}&page=${page.value}&sort_key=${sortBy.value ?? ""}&sort_order=${orderBy.value ?? ""}&per_page=${itemsPerPage.value}`
-    )
-
-    dataItems.value = response.data
-    totalItems.value = response.meta.total
+    const response = await $api(url);
+    dataItems.value = response.data;
+    totalItems.value = response.meta.total;
   } catch (err) {
-    console.error('Failed to fetch site visits:', err)
-    // Optionally show a toast
-    toast.error('Failed to load site visits')
+    console.error('Failed to fetch site visits:', err);
+    toast.error('Failed to load site visits');
   }
 }
 
@@ -162,7 +169,12 @@ const makeDateFormat = (date , onlyDate = false) => {
       confirmation-question="Are you sure want to delete lead?" :currentItem="currentSiteVisit" @submit="refresh"
       :endpoint="`/sitevisit/${currentSiteVisit?.id}`" @close="isDeleteDialogOpen = false" />
 
-    <AddDrawer v-model:is-drawer-open="isAddEditDrawerOpen" :currentItem="currentSiteVisit" @submit="refresh"
-      @close="isAddEditDrawerOpen = false" />
+    <AddDrawer 
+      v-model:is-drawer-open="isAddEditDrawerOpen" 
+      :currentItem="currentSiteVisit" 
+      :type="props.type"
+      @submit="refresh"
+      @close="isAddEditDrawerOpen = false" 
+    />
   </div>
 </template>

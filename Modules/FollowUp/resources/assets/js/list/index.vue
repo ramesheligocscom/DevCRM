@@ -34,6 +34,8 @@ const resolveStatusVariant = status => {
 }
 
 
+
+
 const updateOptions = options => {
   sortBy.value = options.sortBy[0]?.key
   orderBy.value = options.sortBy[0]?.order
@@ -42,13 +44,24 @@ const updateOptions = options => {
 const dataItems = ref([])
 const totalItems = ref(0)
 
+const props = defineProps({
+  type: {
+    type: String,
+    default: null,
+    validator: (value) => ['client', 'lead', null].includes(value)
+  }
+});
+
 const fetchFollowups = async () => {
   try {
-   
+    let url = `/followup?search=${searchQuery.value ?? ""}&page=${page.value}&sort_key=${sortBy.value ?? ""}&sort_order=${orderBy.value ?? ""}&per_page=${itemsPerPage.value}`;
+    
+    // Add type filter if specified
+    if (props.type) {
+      url += `&type=${props.type}`;
+    }
 
-    const response = await $api(
-      `/followup?search=${searchQuery.value ?? ""}&page=${page.value}&sort_key=${sortBy.value ?? ""}&sort_order=${orderBy.value ?? ""}&per_page=${itemsPerPage.value}`
-    )
+    const response = await $api(url)
 
     dataItems.value = response.data
     totalItems.value = response.meta.total
@@ -162,7 +175,7 @@ const makeDateFormat = (date , onlyDate = false) => {
       confirmation-question="Are you sure want to delete follow up?" :currentItem="currentFollowup" @submit="refresh"
       :endpoint="`/followup/${currentFollowup?.id}`" @close="isDeleteDialogOpen = false" />
 
-    <AddDrawer v-model:is-drawer-open="isAddEditDrawerOpen" :currentItem="currentFollowup" @submit="refresh"
+    <AddDrawer v-model:is-drawer-open="isAddEditDrawerOpen" :currentItem="currentFollowup" :type="props.type" @submit="refresh"
       @close="isAddEditDrawerOpen = false" />
   </div>
 </template>

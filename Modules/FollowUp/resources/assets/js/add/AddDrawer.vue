@@ -1,11 +1,14 @@
 <script setup>
 import { ref, watch } from "vue";
+import { useRoute } from "vue-router";
 import { PerfectScrollbar } from "vue3-perfect-scrollbar";
 import { toast } from "vue3-toastify";
 import { VForm } from "vuetify/components/VForm";
 import { VBtn } from "vuetify/lib/components/index.mjs";
+
 const valid = ref(true);
 const refForm = ref(false);
+const route = useRoute();
 
 const props = defineProps({
   isDrawerOpen: {
@@ -16,6 +19,11 @@ const props = defineProps({
     type: Object,
     required: true,
   },
+  type: {
+    type: String,
+    default: null,
+    validator: (value) => ['lead', 'client'].includes(value)
+  }
 });
  
 const followupItem = ref({
@@ -31,8 +39,8 @@ const resetForm = () => {
     lead_prospect: "",
     call_status: "",
     call_summary: "",
-    lead_id: "",
-    client_id: "",
+    lead_id: props.type === 'lead' ? route.params.id : "",
+    client_id: props.type === 'client' ? route.params.id : "",
   }
 }
 
@@ -180,7 +188,7 @@ const statusOptions = [
               <VCol cols="12">
                 <AppTextField v-model="followupItem.call_summary" label="Call Summary" placeholder="Call Summary" autofocus />
               </VCol>
-              <VCol cols="12">
+              <!-- <VCol cols="12">
                 <VSelect v-model="followupItem.client_id" :items="[]" label="Client" placeholder="Select Client"
                   item-title="name" item-value="id" clearable>
                   <template #item="{ item }">
@@ -198,7 +206,7 @@ const statusOptions = [
                     <VListItem v-bind="props" :title="item.raw.name" :subtitle="item.raw.email"></VListItem>
                   </template>
                 </VSelect>
-              </VCol>
+              </VCol> -->
 
               <VCol cols="12">
                 <VBtn type="submit" class="me-3" :loading="isLoading">

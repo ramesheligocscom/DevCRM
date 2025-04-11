@@ -16,6 +16,7 @@ class FollowUpConst
                     "permission_list" => [
                         ["name" => 'Follow up', "action" => "followUp", "slug" => 'view'],
                         ["name" => 'Create Follow Up', "action" => "followUp", "slug" => 'create'],
+                        ["name" => 'Delete Follow Up', "action" => "followUp", "slug" => 'delete'],
                         ["name" => 'Edit Follow Up', "action" => "followUp", "slug" => 'edit'],
                         ["name" => 'Activity Timeline', "action" => "followUp", "slug" => 'activity-timeline'],
                     ]

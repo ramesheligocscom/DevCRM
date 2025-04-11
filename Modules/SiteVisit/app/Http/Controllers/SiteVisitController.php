@@ -22,6 +22,7 @@ class SiteVisitController extends Controller
     {
         $visits = $this->siteVisitService->getAllVisits()
             ->when($request->boolean('with_trashed'), fn($q) => $q->withTrashed())
+            ->when($request->search ,fn($q) => $q->search($request->search))
             ->latest()
             ->paginate($request->integer('per_page', 15));
 

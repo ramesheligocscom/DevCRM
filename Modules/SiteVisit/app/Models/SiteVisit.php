@@ -30,7 +30,14 @@ class SiteVisit extends Model
         'lead_id' => 'string'
     ];
 
-
+    public function scopeSearch($query, $searchTerm)
+    {
+        $term = strtolower($searchTerm);
+        return $query->where(function ($q) use ($term) {
+            $q->whereRaw('LOWER(visit_notes) LIKE ?', ["%{$term}%"]);
+        });
+    }
+    
     public function assignee()
     {
         return $this->belongsTo(\App\Models\User::class, 'visit_assignee', 'uuid');

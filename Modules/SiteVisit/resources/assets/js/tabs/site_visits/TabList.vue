@@ -79,21 +79,27 @@ const pagination = ref({
   last_page: 1,
 });
 
+const totalItems = ref(0);
+
 const fetchClients = async () => {
   loading.value = true;
 
   try {
-    const response = await $api(`/sitevisit?status=${statusFilter.value ?? ""}&per_page=${itemsPerPage.value}`);
+    const response = await $api(`/sitevisit?status=${statusFilter.value ?? ""}&page=${page.value}&per_page=${itemsPerPage.value}`);
 
     filteredClients.value = response.data;
     clients.value = response.data; // Store all clients for reference
 
+    // Update pagination data
     pagination.value = {
       current_page: response.meta.current_page,
       per_page: response.meta.per_page,
       total: response.meta.total,
       last_page: response.meta.last_page,
     };
+
+    // Set total items for pagination
+    totalItems.value = response.meta.total;
 
     clientCards.value = [
       {
@@ -189,11 +195,8 @@ fetchClients();
         </div>
 
         <div class="d-flex gap-3">
-        
-
           <AppTextField v-model="searchQuery" placeholder="Search"
             style="max-inline-size: 200px; min-inline-size: 200px" />
-
 
           <!-- Filter Header Btn FilterHeaderTableBtn -->
           <FilterHeaderTableBtn :slug="tableHeaderSlug" @filterHeaderValue="getFilteredHeaderValue" />
@@ -210,9 +213,16 @@ fetchClients();
       <BaseSpinner class="d-flex" v-if="loading" />
 
       <!-- Client Data Table -->
-      <VDataTable v-else :items="searchedClients" :items-length="searchedClients.length"
-        :headers="headers.filter((header) => header.checked)" class="text-no-wrap" @update:options="updateOptions"
-        v-model:items-per-page="itemsPerPage" v-model:page="page" show-select v-model="selectedClient">
+      <VDataTableServer v-else 
+        v-model:items-per-page="itemsPerPage" 
+        v-model:page="page" 
+        :items="searchedClients" 
+        :items-length="totalItems"
+        :headers="headers.filter((header) => header.checked)" 
+        class="text-no-wrap" 
+        @update:options="updateOptions"
+        show-select 
+        v-model="selectedClient">
         
         <template #item.visit_time="{ item }">
           {{ item?.visit_time || '-' }}
@@ -238,20 +248,17 @@ fetchClients();
           {{ item.creator_name || '-' }}
         </template>
 
-
         <template #item.updated_at="{ item }">
           {{ item.updated_at || '-' }}
         </template>
         <template #item.updated_by="{ item }">
           {{ item.updater_name || '-' }}
         </template>
-     
 
         <template #item.action="{ item }">
           <IconBtn @click="editBranch(item)" v-if="$can('client', 'edit')">
             <VIcon icon="tabler-pencil" />
           </IconBtn>
-
 
           <IconBtn v-if="$can('client', 'delete')" @click="openDeleteDialog(item)">
             <VIcon icon="tabler-trash" />
@@ -259,10 +266,13 @@ fetchClients();
         </template>
 
         <template #bottom>
-          <Pagination :pagination="pagination" :itemsPerPage="itemsPerPage" @update:itemsPerPage="itemsPerPage = $event"
-            @paginate="paginate" />
+          <TablePagination 
+            v-model:page="page" 
+            :items-per-page="itemsPerPage" 
+            :total-items="totalItems" 
+          />
         </template>
-      </VDataTable>
+      </VDataTableServer>
     </VCard>
 
     <!-- 👉 Confirm Dialog -->

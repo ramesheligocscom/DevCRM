@@ -10,7 +10,7 @@ class FollowUpService
 {
     public function getAllFollowUps()
     {
-        return FollowUp::with(['lead', 'client', 'creator', 'updater'])
+        return FollowUp::with([ 'creator', 'updater'])
             ->latest();
     }
 
@@ -24,7 +24,7 @@ class FollowUpService
         ?string $lastUpdatedBy = null
     ): LengthAwarePaginator
     {
-        $query = FollowUp::query()->with(['lead', 'client', 'creator', 'updater']);
+        $query = FollowUp::query()->with([ 'creator', 'updater']);
         
         if ($withTrashed) {
             $query->withTrashed();
@@ -55,7 +55,7 @@ class FollowUpService
 
     public function getFollowUpById(string $id)
     {
-        return FollowUp::with(['lead', 'client', 'creator', 'updater'])
+        return FollowUp::with([ 'creator', 'updater'])
             ->where('id', $id)
             ->firstOrFail();
     }

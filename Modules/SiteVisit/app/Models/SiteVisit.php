@@ -31,26 +31,15 @@ class SiteVisit extends Model
     ];
 
 
-    public function lead()
-    {
-        return $this->belongsTo(\Modules\Leads\Models\Lead::class)->withDefault();
-    }
-
     public function assignee()
     {
-        return $this->belongsTo(\App\Models\User::class, 'visit_assignee')->withDefault();
+        return $this->belongsTo(\App\Models\User::class, 'visit_assignee', 'uuid');
     }
 
     public function creator()
     {
-        return $this->belongsTo(\App\Models\User::class, 'created_by', 'uuid')->withDefault();
+        return $this->belongsTo(\App\Models\User::class, 'created_by', 'uuid');
     }
-
-    public function client()
-    {
-        return $this->belongsTo(\Modules\Clients\Models\Client::class)->withDefault();
-    }
-
 
     public function updater()
     {

@@ -1,7 +1,5 @@
 <script setup>
-import AppTextField from "@/@core/components/app-form-elements/AppTextField.vue";
-import _ from "lodash";
-import { onMounted, ref, watch } from "vue";
+import { ref, watch } from "vue";
 import { PerfectScrollbar } from "vue3-perfect-scrollbar";
 import { toast } from "vue3-toastify";
 import { VForm } from "vuetify/components/VForm";
@@ -9,49 +7,50 @@ import { VBtn } from "vuetify/lib/components/index.mjs";
 const valid = ref(true);
 const refForm = ref(false);
 
-
-
 const props = defineProps({
   isDrawerOpen: {
     type: Boolean,
     required: true,
   },
-  clients: {
-    type: Array,
-    default: [],
-  },
-  currentClient: {
+  currentItem: {
     type: Object,
-    default: null,
+    required: true,
   },
 });
-
-const customer = ref({
-  addresses: [{ address: "" }],
-});
-
-const client = ref({
-  visit_time: "",
-  visit_assignee: "",
-  status: "",
-  visit_notes: "",
+ 
+const followupItem = ref({
+  lead_prospect: "",
+  call_status: "",
+  call_summary: "",
   lead_id: "",
   client_id: "",
 });
 
-onMounted(() => {
-  if (props.currentClient) {
-    client.value = _.cloneDeep({
-      visit_time: props.currentClient.visit_time,
-      visit_assignee: props.currentClient.visit_assignee,
-      status: props.currentClient.status,
-      visit_notes: props.currentClient.visit_notes,
-      lead_id: props.currentClient.lead_id,
-      client_id: props.currentClient.client_id,
-    });
-    date.value = props.currentClient.visit_time;
+const resetForm = () => {
+  followupItem.value = {
+    lead_prospect: "",
+    call_status: "",
+    call_summary: "",
+    lead_id: "",
+    client_id: "",
   }
-});
+}
+
+
+watch(
+  () => props.isDrawerOpen,
+  (val) => {
+    if (val) {
+      if (props.currentItem?.id) {
+        followupItem.value = JSON.parse(JSON.stringify(props.currentItem))
+      } else {
+        resetForm()
+      }
+    }
+  }
+)
+
+ 
 
 const emit = defineEmits(["update:isDrawerOpen", "submit", "statusChange"]);
 
@@ -72,7 +71,7 @@ const isLoading = ref(false);
 let isSubmitting = false;
 
 // Add watch on status changes
-watch(() => client.value.status, (newStatus) => {
+watch(() => followupItem.value.call_status, (newStatus) => {
   if (newStatus) {
     // Emit status change event to parent
     emit("statusChange", newStatus);
@@ -93,26 +92,25 @@ const onSubmit = async () => {
     isLoading.value = true;
 
     const payload = {
-      visit_time: date.value,
-      visit_assignee: client.value.visit_assignee,
-      status: client.value.status,
-      visit_notes: client.value.visit_notes,
-      lead_id: client.value.lead_id,
-      client_id: client.value.client_id,
+      lead_prospect: followupItem.value.lead_prospect,
+      call_status: followupItem.value.call_status,
+      call_summary: followupItem.value.call_summary,
+      lead_id: followupItem.value.lead_id,
+      client_id: followupItem.value.client_id,
     };
 
     const res = await $api(
-      props.currentClient
-        ? `/sitevisit/${props.currentClient.id}`
-        : `/sitevisit`,
+      props.currentItem
+        ? `/followup/${props.currentItem.id}`
+        : `/followup`,
       {
-        method: props.currentClient ? "PUT" : "POST",
+        method: props.currentItem ? "PUT" : "POST",
         body: payload,
       }
     );
 
     if (res?.status === 200) {
-      toast.success(res?.message || (props.currentClient ? "Site visit updated successfully" : "Site visit created successfully"));
+      toast.success(res?.message || (props.currentItem ? "Follow Up updated successfully" : "Follow Up created successfully"));
 
       // Emit submit event with the response data for reload
       emit("submit", res.data);
@@ -121,16 +119,14 @@ const onSubmit = async () => {
       emit("update:isDrawerOpen", false);
 
       // Only reset form if it's a new entry, not an update
-      if (!props.currentClient) {
-        client.value = {
-          visit_time: "",
-          visit_assignee: "",
-          status: "",
-          visit_notes: "",
+      if (!props.currentItem) {
+        followupItem.value = {
+          lead_prospect: "",
+          call_status: "",
+          call_summary: "",
           lead_id: "",
           client_id: "",
         };
-        date.value = "";
 
         // Reset form validation
         await nextTick(() => {
@@ -152,46 +148,14 @@ const onSubmit = async () => {
 
 
 const statusOptions = [
-  { text: "Scheduled", value: "scheduled" },
+
+  { text: "Pending", value: "pending" },
   { text: "Completed", value: "completed" },
-  { text: "Canceled", value: "canceled" },
-  { text: "Rescheduled", value: "rescheduled" },
+  { text: "No answer", value: "no_answer" },
+  { text: "Busy", value: "busy" },
+  { text: "Failed", value: "failed" },
 ];
-
-
-const userOptions = ref([
-  {
-    id: '550e8400-e29b-41d4-a716-446655440001',
-    name: 'John Smith',
-    email: 'john@example.com'
-  },
-  {
-    id: '550e8400-e29b-41d4-a716-446655440002',
-    name: 'Sarah Johnson',
-    email: 'sarah@example.com'
-  },
-  {
-    id: '550e8400-e29b-41d4-a716-446655440003',
-    name: 'Michael Brown',
-    email: 'michael@example.com'
-  },
-  {
-    id: '550e8400-e29b-41d4-a716-446655440004',
-    name: 'Emily Davis',
-    email: 'emily@example.com'
-  },
-  {
-    id: '550e8400-e29b-41d4-a716-446655440005',
-    name: 'David Wilson',
-    email: 'david@example.com'
-  }
-])
-
-const users = ref({
-  assigned_user: null // This will store the selected UUID
-})
-const Status = ref("");
-const date = ref('')
+ 
 </script>
 
 <template>
@@ -199,7 +163,7 @@ const date = ref('')
     <div v-if="isDrawerOpen" class="backdrop"></div>
     <VNavigationDrawer permanent :width="500" location="end" class="scrollable-content"
       :model-value="props.isDrawerOpen" @update:model-value="handleDrawerModelValueUpdate">
-      <AppDrawerHeaderSection :title="currentClient ? 'Edit Site Visit' : 'Add Site Visit'"
+      <AppDrawerHeaderSection :title="props.currentItem ? 'Edit Follow Up' : 'Add Follow Up'"
         @cancel="closeNavigationDrawer" />
       <VDivider />
       <PerfectScrollbar :options="{ wheelPropagation: false }">
@@ -207,29 +171,17 @@ const date = ref('')
           <VForm ref="refForm" v-model="valid" @submit.prevent="onSubmit">
             <VRow>
               <VCol cols="12">
-                <AppDateTimePicker v-model="date" label="Date & Time" placeholder="Select date and time"
-                  :config="{ enableTime: true, dateFormat: 'Y-m-d H:i' }" />
-              </VCol>
-              <VCol cols="12">
-                <VSelect v-model="client.visit_assignee" :items="userOptions" label="Visit Assignee"
-                  placeholder="Visit Assignee *" item-title="name" item-value="id" clearable>
-                  <template #selection="{ item }">
-                    <span>{{ item.title }}</span>
-                  </template>
-                  <template #item="{ props, item }">
-                    <VListItem v-bind="props" :title="item.raw.name" :subtitle="item.raw.email"></VListItem>
-                  </template>
-                </VSelect>
-              </VCol>
-              <VCol cols="12">
-                <VSelect v-model="client.status" :items="statusOptions" label="Status" placeholder="Select Status *"
+                <VSelect v-model="followupItem.call_status" :items="statusOptions" :rules="[requiredValidator]" label="Call Status" placeholder="Select Status *"
                   item-title="text" item-value="value" clearable />
               </VCol>
               <VCol cols="12">
-                <AppTextField v-model="client.visit_notes" label="Visit Notes" placeholder="Visit Notes" autofocus />
+                <AppTextField v-model="followupItem.lead_prospect" label="Lead Prospect" />
               </VCol>
               <VCol cols="12">
-                <VSelect v-model="client.client_id" :items="userOptions" label="Client" placeholder="Select Client"
+                <AppTextField v-model="followupItem.call_summary" label="Call Summary" placeholder="Call Summary" autofocus />
+              </VCol>
+              <VCol cols="12">
+                <VSelect v-model="followupItem.client_id" :items="[]" label="Client" placeholder="Select Client"
                   item-title="name" item-value="id" clearable>
                   <template #item="{ item }">
                     <VListItem :title="item.raw.name" :subtitle="item.raw.email" />
@@ -237,7 +189,7 @@ const date = ref('')
                 </VSelect>
               </VCol>
               <VCol cols="12">
-                <VSelect v-model="client.lead_id" :items="userOptions" label="Lead" placeholder="Select Lead"
+                <VSelect v-model="followupItem.lead_id" :items="[]" label="Lead" placeholder="Select Lead"
                   item-title="name" item-value="id" clearable>
                   <template #selection="{ item }">
                     <span>{{ item.title }}</span>
@@ -250,7 +202,7 @@ const date = ref('')
 
               <VCol cols="12">
                 <VBtn type="submit" class="me-3" :loading="isLoading">
-                  {{ currentClient ? "Update" : "Submit" }}
+                  {{ props.currentItem ? "Update" : "Submit" }}
                 </VBtn>
                 <VBtn variant="tonal" color="secondary" @click="closeNavigationDrawer">
                   Cancel
@@ -274,7 +226,7 @@ const date = ref('')
 }
 
 .addresAdd {
-  cursor: pointer;
   padding: 4px;
+  cursor: pointer;
 }
 </style>

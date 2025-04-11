@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamp('visit_time')->comment('Scheduled date and time of the site visit');
 
             // ID of the user assigned to this visit (foreign key to users table)
-            $table->uuid('visit_assignee')->comment('User ID of the assigned staff member');
+            $table->uuid('visit_assignee')->nullable()->comment('User ID of the assigned staff member');
             // Who created this record (could be user email, username, or system identifier)
             $table->uuid('created_by')->comment('Identifier of who created this record');
             // Current status of the visit (e.g., 'scheduled', 'completed', 'canceled')

@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CityResource;
 use App\Http\Resources\StateResource;
+use App\Models\AdminControlConfig;
 use App\Models\State;
 use App\Models\Setting;
 use App\Models\City;
@@ -28,6 +29,7 @@ class SettingController extends Controller
 {
     const CONTROLLER_NAME = "Setting Controller";
 
+    # Setting List and Save Function 
     public function index(Request $request)
     {
         try {
@@ -42,11 +44,10 @@ class SettingController extends Controller
     public function update(Request $request)
     {
         DB::beginTransaction();
-
         try {
-            $settings = $request->except(['image']);
+            $is_delete = $request->is_delete;
+            $settings = $request->except(['image', 'is_delete']);
             $userId = Auth::user()->uuid;
-
             foreach ($settings as $key => $value) {
                 $existingSetting = Setting::where('key', $key)->first();
 
@@ -61,11 +62,30 @@ class SettingController extends Controller
                 }
             }
 
+
+            // ✅ Delete the logo file if is_delete is true
+            if ($is_delete) {
+                $existLogo = Setting::where('key', 'company_logo')->first();
+                if ($existLogo && $existLogo->value) {
+                    $filePath = str_replace('storage/', '', $existLogo->value);
+                    if (Storage::disk('public')->exists($filePath)) {
+                        Storage::disk('public')->delete($filePath);
+                    }
+
+                    // Optional: clear the setting value too
+                    $existLogo->value = null;
+                    $existLogo->updated_by = $userId;
+                    $existLogo->save();
+                }
+            }
+
             # Handle Image (Base64)
             if ($request->has('image')) {
                 $image = $request->image;
                 $imageName = time() . '.jpg';
                 $imagePath = 'uploads/' . $imageName;
+
+                addStoragePermission("app/public/uploads");
 
                 $decodedImage = base64_decode(preg_replace('/^data:image\/\w+;base64,/', '', $image));
                 Storage::disk('public')->put($imagePath, $decodedImage);
@@ -75,325 +95,89 @@ class SettingController extends Controller
                 $existingLogo = Setting::where('key', $logoKey)->first();
 
                 if ($existingLogo) {
-                    $existingSetting->value = 'storage/' . $imagePath;
-                    $existingSetting->updated_by = $userId;
-                    $existingSetting->save();
+                    $existingLogo->value = 'storage/' . $imagePath;
+                    $existingLogo->updated_by = $userId;
+                    $existingLogo->save();
                 } else {
                     Setting::create(['key' => $logoKey, 'value' => 'storage/' . $imagePath, 'created_by' => $userId,]);
                 }
             }
 
             DB::commit();
-            return $this->actionSuccess('Settings updated successfully!');
+            return $this->actionSuccess('Settings updated successfully!', Setting::pluck('value', 'key'));
         } catch (\Exception $e) {
             DB::rollBack();
             return $this->actionFailure($e->getMessage());
         }
     }
 
-    # Status get list
-
-    public function storeStatus(Request $request)
+    # Status list Function
+    public function pageList(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'status' => 'required|string|max:255',
-            'pages' => 'required|array',
-            # 'page.*' => 'exists:pages,id',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['error' => $validator->errors()], 422);
-        }
-
-        # Create the status
-        $status = Status::create([
-            'name' => $request->status,
-        ]);
-
-        # Create page_status records
-        foreach ($request->pages as $page) {
-            $page_id = Page::where('name', $page)->first();
-            PageStatus::create([
-                'page_id' => $page_id->id,
-                'status_id' => $status->id,
-            ]);
-        }
-
-        return response()->json([
-            'message' => 'Status and page status created successfully.',
-            'status' => $status,
-            'response' => 'success'
-        ]);
-
-        return $this->actionSuccess('Status Added successfully.');
-    }
-
-    public function pageList()
-    {
-        $page = Page::pluck('name');
-        return response()->json(['page' => $page], 201);
-    }
-
-    public function pageStatusList(Request $request)
-    {
-        # Fetch all statuses with their related pages
-        $statuses = Status::query()
-            ->filter($request)
-            ->with('pages')
-            ->get();
-
-
-        # Transform the data into the desired structure
-        $result = $statuses->map(function ($status) {
-            return [
-                'id' => $status->id,
-                'status' => $status->name,
-                'pages' => $status->pages->map(fn($page) => $page->name)->unique()->values(),
-            ];
-        });
-
-        # Return the result as JSON
-        return response()->json($result);
-    }
-
-    public function pageStatus($page_name)
-    {
-        if ($page_name == 'Lead') {
-            if (!Status::where('name', 'Quotation Draft')->exists()) {
-                Status::whereIn('name', ['Follow-up', 'In Progress', 'Converted', 'Ready For SRM'])->delete();
-                $page_id = Page::where('name', $page_name)->pluck('id')->first();
-
-                $statuses = [
-                    ['name' => "No Action", 'slug' => 'no_action'],
-                    ['name' => "Follow up", 'slug' => 'follow_up'],
-                    ['name' => "Interested", 'slug' => 'interested'],
-                    ['name' => "Not Interested", 'slug' => 'not_interested'],
-                    ['name' => "Ready For SRM", 'slug' => 'ready_for_srm'],
-                    ['name' => "Ready For Quotation", 'slug' => 'ready_for_quotation'],
-                    ['name' => "Quotation Created", 'slug' => 'quotation_created'],
-                    ['name' => "Quotation Draft", 'slug' => 'quotation_draft'],
-                    ['name' => "Quotation in progress 25 %", 'slug' => 'quotation_in_progress_25'],
-                    ['name' => "Quotation in progress 50 %", 'slug' => 'quotation_in_progress_50'],
-                    ['name' => "Quotation in progress 75 %", 'slug' => 'quotation_in_progress_75'],
-                    ['name' => "Quotation Accepted", 'slug' => 'quotation_accepted'],
-                    ['name' => "Quotation Cancelled", 'slug' => 'quotation_cancelled'],
-                ];
-
-                foreach ($statuses as $status) {
-                    $info = Status::updateOrCreate(['slug' => $status['slug']], ['name' => $status['name']]);
-                    PageStatus::updateOrCreate(['page_id' => $page_id, 'status_id' => $info->id]);
-                }
-            }
-        }
-
         try {
-            # Get page ID
-            $page_id = Page::where('name', $page_name)->pluck('id')->first();
-
-            if (!$page_id) {
-                return $this->actionFailure('Page not found');
-            }
-            # Get associated status IDs from page_statuses table
-            $status_ids = PageStatus::where('page_id', $page_id)->pluck('status_id')->toArray();
-
-            # Get status names using the retrieved status IDs
-            $status_list = Status::whereIn('id', $status_ids)->pluck('name')->toArray();
-
-            return $this->actionSuccess('Page statuses retrieved successfully', $status_list);
+            $pages = AdminControlConfig::pluck('status_for')->unique()->values()->toArray();
+            return $this->actionSuccess('Page list get successfully',  $pages);
         } catch (\Exception $e) {
             createExceptionError($e, self::CONTROLLER_NAME, __FUNCTION__);
             return $this->actionFailure($e->getMessage());
         }
     }
 
-    public function updateStatus(Request $request, $id)
-    {
-        # Validate the request data
-        $validated = $request->validate([
-            'status' => 'required|string',
-            'pages' => 'required|array',
-            'pages.*' => 'string', # Ensure that pages are strings
-        ]);
-
-        # Find the Status record
-        $status = Status::findOrFail($id);
-
-        # Update the status name
-        $status->name = $validated['status'];
-        $status->save(); # Save the updated status name
-
-        # Detach all existing pages related to the status before adding new ones
-        $status->pages()->detach(); # Detach previous pages
-
-        # Attach the new pages
-        foreach ($validated['pages'] as $pageName) {
-            # Find the page by its name or create it
-            $page = Page::firstOrCreate(['name' => $pageName]);
-
-            # Attach the page to the status
-            $status->pages()->attach($page->id);
-        }
-
-        # Return a success response
-        return response()->json(['message' => 'Status updated successfully!', 'response' => 'success']);
-    }
-
-    public function deleteStatus($id)
-    {
-        $get_status = Status::with('pages')->find($id);
-
-        if (!$get_status) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Status not found.',
-            ], 404);
-        }
-
-        # Delete related data in the `page_statuses` table
-        PageStatus::where('status_id', $id)->delete();
-        $get_status->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Status and related page statuses deleted successfully.',
-        ]);
-    }
-
-    public function showUintLists(Request $request)
-    {
-        $leads = Unit::query()->filter($request)->get();
-
-        # paginate($request->per_page ?? 10);
-
-        return $leads;
-    }
-
-    public function showUint(Request $request)
+    public function pageStatusList(Request $request)
     {
         try {
-            # Validation rules
-            $rules = [
-                'code'           => 'required|string|unique:units,code',
-                'name'           => 'required|string|max:255',
-                'status'         => 'required|string|max:15',
-            ];
+            $type = $request->type ? $request->type : 'All';
+            $query = AdminControlConfig::query();
 
-            # Validate the request
-            $validated = $request->validate($rules);
-            # Prepare data for storing
-            $data = [
-                'code'          => $validated['code'],
-                'name'          => $validated['name'],
-                'status'        => $validated['status'],
-            ];
+            if ($type != 'All') $query->where('status_for', $type);
 
-            # Create a new Unit
-            $Unit = Unit::create($data);
-
-            return response()->json([
-                'status' => 201,
-                'message' => 'Unit created successfully!',
-                'data'    => $Unit
-            ], Response::HTTP_CREATED);
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Failed to save Unit',
-                'message' => $e->getMessage(),
-            ], 500);
-        }
-    }
-
-    public function updateUint(Request $request, $id)
-    {
-        try {
-            # Validation rules
-            $rules = [
-                'code'           => 'required|string',
-                'name'           => 'required|string|max:255',
-                'status'         => 'required|string|max:15',
-            ];
-
-            # Validate the request
-            $validated = $request->validate($rules);
-
-
-            $unit = Unit::find($id);
-
-            if (!$unit) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Unit not found.',
-                ], 404);
+            # Sort results
+            if ($sortKey = $request->input('sort_key')) {
+                $sortOrder = $request->input('sort_order', 'asc');
+                $query->orderBy($sortKey, $sortOrder);
             }
 
-            $unit->update($validated);
+            # Pagination
+            $perPage = $request->input('per_page', 10);
+            $list = $query->paginate($perPage);
 
-            return response()->json([
-                'status' => 201,
-                'message' => 'Unit Updated successfully!',
-                'data'    => $unit
-            ], Response::HTTP_CREATED);
+            return $this->actionSuccess('Status list get successfully',  $list);
         } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Failed to save Unit',
-                'message' => $e->getMessage(),
-            ], 500);
+            createExceptionError($e, self::CONTROLLER_NAME, __FUNCTION__);
+            return $this->actionFailure($e->getMessage());
         }
     }
 
-    public function deleteUint($id)
-    {
-        $get_unit = Unit::find($id);
-
-        if (!$get_unit) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Unit not found.',
-            ], 404);
-        }
-
-        $get_unit->delete();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Unit deleted successfully.',
-        ]);
-    }
-
-
-    # Curd for Source
-    public function storeSource(Request $request)
+    public function pageStatusCreate(Request $request)
     {
         try {
-            # Validation rules
-            $rules = [
-                'name'         => 'required|string|max:255',
-            ];
-
-            # Validate the request
-            $validated = $request->validate($rules);
-
-            # Check if a Source with the same name exists
-            $existingLead = Source::where('name', $validated['name'])->first();
-            if ($existingLead) {
-                return response()->json([
-                    "message" => 'This name of Source Exist !!'
-                ]);
-            } else {
-                # Create a new lead
-                $Source = Source::create($validated);
-
-                return response()->json([
-                    'success' => true,
-                    'message' => 'Source created successfully!',
-                    'data'    => $Source
-                ]);
-            }
+            $info = null;
+            return $this->actionSuccess('Status Create successfully',  $info);
         } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Failed to save Source',
-                'message' => $e->getMessage(),
-            ], 500);
+            createExceptionError($e, self::CONTROLLER_NAME, __FUNCTION__);
+            return $this->actionFailure($e->getMessage());
+        }
+    }
+
+    public function pageStatusUpdate(Request $request)
+    {
+        try {
+            $info = null;
+            return $this->actionSuccess('Status Update successfully',  $info);
+        } catch (\Exception $e) {
+            createExceptionError($e, self::CONTROLLER_NAME, __FUNCTION__);
+            return $this->actionFailure($e->getMessage());
+        }
+    }
+
+    public function pageStatusDelete(Request $request)
+    {
+        try {
+            $info = null;
+            return $this->actionSuccess('Status Delete successfully',  $info);
+        } catch (\Exception $e) {
+            createExceptionError($e, self::CONTROLLER_NAME, __FUNCTION__);
+            return $this->actionFailure($e->getMessage());
         }
     }
 }

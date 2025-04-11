@@ -36,9 +36,7 @@ const onConfirmation = async () => {
     updateModelValue(false)
   } catch (error) {
     console.error("Failed to delete item:", error)
-    // Show error toast
-    toast.error(error.response?.data?.message || 'Failed to delete item')
-    updateModelValue(false)
+    // Optionally show toast here
   }
 }
 

@@ -21,7 +21,7 @@
       <BaseSpinner class="d-flex" v-if="loading" />
       <VCardText v-else class="px-0">
         <VDataTableServer v-model:items-per-page="pagination.per_page" :items="userLoginLogList"
-          :items-length="userLoginLogList.length" :headers="headers" class="text-no-wrap" mobile-breakpoint="600"
+          :items-length="userLoginLogList.length" :headers="headers.filter((header) => header.checked)" class="text-no-wrap" mobile-breakpoint="600"
           @update:options="updateTableSort">
           <!-- show-select -->
           <template #item.name="{ item }">

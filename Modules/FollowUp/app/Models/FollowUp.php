@@ -46,18 +46,6 @@ class FollowUp extends Model
         });
     }
 
-    public function lead()
-    {
-        return $this->belongsTo(\Modules\Leads\Models\Lead::class)->withDefault();
-    
-    }
-
-    public function client()
-    {
-        return $this->belongsTo(\Modules\Clients\Models\Client::class)->withDefault();
-    
-    }
-
     public function creator()
     {
         return $this->belongsTo(\App\Models\User::class, 'created_by','uuid');

@@ -155,7 +155,7 @@ const onSubmit = async () => {
     }
   } catch (err) {
     console.error(err)
-    toast.error(err?.response?.data?.message || 'An error occurred while updating.')
+    toast.error(err?._data?.message || 'An error occurred while updating.')
   } finally {
     isSubmitting = false
     isLoading.value = false

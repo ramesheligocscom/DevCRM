@@ -15,7 +15,7 @@ const orderBy = ref()
 const currentSiteVisit = ref(null);
 
 // Data table Headers
-const tableHeaderSlug = ref('client-site-visit');
+const tableHeaderSlug = ref('site-visit');
 const headers = ref([]);
 const getFilteredHeaderValue = async (headerList) => { headers.value = headerList; };
 
@@ -82,7 +82,7 @@ const makeDateFormat = (date , onlyDate = false) => {
 </script>
 
 <template>
-  <div v-if="$can('client', 'view')">
+  <div v-if="$can('siteVisit', 'view')">
     <VCard>
       <VCardText>
         <div class="d-flex justify-space-between flex-wrap gap-y-4">
@@ -93,10 +93,10 @@ const makeDateFormat = (date , onlyDate = false) => {
           <div class="d-flex flex-row gap-4 align-center flex-wrap">
             <AppSelect v-model="itemsPerPage" :items="[5, 10, 20, 50, 100]" />
 
-            <VBtn v-if="$can('client', 'export-list')" prepend-icon="tabler-upload" variant="tonal" color="secondary">
+            <VBtn v-if="$can('siteVisit', 'export-list')" prepend-icon="tabler-upload" variant="tonal" color="secondary">
               Export
             </VBtn>
-            <VBtn v-if="$can('client', 'create')" prepend-icon="tabler-plus" @click="addSiteVisit()">
+            <VBtn v-if="$can('siteVisit', 'create')" prepend-icon="tabler-plus" @click="addSiteVisit()">
               Add New
             </VBtn>
 
@@ -143,10 +143,10 @@ const makeDateFormat = (date , onlyDate = false) => {
         </template>
         <!-- Actions Column -->
         <template #item.action="{ item }">
-          <IconBtn v-if="$can('client', 'edit')" @click="editBranch(item)">
+          <IconBtn v-if="$can('siteVisit', 'edit')" @click="editBranch(item)">
             <VIcon icon="tabler-pencil" />
           </IconBtn>
-          <IconBtn v-if="$can('client', 'delete')" @click="openDeleteDialog(item)">
+          <IconBtn v-if="$can('siteVisit', 'delete')" @click="openDeleteDialog(item)">
             <VIcon icon="tabler-trash" />
           </IconBtn>
         </template>

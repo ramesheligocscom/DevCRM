@@ -1,5 +1,6 @@
 <script setup>
 import moment from 'moment';
+import { useRoute } from "vue-router";
 import { toast } from 'vue3-toastify';
 import AddDrawer from '../add/AddDrawer.vue';
 import ConfirmDialog from '../dialog/ConfirmDialog.vue';
@@ -18,7 +19,7 @@ const currentSiteVisit = ref(null);
 const tableHeaderSlug = ref('site-visit');
 const headers = ref([]);
 const getFilteredHeaderValue = async (headerList) => { headers.value = headerList; };
-
+const route = useRoute();
 const editBranch = (item) => {
   currentSiteVisit.value = JSON.parse(JSON.stringify(item));
   isAddEditDrawerOpen.value = true;
@@ -52,11 +53,16 @@ const fetchSiteVisits = async () => {
   try {
     let url = `/sitevisit?search=${searchQuery.value ?? ""}&page=${page.value}&sort_key=${sortBy.value ?? ""}&sort_order=${orderBy.value ?? ""}&per_page=${itemsPerPage.value}`;
     
-    // Add type filter if type prop is provided
-    if (props.type) {
-      url += `&type=${props.type}`;
+
+
+    if (props.type === 'lead') {
+      url += `&lead_id=${route.params.id}`;
+    } else if (props.type === 'client') {
+      url += `&client_id=${route.params.id}`;
     }
 
+
+    
     const response = await $api(url);
     dataItems.value = response.data;
     totalItems.value = response.meta.total;

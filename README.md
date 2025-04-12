@@ -5,9 +5,8 @@ A modern CRM system built with Laravel backend and Vue.js frontend.
 ## Tech Stack
 
 - Backend: Laravel
-- Frontend: Vue.js 3 + Vite
+- Frontend: Vue.js 3 + Vite + Vuexy Theme
 - Database: PostgreSQL
-- Real-time: Reverb (WebSocket)
 - Theme: Vuexy Vue.js Admin Template
 - Module System: Laravel Modules
 

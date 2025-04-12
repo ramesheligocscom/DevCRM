@@ -27,4 +27,16 @@ class ClientConst
             ]
         ],
     ];
+
+    # Clients page statuses
+    const CLIENT_PAGE_PERMISSION_LIST = [
+        [
+            'page' => 'Clients',
+            'position' => 5,
+            'statuses' => [
+                ["status_text" => "Active", "status_color" => "#28a745", "position" => 1, "is_predefined" => 0, "invoice_footer_text" => null, "contract_footer_text" => null],
+                ["status_text" => "In Active", "status_color" => "#6c757d", "position" => 2, "is_predefined" => 0, "invoice_footer_text" => null, "contract_footer_text" => null],
+            ]
+        ],
+    ];
 }

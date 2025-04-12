@@ -25,4 +25,19 @@ class ContractConst
             ]
         ],
     ];
+
+
+    # Contracts page statuses
+    const CONTRACT_PAGE_PERMISSION_LIST = [
+        [
+            'page' => 'Contracts',
+            'position' => 6,
+            'statuses' => [
+                ["status_text" => "Active", "status_color" => "#28a745", "position" => 1, "is_predefined" => 0, "invoice_footer_text" => null, "contract_footer_text" => null],
+                ["status_text" => "In Active", "status_color" => "#6c757d", "position" => 2, "is_predefined" => 0, "invoice_footer_text" => null, "contract_footer_text" => null],
+                ["status_text" => "Expired", "status_color" => "#dc3545", "position" => 3, "is_predefined" => 0, "invoice_footer_text" => null, "contract_footer_text" => null],
+                ["status_text" => "Renew", "status_color" => "#007bff", "position" => 4, "is_predefined" => 0, "invoice_footer_text" => null, "contract_footer_text" => null],
+            ]
+        ],
+    ];
 }

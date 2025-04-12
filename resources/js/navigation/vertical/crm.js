@@ -59,7 +59,7 @@ const menuItems = [
     title: 'Product/Services',
     icon: { icon: 'tabler-building-warehouse' },
     to: 'product-service-list',
-    permission: { action: 'invoice', subject: 'view' },
+    permission: { action: 'productService', subject: 'view' },
   },
   {
     title: 'Setting',

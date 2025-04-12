@@ -20,7 +20,7 @@ class RolePermissionConst
     const ROLE_LIST = [
         ['name' => RolePermissionConst::SUPER_ADMIN, "slug" => RolePermissionConst::SLUG_SUPER_ADMIN, 'description' => 'Full access to all system features and settings.', "position" => 0],
         ['name' => RolePermissionConst::ADMIN, "slug" => RolePermissionConst::SLUG_ADMIN, 'description' => 'Manage most system settings and data.', "position" => 1],
-        ['name' => RolePermissionConst::EMPLOYEE, "slug" => RolePermissionConst::SLUG_EMPLOYEE, 'description' => 'Manage most system settings and data.', "position" => 2],
+        // ['name' => RolePermissionConst::EMPLOYEE, "slug" => RolePermissionConst::SLUG_EMPLOYEE, 'description' => 'Manage most system settings and data.', "position" => 2],
     ];
 
     const PERMISSION_LIST = [

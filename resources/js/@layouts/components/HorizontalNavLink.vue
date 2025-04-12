@@ -1,12 +1,13 @@
 <script setup>
-import { layoutConfig } from '@layouts'
-import { can } from '@layouts/plugins/casl'
+import { layoutConfig } from '@layouts';
+import { can } from '@layouts/plugins/casl';
 import {
   getComputedNavLinkToProp,
   getDynamicI18nProps,
   isNavLinkActive,
-} from '@layouts/utils'
-
+} from '@layouts/utils';
+import { useRoute } from 'vue-router';
+const route = useRoute();
 const props = defineProps({
   item: {
     type: null,
@@ -18,6 +19,12 @@ const props = defineProps({
     default: false,
   },
 })
+const checkRoute = (item) =>{
+  if(item.otherRouteList && item.otherRouteList.includes(route.name)){
+    return true;
+  }
+  return false;
+};
 </script>
 
 <template>
@@ -32,7 +39,7 @@ const props = defineProps({
     <Component
       :is="item.to ? 'RouterLink' : 'a'"
       v-bind="getComputedNavLinkToProp(item)"
-      :class="{ 'router-link-active router-link-exact-active': isNavLinkActive(item, $router) }"
+      :class="{ 'router-link-active router-link-exact-active': isNavLinkActive(item, $router) || checkRoute(item) }"
     >
       <Component
         :is="layoutConfig.app.iconRenderer || 'div'"

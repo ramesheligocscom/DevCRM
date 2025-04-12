@@ -1,4 +1,5 @@
 <template>
+  <div v-if="$can('generalSetting','view')">
   <!-- 👉 Profile Information -->
   <VForm @submit.prevent="handleSubmitForm" ref="form" v-model="valid">
     <VCard title="General Settings" class="mb-6">
@@ -32,12 +33,13 @@
           </VCol>
         </VRow>
         <!-- 👉 Save button -->
-        <div class="d-flex justify-end gap-x-4 mt-4">
+        <div class="d-flex justify-end gap-x-4 mt-4" v-if="$can('generalSetting','save')">
           <VBtn type="submit">Save Changes</VBtn>
         </div>
       </VCardText>
     </VCard>
   </VForm>
+</div>
 </template>
 
 <script setup>
@@ -82,10 +84,8 @@ const handleFileChange = async (event) => {
 
 const fetchCompanyDetails = async () => {
   try {
-    console.log('Calling API...');
     const response = await $api('/settings');
     setting.value = response.data ?? null;
-    console.log('Calling API... response ');
     if (setting.value) {
       formData.value.name = setting.value.Company_name;
       formData.value.phone = setting.value.Phone;

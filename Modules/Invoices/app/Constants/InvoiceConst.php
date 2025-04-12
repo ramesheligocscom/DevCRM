@@ -25,4 +25,17 @@ class InvoiceConst
             ]
         ],
     ];
+
+    # Invoice page statuses
+    const INVOICE_PAGE_PERMISSION_LIST = [
+        [
+            'page' => 'Invoices',
+            'position' => 4,
+            'statuses' => [
+                ["status_text" => "Paid", "status_color" => "#28a745", "position" => 1, "is_predefined" => 0, "invoice_footer_text" => null, "contract_footer_text" => null],
+                ["status_text" => "Pending", "status_color" => "#ffc107", "position" => 2, "is_predefined" => 0, "invoice_footer_text" => null, "contract_footer_text" => null],
+                ["status_text" => "Partial", "status_color" => "#17a2b8", "position" => 3, "is_predefined" => 0, "invoice_footer_text" => null, "contract_footer_text" => null],
+            ]
+        ],
+    ];
 }

@@ -21,7 +21,7 @@ export const getComputedNavLinkToProp = computed(() => link => {
     props.to = typeof link.to === 'string' ? { name: link.to } : link.to
   else
     props.href = link.href
-  
+
   return props
 })
 
@@ -32,11 +32,10 @@ export const getComputedNavLinkToProp = computed(() => link => {
  // @param {Object, String} link navigation link object/string
  */
 export const resolveNavLinkRouteName = (link, router) => {
-  if (!link.to)
-    return null
+  if (!link.to) return null
   if (typeof link.to === 'string')
     return link.to
-  
+
   return router.resolve(link.to).name
 }
 
@@ -45,14 +44,17 @@ export const resolveNavLinkRouteName = (link, router) => {
  * @param {object} link nav-link object
  */
 export const isNavLinkActive = (link, router) => {
+  // alert("1 ", JSON.stringify(link));
+  // alert("2 ", JSON.stringify(router));
+
   // Matched routes array of current route
   const matchedRoutes = router.currentRoute.value.matched
+  // alert('3 ', JSON.stringify(matchedRoutes));
 
   // Check if provided route matches route's matched route
   const resolveRoutedName = resolveNavLinkRouteName(link, router)
-  if (!resolveRoutedName)
-    return false
-  
+  if (!resolveRoutedName) return false
+
   return matchedRoutes.some(route => {
     return route.name === resolveRoutedName || route.meta.navActiveLink === resolveRoutedName
   })
@@ -89,7 +91,7 @@ export const _setDirAttr = dir => {
 export const getDynamicI18nProps = (key, tag = 'span') => {
   if (!layoutConfig.app.i18n.enable)
     return {}
-  
+
   return {
     keypath: key,
     tag,
@@ -149,7 +151,7 @@ export const hexToRgb = hex => {
   })
 
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-  
+
   return result ? `${Number.parseInt(result[1], 16)},${Number.parseInt(result[2], 16)},${Number.parseInt(result[3], 16)}` : null
 }
 

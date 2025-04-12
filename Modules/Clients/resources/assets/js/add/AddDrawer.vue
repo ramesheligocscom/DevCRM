@@ -3,14 +3,7 @@ import _ from "lodash";
 import { onMounted, ref } from "vue";
 import { PerfectScrollbar } from "vue3-perfect-scrollbar";
 import { toast } from "vue3-toastify";
-import {
-  emailRule,
-  inputNumberRestrict,
-  onlyAlphabetsRule,
-  optionalRequiredRule,
-  requiredRule,
-  validateMobileNumber,
-} from "../validations/validationRules";
+import { emailRule, inputNumberRestrict, onlyAlphabetsRule, optionalRequiredRule, requiredRule, validateMobileNumber, } from "../validations/validationRules";
 const valid = ref(true);
 const refForm = ref(null);
 

@@ -5,7 +5,7 @@ namespace Modules\FollowUp\Constants;
 class FollowUpConst
 {
     const FOLLOW_UP_PERMISSION_LIST = [
-        # 3. Clients Permission
+        # 3. Follow Up Permission
         [
             'name' => 'Follow Up',
             'position' => 3,
@@ -24,4 +24,7 @@ class FollowUpConst
             ]
         ],
     ];
+
+    # Follow Up page statuses 7
+    const FOLLOW_UP_PAGE_PERMISSION_LIST = [];
 }

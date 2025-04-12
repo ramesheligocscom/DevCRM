@@ -1,4 +1,4 @@
-# DevCRM - Development CRM System
+# ModularCrm - Development CRM System
 
 A modern CRM system built with Laravel backend and Vue.js frontend.
 

@@ -1,4 +1,4 @@
-import CustomerDetail from '../details/[id].vue'
+import ClientDetail from '../details/[id].vue'
 import CustomerList from '../list/index.vue'
 
 export default [
@@ -9,10 +9,10 @@ export default [
     meta: { title: 'Client' },
   },
   {
-    path: '/clients/:id',
-    name: 'clients-view',
-    component: CustomerDetail,
-    meta: { title: 'Client' },
+    path: '/clients/details/:id',
+    name: 'client-details-id',
+    component: ClientDetail,
+    meta: { title: 'Client Detail' },
   },
 ]
 

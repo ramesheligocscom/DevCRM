@@ -26,4 +26,15 @@ class SiteVisitConst
             ]
         ],
     ];
+
+    # Site Visit page statuses
+    const SITE_VISIT_PAGE_PERMISSION_LIST = [
+        [
+            'page' => 'Site Visit',
+            'position' => 2,
+            'statuses' => [
+                ["status_text" => "Ready For SRM", "status_color" => "#007bff", "position" => 1, "is_predefined" => 0, "invoice_footer_text" => null, "contract_footer_text" => null], // Blue
+            ]
+        ],
+    ];
 }

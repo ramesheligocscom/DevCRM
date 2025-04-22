@@ -29,6 +29,8 @@ class PermissionSeeder extends Seeder
             ['class' => \Modules\Quotations\Constants\QuotationConst::class, 'const' => 'QUOTATION_PERMISSION_LIST'],
             ['class' => \Modules\Contracts\Constants\ContractConst::class, 'const' => 'CONTRACT_PERMISSION_LIST'],
             ['class' => \Modules\Clients\Constants\ClientConst::class, 'const' => 'CLIENT_PERMISSION_LIST'],
+            ['class' => \Modules\FollowUp\Constants\FollowUpConst::class, 'const' => 'FOLLOW_UP_PERMISSION_LIST'],
+            ['class' => \Modules\ProductService\Constants\ProductServiceConst::class, 'const' => 'PRODUCT_SERVICE_PERMISSION_LIST'],
         ];
 
         foreach ($optionalModules as $module) {
@@ -116,6 +118,9 @@ class PermissionSeeder extends Seeder
                     break;
                 case RolePermissionConst::SLUG_ADMIN:
                     $permissions_ids = Permission::whereIn('permission', RolePermissionConst::ADMIN_PERMISSION)->pluck('id')->toArray();
+                    break;
+                case RolePermissionConst::SLUG_EMPLOYEE:
+                    $permissions_ids = Permission::whereIn('permission', RolePermissionConst::EMPLOYEE_PERMISSION)->pluck('id')->toArray();
                     break;
                 default:
                     $permissions_ids = [];

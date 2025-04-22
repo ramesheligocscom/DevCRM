@@ -3,7 +3,7 @@
   "files.insertFinalNewline": true,
   "javascript.updateImportsOnFileMove.enabled": "always",
   "[javascript]": {
-    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+    "editor.defaultFormatter": "vscode.typescript-language-features"
   },
   "[typescript]": {
     "editor.defaultFormatter": "dbaeumer.vscode-eslint",
@@ -22,7 +22,7 @@
     "editor.defaultFormatter": "vscode.json-language-features"
   },
   "[vue]": {
-    "editor.defaultFormatter": "Vue.volar"
+    "editor.defaultFormatter": "vscode.typescript-language-features", // "Vue.volar"
   },
   "volar.preview.port": 3000,
   "volar.completion.preferredTagNameCase": "pascal",

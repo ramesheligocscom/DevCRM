@@ -26,17 +26,16 @@ class UpdateSiteVisitRequest extends FormRequest
                 'after_or_equal:today'
             ],
             'visit_assignee' => [
-                'sometimes',
-                'exists:users,id',
-                Rule::exists('users', 'id')->where(function ($query) {
-                    $query->where('is_active', true);
-                })
+                'nullable',
+                // 'exists:users,id',
+                // Rule::exists('users', 'id')->where(function ($query) {
+                //     $query->where('is_active', true);
+                // })
             ],
             'status' => [
                 'sometimes',
                 'string',
-                'max:255',
-                Rule::in(['scheduled', 'completed', 'canceled', 'rescheduled'])
+                'max:255'
             ],
             'visit_notes' => [
                 'nullable',
@@ -44,18 +43,10 @@ class UpdateSiteVisitRequest extends FormRequest
                 'max:2000'
             ],
             'lead_id' => [
-                'nullable',
-                'exists:leads,id',
-                Rule::requiredIf(function () {
-                    return empty($this->client_id);
-                })
+                'nullable'
             ],
             'client_id' => [
-                'nullable',
-                'exists:clients,id',
-                Rule::requiredIf(function () {
-                    return empty($this->lead_id);
-                })
+                'nullable'
             ],
         ];
     }

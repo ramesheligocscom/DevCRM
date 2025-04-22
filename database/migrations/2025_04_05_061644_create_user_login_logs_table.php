@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('city')->nullable();
             $table->text('user_agent')->nullable();
             $table->enum('event', ['login', 'logout', 'Unauthenticated'])->index();
-            $table->boolean('success')->default(true);
             $table->timestamp('logged_at')->useCurrent();
             $table->foreign('user_id')->references('uuid')->on('users')->onUpdate('cascade')->onDelete('cascade');
         });

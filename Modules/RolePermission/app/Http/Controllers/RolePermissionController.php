@@ -174,11 +174,11 @@ class RolePermissionController extends Controller
         $query = PermissionType::query();
 
         if ($search) {
-            $query->where('name', 'LIKE', '%' . $search . '%')
+            $query->where('name', 'ILIKE', '%' . $search . '%')
                 ->orWhereHas('permission_category', function ($q) use ($search) {
-                    $q->where('name', 'LIKE', '%' . $search . '%')
+                    $q->where('name', 'ILIKE', '%' . $search . '%')
                         ->orWhereHas('permissions', function ($q) use ($search) {
-                            $q->where('title', 'LIKE', '%' . $search . '%');
+                            $q->where('title', 'ILIKE', '%' . $search . '%');
                         });
                 });
         }
@@ -282,8 +282,8 @@ class RolePermissionController extends Controller
             return $this->actionFailure($validator->errors()->first());
         }
 
-        if (strtolower(trim($request->delete_text)) !== 'delete') {
-            return $this->actionFailure('Your Delete input value is wrong. If you are permanently deleting the file, please type "delete" to confirm!');
+        if (trim($request->delete_text) !== "DELETE") {
+            return $this->actionFailure('Your Delete input value is wrong. If you are permanently deleting the file, please type "DELETE" to confirm!');
         }
 
         if (UserRole::where('role_id', $request->role_id)->exists()) {

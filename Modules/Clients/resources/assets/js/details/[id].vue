@@ -1,65 +1,89 @@
 <script setup>
-import CustomerTabOverview from '../tabs/site_visits/TabsiteVisits.vue';
-const route = useRoute('clients-view')
-const customerData = ref()
-const userTab = ref(null)
+import Followup from '@modules/FollowUp/resources/assets/js/list/index.vue';
+import SiteVisit from '@modules/SiteVisit/resources/assets/js/list/index.vue';
+import moment from 'moment';
+import { toast } from 'vue3-toastify';
+import Information from './tabs/Information.vue';
+
+
+const route = useRoute()
+const InfoData = ref()
+const tab = ref(null)
 
 const tabs = [
   {
-    title: 'Site visits',
-    icon: 'tabler-map-pin',
+    title: 'Information',
+    icon: 'tabler-user',
   },
   {
-    title: 'FolloW Up',
-    icon: 'tabler-phone-call',
+    title: 'Site Visit',
+    icon: 'tabler-user',
+  },
+  {
+    title: 'Follow UP',
+    icon: 'tabler-user',
   }
 ]
 
-const { data } = await useApi(`/apps/ecommerce/customers/${route.params.id}`)
-if (data.value)
-  customerData.value = data.value
-const isAddCustomerDrawerOpen = ref(false)
+try {
+  const { data } = await $api(`/clients/${route.params.id}`)
+  InfoData.value = data
+} catch (error) {
+  console.error('Failed to fetch clients data:', error)
+  toast.error(error?.response?.data?.message || 'Failed to load clients details.')
+}
+
+const makeDateFormat = (date , onlyDate = false) => {
+    if(onlyDate)
+    return moment(date).format('DD-MM-Y');
+    else
+    return moment(date).format('LLLL');
+};
 </script>
 
 <template>
   <div>
-    <!-- 👉 Header  -->
-    <div class="d-flex justify-space-between align-center flex-wrap gap-y-4 mb-6">
+     <!-- 👉 Header  -->
+     <div class="d-flex justify-space-between align-center flex-wrap gap-y-4 mb-6">
       <div>
-        <h4 class="text-h4 mb-1">
-          Customer ID #{{ route.params.id }}
-        </h4>
+        <h5 class="text-h5 mb-1">
+          Client {{ InfoData.name }}
+        </h5>
         <div class="text-body-1">
-          Aug 17, 2020, 5:48 (ET)
+          {{ makeDateFormat(InfoData.created_at )}}
         </div>
       </div>
       <div class="d-flex gap-4">
-        <VBtn variant="tonal" color="error">
-          Delete Clients
-        </VBtn>
-        <VBtn variant="tonal" color="primary" @click="isAddCustomerDrawerOpen = true">
-          Edit Clients
+        <VBtn variant="tonal" color="success" :to="{ name: 'clients-list' }">
+          Back
         </VBtn>
       </div>
     </div>
-    <!-- 👉 Customer Profile  -->
-    <VRow>
+    <VRow v-if="InfoData">
       <VCol cols="12" md="12" lg="12">
-        <VTabs v-model="userTab" class="v-tabs-pill mb-3 disable-tab-transition">
+        <VTabs v-model="tab" class="v-tabs-pill mb-3 disable-tab-transition">
           <VTab v-for="tab in tabs" :key="tab.title">
             <VIcon size="20" start :icon="tab.icon" />
             {{ tab.title }}
           </VTab>
         </VTabs>
-        <VWindow v-model="userTab" class="disable-tab-transition" :touch="false">
+        <VWindow v-model="tab" class="disable-tab-transition" :touch="false">
           <VWindowItem>
-            <CustomerTabOverview />
+            <Information :InfoData="InfoData" />
           </VWindowItem>
           <VWindowItem>
-            <!-- <CustomerTabSecurity /> -->
+            <SiteVisit type="client" />
+          </VWindowItem>
+          <VWindowItem>
+            <Followup  type="client" />
           </VWindowItem>
         </VWindow>
       </VCol>
     </VRow>
+    <div v-else>
+      <VAlert type="error" variant="tonal">
+        Client with ID {{ route.params.id }} not found!
+      </VAlert>
+    </div>
   </div>
 </template>

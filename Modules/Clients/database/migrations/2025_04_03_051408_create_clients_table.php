@@ -8,13 +8,6 @@ return new class extends Migration
 {
     public function up(): void
     {
-        // Enable UUID extension with error handling
-        try {
-            DB::statement('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
-        } catch (\Exception $e) {
-            logger()->warning('UUID-OSSP extension not available: ' . $e->getMessage());
-        }
-
         Schema::create('clients', function (Blueprint $table) {
             // Primary UUID with comment
             $table->uuid('id')->primary()->comment('Auto-generated UUID primary key');
@@ -34,12 +27,12 @@ return new class extends Migration
                 ->index()
                 ->default('active')
                 ->comment('Current client status');
-            $table->string('assigned_user')->nullable()
+            $table->uuid('assigned_user')->nullable()
                 ->comment('User responsible for this client');
             // Audit tracking
-            $table->string('created_by')
+            $table->uuid('created_by')
                 ->comment('User who created the record');
-            $table->string('last_updated_by')
+            $table->uuid('last_updated_by')
                 ->nullable()
                 ->comment('User who last modified the record');
             $table->softDeletes(); // Adds a `deleted_at` column

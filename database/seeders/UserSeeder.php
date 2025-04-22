@@ -18,8 +18,6 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-
-        $roles = RolePermissionConst::ROLE_LIST;
         $users = [
             [
                 'name' => 'Pankaj Sharma',
@@ -41,6 +39,16 @@ class UserSeeder extends Seeder
                 'email_verified_at' => now()->format('Y-m-d H:i:s'),
                 "roles" => [RolePermissionConst::SLUG_ADMIN],
             ],
+            // [
+            //     'name' => 'Employee User',
+            //     'email' => 'employee@eligocs.com',
+            //     'user_name' => 'employee_user',
+            //     'password' => 'qwerty123',
+            //     'avatar' => null,
+            //     'status' => User::ACTIVE,
+            //     'email_verified_at' => now()->format('Y-m-d H:i:s'),
+            //     "roles" => [RolePermissionConst::SLUG_EMPLOYEE],
+            // ],
         ];
 
         # Create or update roles with a progress bar
@@ -71,6 +79,7 @@ class UserSeeder extends Seeder
             $user->roles()->sync($roleIds);
             $progressBar->advance();
         }
+
 
         $progressBar->finish();
         $output->writeln("\nUsers seeded and roles assigned successfully!");

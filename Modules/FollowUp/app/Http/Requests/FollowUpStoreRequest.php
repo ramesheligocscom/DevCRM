@@ -21,17 +21,11 @@ class FollowUpStoreRequest extends FormRequest
             'call_summary' => 'nullable|string|max:2000',
             'lead_id' => [
                 'nullable',
-                'exists:leads,id',
-                Rule::requiredIf(function () {
-                    return empty($this->client_id);
-                })
+                'exists:leads,id'
             ],
             'client_id' => [
                 'nullable',
-                'exists:clients,id',
-                Rule::requiredIf(function () {
-                    return empty($this->lead_id);
-                })
+                'exists:clients,id'
             ]
         ];
     }
@@ -42,8 +36,6 @@ class FollowUpStoreRequest extends FormRequest
             'call_status.in' => 'Invalid call status. Must be: completed, pending, no_answer, busy, or failed.',
             'lead_prospect.max' => 'Lead prospect cannot exceed 32 characters.',
             'call_summary.max' => 'Call summary cannot exceed 2000 characters.',
-            'lead_id.required' => 'Either lead_id or client_id is required.',
-            'client_id.required' => 'Either lead_id or client_id is required.'
         ];
     }
 

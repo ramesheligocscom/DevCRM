@@ -1,10 +1,9 @@
 <script setup>
-import Clients from './tabs/Clients.vue'
-import Information from './tabs/Information.vue'
-import Invoices from './tabs/Invoices.vue'
-import Quotations from './tabs/Quotations.vue'
+import moment from 'moment';
+import { toast } from 'vue3-toastify';
+import Information from './tabs/Information.vue';
 
-const route = useRoute('contract-details-id')
+const route = useRoute()
 const InfoData = ref()
 const tab = ref(null)
 
@@ -12,29 +11,43 @@ const tabs = [
   {
     title: 'Information',
     icon: 'tabler-user',
-  },
-  {
-    title: 'Clients',
-    icon: 'tabler-user',
-  },
-  {
-    title: 'Quotations',
-    icon: 'tabler-lock',
-  },
-  {
-    title: 'Invoices',
-    icon: 'tabler-bell',
-  },
+  }
 ]
 
-const { data } = await useApi(`/contracts/${route.params.id}`)
-if (data.value)
-  InfoData.value = data.value.data
+try {
+  const { data } = await $api(`/contracts/${route.params.id}`)
+  InfoData.value = data
+} catch (error) {
+  console.error('Failed to fetch contracts data:', error)
+  toast.error(error?.response?.data?.message || 'Failed to load contracts details.')
+}
 
+const makeDateFormat = (date , onlyDate = false) => {
+    if(onlyDate)
+    return moment(date).format('DD-MM-Y');
+    else
+    return moment(date).format('LLLL');
+};
 </script>
 
 <template>
   <div>
+     <!-- 👉 Header  -->
+     <div class="d-flex justify-space-between align-center flex-wrap gap-y-4 mb-6">
+      <div>
+        <h5 class="text-h5 mb-1">
+          Contract {{ InfoData.title }}
+        </h5>
+        <div class="text-body-1">
+          {{ makeDateFormat(InfoData.created_at )}}
+        </div>
+      </div>
+      <div class="d-flex gap-4">
+        <VBtn variant="tonal" color="success" :to="{ name: 'contract-list' }">
+          Back
+        </VBtn>
+      </div>
+    </div>
     <VRow v-if="InfoData">
       <VCol cols="12" md="12" lg="12">
         <VTabs v-model="tab" class="v-tabs-pill mb-3 disable-tab-transition">
@@ -46,15 +59,6 @@ if (data.value)
         <VWindow v-model="tab" class="disable-tab-transition" :touch="false">
           <VWindowItem>
             <Information :InfoData="InfoData" />
-          </VWindowItem>
-          <VWindowItem>
-            <Clients />
-          </VWindowItem>
-          <VWindowItem>
-            <Invoices />
-          </VWindowItem>
-          <VWindowItem>
-            <Quotations />
           </VWindowItem>
         </VWindow>
       </VCol>

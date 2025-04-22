@@ -11,20 +11,33 @@ class ContractService
         int $perPage = 15,
         bool $withTrashed = false,
         ?string $status = null,
-        ?string $clientId = null
+        ?string $clientId = null,
+        ?string $invoiceId = null,
+        ?string $quotationId = null,
+        ?string $createdBy = null,
+        ?string $lastUpdatedBy = null,
+        ?string $search = null
     ): LengthAwarePaginator {
-        return Contract::query()
-            ->when($withTrashed, fn($q) => $q->withTrashed())
-            ->when($status, fn($q) => $q->where('status', $status))
+        $query = Contract::query()->when($withTrashed, fn($q) => $q->withTrashed());
+
+        # ✅ Apply custom filtering from the helper
+        $query = applyFilteringUser($query, 'created_by');
+
+        return $query->when($status, fn($q) => $q->where('status', $status))
             ->when($clientId, fn($q) => $q->where('client_id', $clientId))
-            ->with(['client', 'quotation', 'invoice', 'creator', 'updater'])
+            ->when($invoiceId, fn($q) => $q->where('invoice_id', $invoiceId))
+            ->when($quotationId, fn($q) => $q->where('quotation_id', $quotationId))
+            ->when($createdBy, fn($q) => $q->where('created_by', $createdBy))
+            ->when($lastUpdatedBy, fn($q) => $q->where('last_updated_by', $lastUpdatedBy))
+            ->when($search, fn($q) => $q->search($search))
+            ->with(['creator', 'updater'])
             ->latest()
             ->paginate($perPage);
     }
 
     public function getContractById(string $id): Contract
     {
-        return Contract::with(['client', 'quotation', 'invoice', 'creator', 'updater'])
+        return Contract::with(['creator', 'updater'])
             ->findOrFail($id);
     }
 
@@ -43,7 +56,7 @@ class ContractService
         // Calculate totals before update
         $totals = $this->calculateTotals($data['items'] ?? []);
         $data = array_merge($data, $totals);
-    
+
         $contract->update($data);
         return $contract->fresh();
     }
@@ -60,7 +73,7 @@ class ContractService
         $total = collect($items)->sum('total');
         $discount = collect($items)->sum('discount_amount');
         $tax = $subTotal * 0.15;
-        
+
 
         return [
             'sub_total' => $subTotal,

@@ -24,22 +24,22 @@ export const setupGuards = router => {
          */
     if (to.meta.unauthenticatedOnly) {
       if (isLoggedIn)
-        return '/dashboards/crm'
+        return '/dashboard/crm'
       else
         return undefined
     }
     if (!canNavigate(to) && to.matched.length) {
       /* eslint-disable indent */
-            return isLoggedIn
-                ? { name: 'not-authorized' }
-                : {
-                    name: 'login',
-                    query: {
-                        ...to.query,
-                        to: to.fullPath !== '/' ? to.path : undefined,
-                    },
-                }
-            /* eslint-enable indent */
+      return isLoggedIn
+        ? { name: 'not-authorized' }
+        : {
+          name: 'login',
+          query: {
+            ...to.query,
+            to: to.fullPath !== '/' ? to.path : undefined,
+          },
+        }
+      /* eslint-enable indent */
     }
   })
 }

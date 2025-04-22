@@ -41,6 +41,7 @@ declare module 'vue' {
     CustomRadios: typeof import('./resources/js/@core/components/app-form-elements/CustomRadios.vue')['default']
     CustomRadiosWithIcon: typeof import('./resources/js/@core/components/app-form-elements/CustomRadiosWithIcon.vue')['default']
     CustomRadiosWithImage: typeof import('./resources/js/@core/components/app-form-elements/CustomRadiosWithImage.vue')['default']
+    DeleteDialog: typeof import('./resources/js/@core/components/DeleteDialog.vue')['default']
     DemoAlertBasic: typeof import('./resources/js/views/demos/components/alert/DemoAlertBasic.vue')['default']
     DemoAlertBorder: typeof import('./resources/js/views/demos/components/alert/DemoAlertBorder.vue')['default']
     DemoAlertClosable: typeof import('./resources/js/views/demos/components/alert/DemoAlertClosable.vue')['default']
@@ -392,5 +393,6 @@ declare module 'vue' {
     TwoFactorAuthDialog: typeof import('./resources/js/components/dialogs/TwoFactorAuthDialog.vue')['default']
     UserInfoEditDialog: typeof import('./resources/js/components/dialogs/UserInfoEditDialog.vue')['default']
     UserUpgradePlanDialog: typeof import('./resources/js/components/dialogs/UserUpgradePlanDialog.vue')['default']
+    VueApexCharts: typeof import('vue3-apexcharts')['default']
   }
 }

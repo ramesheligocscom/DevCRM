@@ -29,22 +29,19 @@ const refVForm = ref()
 const loading = ref(false)
 const errors = ref({})
 const credentials = ref({
-  // email: 'admin@eligocs.com',
-  // password: 'qwerty123',
   email: 'admin@eligocs.com',
   password: 'qwerty123',
-
 })
 
 const routeList = ref([
-  // { route: '/dashboards/crm', action: 'dashboard', slug: 'view' },
+  { route: '/dashboard/crm', action: 'dashboard', slug: 'view' },
   { route: '/leads', action: 'leads', slug: 'view' },
   { route: '/clients', action: 'client', slug: 'view' },
-  { route: '/RolePermission', action: 'role', slug: 'view' },
-  // { route: '/admin/quotations', action: 'quotation', slug: 'view' },
-  // { route: '/admin/contracts', action: 'contract', slug: 'view' },
-  // { route: '/admin/invoices-list', action: 'invoice', slug: 'view' },
-  // { route: '/admin/contract-schedulings', action: 'schedule', slug: 'view' },
+  { route: '/roles', action: 'role', slug: 'view' },
+  { route: '/quotations', action: 'quotation', slug: 'view' },
+  { route: '/contracts', action: 'contract', slug: 'view' },
+  // { route: '/invoices-list', action: 'invoice', slug: 'view' },
+  // { route: '/contract-schedulings', action: 'schedule', slug: 'view' },
 ]);
 
 const rememberMe = ref(false)
@@ -66,7 +63,7 @@ const login = async () => {
       const user = response.data.user;
 
       // Store in localStorage
-      localStorage.setItem('user_id', user.id);
+      localStorage.setItem('user_id', user.uuid);
       localStorage.setItem('user_name', user.name);
 
       localStorage.setItem('permission_list', JSON.stringify(ability_list.value)) ?? [];
@@ -94,7 +91,7 @@ const login = async () => {
       if (allowedRoute) {
         window.location.href = allowedRoute.route;
       } else {
-        router.push("/leads");
+        router.push("/dashboard/crm");
       }
     } else {
       toast.error(response.message);

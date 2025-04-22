@@ -24,7 +24,12 @@ class ContractController extends Controller
             $request->integer('per_page', 15),
             $request->boolean('with_trashed'),
             $request->input('status'),
-            $request->input('client_id')
+            $request->input('client_id'),
+            $request->input('invoice_id'),
+            $request->input('quotation_id'),
+            $request->input('created_by'),
+            $request->input('last_updated_by'),
+            $request->input('search')
         );
 
         return response()->json([

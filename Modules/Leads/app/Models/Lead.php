@@ -23,8 +23,6 @@ class Lead extends Model
         'source',
         'assigned_user',
         'note',
-        'visit_assignee',
-        'visit_time',
         'created_by',
         'last_updated_by',
         'client_id',
@@ -39,6 +37,14 @@ class Lead extends Model
         'updated_at' => 'datetime',
     ];
 
+    public function scopeSearch($query, $searchTerm)
+    {
+        $term = strtolower($searchTerm);
+        return $query->where(function ($q) use ($term) {
+            $q->whereRaw('LOWER(name) LIKE ?', ["%{$term}%"]);
+        });
+    }
+    
     public function scopeFilterByStatus($query, $status)
     {
         return $query->where('status', $status);
@@ -72,38 +78,19 @@ class Lead extends Model
         ]);
     }
 
-    public function loadRelations()
+    public function creator()
     {
-        return $this->load(['client', 'quotation', 'contract', 'invoice']);
+        return $this->belongsTo(\App\Models\User::class, 'created_by' , 'uuid');
     }
 
-    public function client()
+    public function updater()
     {
-        return $this->belongsTo(\Modules\Clients\Models\Client::class);
-    }
-
-    public function quotation()
-    {
-        return $this->belongsTo(\Modules\Clients\Models\Client::class)->withDefault();
-    }
-    
-    public function contract()
-    {
-        return $this->belongsTo(\Modules\Clients\Models\Client::class)->withDefault();
-    }
-    
-    public function invoice()
-    {
-        return $this->belongsTo(\Modules\Clients\Models\Client::class)->withDefault();
+        return $this->belongsTo(\App\Models\User::class, 'last_updated_by', 'uuid');
     }
 
     public function assignedUser()
     {
-        return $this->belongsTo(\App\Models\User::class, 'assigned_user');
+        return $this->belongsTo(\App\Models\User::class, 'assigned_user' , 'uuid');
     }
-
-    public function visitAssignee()
-    {
-        return $this->belongsTo(\App\Models\User::class, 'visit_assignee');
-    }
+ 
 }

@@ -15,7 +15,7 @@ export const redirects = [
         return { name: 'dashboards-crm' }
       if (userRole === 'client')
         return { name: 'access-control' }
-      
+
       return { name: 'login', query: to.query }
     },
   },
@@ -66,6 +66,6 @@ export const routes = [
   {
     path: '/apps/ecommerce/dashboard',
     name: 'apps-ecommerce-dashboard',
-    component: () => import('@/pages/dashboards/ecommerce.vue'),
+    component: () => import('@/pages/dashboard/ecommerce.vue'),
   },
 ]

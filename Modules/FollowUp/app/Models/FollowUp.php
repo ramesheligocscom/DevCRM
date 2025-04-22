@@ -46,23 +46,21 @@ class FollowUp extends Model
         });
     }
 
-    public function lead()
+    public function scopeSearch($query, $searchTerm)
     {
-        return $this->belongsTo(Lead::class);
-    }
-
-    public function client()
-    {
-        return $this->belongsTo(Client::class);
+        $term = strtolower($searchTerm);
+        return $query->where(function ($q) use ($term) {
+            $q->whereRaw('LOWER(call_summary) LIKE ?', ["%{$term}%"]);
+        });
     }
 
     public function creator()
     {
-        return $this->belongsTo(User::class, 'created_by');
+        return $this->belongsTo(\App\Models\User::class, 'created_by','uuid');
     }
 
     public function updater()
     {
-        return $this->belongsTo(User::class, 'last_updated_by');
+        return $this->belongsTo(\App\Models\User::class, 'last_updated_by','uuid');
     }
 }

@@ -16,13 +16,16 @@ class ClientController extends Controller
         $clients = Client::query()
             ->when($request->boolean('with_trashed'), fn($q) => $q->withTrashed())
             ->when($request->has('status'), fn($q) => $q->filterByStatus($request->status))
+            ->when($request->search, fn($q) => $q->search($request->search))
             // ->when($request->has('assigned_user'), fn($q) => $q->whereAssignedUser($request->assigned_user))
             ->latest()
+            ->with(['creator', 'updater','assignedUser'])
             ->paginate($request->integer('per_page', 15));
 
         return response()->json([
             'data' => ClientResource::collection($clients),
-            'meta' => $this->buildPaginationMeta($clients)
+            'meta' => $this->buildPaginationMeta($clients),
+            'status' => Response::HTTP_OK
         ]);
     }
 
@@ -30,13 +33,14 @@ class ClientController extends Controller
     {
         $client = Client::createWithAttributes([
             ...$request->validated(),
-            'created_by' => auth()->user()->id
+            'created_by' => auth()->user()->uuid
         ]);
 
         return response()->json([
             'message' => __('Client created successfully'),
-            'data' => new ClientResource($client)
-        ], Response::HTTP_CREATED);
+            'data' => new ClientResource($client),
+            'status' => Response::HTTP_OK
+        ], Response::HTTP_OK);
     }
 
     public function show(Client $client): JsonResponse
@@ -50,12 +54,13 @@ class ClientController extends Controller
     {
         $client->updateWithAttributes([
             ...$request->validated(),
-            'last_updated_by' => auth()->user()->id
+            'last_updated_by' => auth()->user()->uuid
         ]);
 
         return response()->json([
             'message' => __('Client updated successfully'),
-            'data' => new ClientResource($client->fresh())
+            'data' => new ClientResource($client->fresh()),
+            'status' => Response::HTTP_OK
         ]);
     }
 
@@ -75,6 +80,7 @@ class ClientController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => __('Client marked as deleted successfully'),
+                'status' => Response::HTTP_OK,
                 'data' => [
                     'deleted_at' => $client->deleted_at
                 ]
@@ -83,6 +89,7 @@ class ClientController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => __('Failed to delete client'),
+                'status' => Response::HTTP_OK,
                 'error' => $e->getMessage()
             ], 500);
         }

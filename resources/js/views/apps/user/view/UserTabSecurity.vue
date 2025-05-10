@@ -150,8 +150,6 @@ const recentDevices = [
     </VCol>
 
     <VCol cols="12">
-      <!-- 👉 Recent devices -->
-
       <VCard title="Recent devices">
         <VDivider />
         <VDataTable

@@ -1,8 +1,8 @@
+import { paginateArray } from '@api-utils/paginateArray'
+import { database } from '@db/apps/invoice/db'
 import is from '@sindresorhus/is'
 import destr from 'destr'
 import { HttpResponse, http } from 'msw'
-import { database } from '@db/apps/invoice/db'
-import { paginateArray } from '@api-utils/paginateArray'
 
 export const handlerAppsInvoice = [
   // 👉 Client

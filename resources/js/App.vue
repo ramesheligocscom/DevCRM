@@ -1,18 +1,25 @@
 <script setup>
-import { useTheme } from 'vuetify'
-import ScrollToTop from '@core/components/ScrollToTop.vue'
-import initCore from '@core/initCore'
+import { useCompanyStore } from "@/stores/companyStore";
+import ScrollToTop from '@core/components/ScrollToTop.vue';
+import initCore from '@core/initCore';
 import {
   initConfigStore,
   useConfigStore,
-} from '@core/stores/config'
-import { hexToRgb } from '@core/utils/colorConverter'
+} from '@core/stores/config';
+import { hexToRgb } from '@core/utils/colorConverter';
+import { onMounted } from "vue";
+import { useTheme } from 'vuetify';
+const companyStore = useCompanyStore();
 
 const { global } = useTheme()
 
 // ℹ️ Sync current theme with initial loader theme
 initCore()
 initConfigStore()
+
+onMounted(() => {
+  companyStore.fetchCompanyDetails();  
+});
 
 const configStore = useConfigStore()
 </script>

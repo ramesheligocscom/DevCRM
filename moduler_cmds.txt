@@ -1,0 +1,16 @@
+php artisan module:make ProductService
+php artisan module:make-model ProductService ProductService -m
+php artisan module:make-request ProductServiceStoreRequest ProductService
+php artisan module:make-request ProductServiceUpdateRequest ProductService
+php artisan module:make-resource ProductServiceResource ProductService
+php artisan module:make-service ProductServiceService ProductService
+php artisan module:make-repository ProductServiceRepository ProductService
+php artisan module:make-controller ProductServiceController ProductService --api
+
+
+# not use this cmd
+php artisan module:make-factory InvoiceFactory Invoices
+php artisan module:make-seed InvoicesTableSeeder Invoices
+php artisan module:migrate Invoices
+php artisan module:seed Invoices
+php artisan module:make-test InvoiceApiTest Invoices

@@ -1,14 +1,13 @@
-import laravel from 'laravel-vite-plugin'
-import { fileURLToPath } from 'node:url'
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
 import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
+import laravel from 'laravel-vite-plugin'
+import { fileURLToPath } from 'node:url'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { VueRouterAutoImports, getPascalCaseRouteName } from 'unplugin-vue-router'
 import VueRouter from 'unplugin-vue-router/vite'
 import { defineConfig } from 'vite'
-import VueDevTools from 'vite-plugin-vue-devtools'
 import Layouts from 'vite-plugin-vue-layouts'
 import vuetify from 'vite-plugin-vuetify'
 import svgLoader from 'vite-svg-loader'
@@ -31,6 +30,11 @@ export default defineConfig({
       },
 
       routesFolder: 'resources/js/pages',
+      // routesFolder: [
+      //   'resources/js/pages', 
+      //   'Modules/*/resources/assets/js/pages' // Include module routes
+      // ],
+      
     }),
     vue({
       template: {
@@ -75,6 +79,7 @@ export default defineConfig({
         './resources/js/@core/composable/',
         './resources/js/composables/',
         './resources/js/utils/',
+        // './resources/js/validations/',
         './resources/js/plugins/*/composables/*',
       ],
       vueTemplate: true,
@@ -108,6 +113,7 @@ export default defineConfig({
       '@configured-variables': fileURLToPath(new URL('./resources/styles/variables/_template.scss', import.meta.url)),
       '@db': fileURLToPath(new URL('./resources/js/plugins/fake-api/handlers/', import.meta.url)),
       '@api-utils': fileURLToPath(new URL('./resources/js/plugins/fake-api/utils/', import.meta.url)),
+      '@modules': fileURLToPath(new URL('./Modules', import.meta.url)), 
     },
   },
   build: {

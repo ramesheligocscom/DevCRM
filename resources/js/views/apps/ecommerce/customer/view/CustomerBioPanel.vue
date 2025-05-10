@@ -14,8 +14,8 @@ const isUpgradePlanDialogVisible = ref(false)
 const customerData = {
   id: props.customerData.id,
   fullName: props.customerData.customer,
-  firstName: props.customerData.customer.split(' ')[0],
-  lastName: props.customerData.customer.split(' ')[1],
+  firstName: props?.customerData.customer?.split(' ')[0],
+  lastName: props?.customerData.customer?.split(' ')[1],
   company: '',
   role: '',
   username: props.customerData.customer,
@@ -39,20 +39,10 @@ const customerData = {
       <VCard v-if="props.customerData">
         <VCardText class="text-center pt-12">
           <!-- 👉 Avatar -->
-          <VAvatar
-            rounded
-            :size="120"
-            :color="!props.customerData.customer ? 'primary' : undefined"
-            :variant="!props.customerData.avatar ? 'tonal' : undefined"
-          >
-            <VImg
-              v-if="props.customerData.avatar"
-              :src="props.customerData.avatar"
-            />
-            <span
-              v-else
-              class="text-5xl font-weight-medium"
-            >
+          <VAvatar rounded :size="120" :color="!props.customerData.customer ? 'primary' : undefined"
+            :variant="!props.customerData.avatar ? 'tonal' : undefined">
+            <VImg v-if="props.customerData.avatar" :src="props.customerData.avatar" />
+            <span v-else class="text-5xl font-weight-medium">
               {{ avatarText(props.customerData.customer) }}
             </span>
           </VAvatar>
@@ -67,12 +57,7 @@ const customerData = {
 
           <div class="d-flex justify-space-evenly gap-x-5 mt-6">
             <div class="d-flex align-center">
-              <VAvatar
-                variant="tonal"
-                color="primary"
-                rounded
-                class="me-4"
-              >
+              <VAvatar variant="tonal" color="primary" rounded class="me-4">
                 <VIcon icon="tabler-shopping-cart" />
               </VAvatar>
               <div class="d-flex flex-column align-start">
@@ -85,12 +70,7 @@ const customerData = {
               </div>
             </div>
             <div class="d-flex align-center">
-              <VAvatar
-                variant="tonal"
-                color="primary"
-                rounded
-                class="me-3"
-              >
+              <VAvatar variant="tonal" color="primary" rounded class="me-3">
                 <VIcon icon="tabler-currency-dollar" />
               </VAvatar>
               <div class="d-flex flex-column align-start">
@@ -137,11 +117,7 @@ const customerData = {
                 <h6 class="text-h6">
                   Status:
                 </h6>
-                <VChip
-                  label
-                  color="success"
-                  size="small"
-                >
+                <VChip label color="success" size="small">
                   {{ props.customerData.status }}
                 </VChip>
               </div>
@@ -168,10 +144,7 @@ const customerData = {
         </VCardText>
 
         <VCardText class="text-center">
-          <VBtn
-            block
-            @click="isUserInfoEditDialogVisible = !isUserInfoEditDialogVisible"
-          >
+          <VBtn block @click="isUserInfoEditDialogVisible = !isUserInfoEditDialogVisible">
             Edit Details
           </VBtn>
         </VCardText>
@@ -181,10 +154,7 @@ const customerData = {
 
     <!-- SECTION  Upgrade to Premium -->
     <VCol cols="12">
-      <VCard
-        flat
-        class="current-plan"
-      >
+      <VCard flat class="current-plan">
         <VCardText>
           <div class="d-flex align-center">
             <div>
@@ -196,19 +166,11 @@ const customerData = {
               </p>
             </div>
             <div>
-              <VImg
-                :src="rocketImg"
-                height="108"
-                width="108"
-              />
+              <VImg :src="rocketImg" height="108" width="108" />
             </div>
           </div>
-          <VBtn
-            color="#fff"
-            class="text-primary"
-            block
-            @click="isUpgradePlanDialogVisible = !isUpgradePlanDialogVisible"
-          >
+          <VBtn color="#fff" class="text-primary" block
+            @click="isUpgradePlanDialogVisible = !isUpgradePlanDialogVisible">
             Upgrade to Premium
           </VBtn>
         </VCardText>
@@ -216,10 +178,7 @@ const customerData = {
     </VCol>
     <!-- !SECTION -->
   </VRow>
-  <UserInfoEditDialog
-    v-model:isDialogVisible="isUserInfoEditDialogVisible"
-    :user-data="customerData"
-  />
+  <UserInfoEditDialog v-model:isDialogVisible="isUserInfoEditDialogVisible" :user-data="customerData" />
   <UserUpgradePlanDialog v-model:isDialogVisible="isUpgradePlanDialogVisible" />
 </template>
 

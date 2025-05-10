@@ -100,7 +100,7 @@ const resolveInvoiceBalanceVariant = (balance, total) => {
       status: 'Paid',
       chip: { color: 'success' },
     }
-  
+
   return {
     status: balance,
     chip: { variant: 'text' },
@@ -138,7 +138,7 @@ const resolveInvoiceStatusVariantAndIcon = status => {
       variant: 'error',
       icon: 'tabler-help',
     }
-  
+
   return {
     variant: 'secondary',
     icon: 'tabler-x',
@@ -170,7 +170,7 @@ const computedMoreList = computed(() => {
 })
 
 const deleteInvoice = async id => {
-  await $api(`/apps/invoice/${ id }`, { method: 'DELETE' })
+  await $api(`/apps/invoice/${id}`, { method: 'DELETE' })
 
   // Delete from selectedRows
   const index = selectedRows.value.findIndex(row => row === id)
@@ -188,24 +188,13 @@ const deleteInvoice = async id => {
     <VCard class="mb-6">
       <VCardText class="px-3">
         <VRow>
-          <template
-            v-for="(data, id) in widgetData"
-            :key="id"
-          >
-            <VCol
-              cols="12"
-              sm="6"
-              md="3"
-              class="px-6"
-            >
-              <div
-                class="d-flex justify-space-between align-center"
-                :class="$vuetify.display.xs
-                  ? id !== widgetData.length - 1 ? 'border-b pb-4' : ''
-                  : $vuetify.display.sm
-                    ? id < (widgetData.length / 2) ? 'border-b pb-4' : ''
-                    : ''"
-              >
+          <template v-for="(data, id) in widgetData" :key="id">
+            <VCol cols="12" sm="6" md="3" class="px-6">
+              <div class="d-flex justify-space-between align-center" :class="$vuetify.display.xs
+                ? id !== widgetData.length - 1 ? 'border-b pb-4' : ''
+                : $vuetify.display.sm
+                  ? id < (widgetData.length / 2) ? 'border-b pb-4' : ''
+                  : ''">
                 <div class="d-flex flex-column">
                   <h4 class="text-h4">
                     {{ data.value }}
@@ -213,27 +202,14 @@ const deleteInvoice = async id => {
                   <span class="text-body-1 text-capitalize">{{ data.title }}</span>
                 </div>
 
-                <VAvatar
-                  variant="tonal"
-                  rounded
-                  size="42"
-                >
-                  <VIcon
-                    :icon="data.icon"
-                    size="26"
-                    color="high-emphasis"
-                  />
+                <VAvatar variant="tonal" rounded size="42">
+                  <VIcon :icon="data.icon" size="26" color="high-emphasis" />
                 </VAvatar>
               </div>
             </VCol>
-            <VDivider
-              v-if="$vuetify.display.mdAndUp ? id !== widgetData.length - 1
-                : $vuetify.display.smAndUp ? id % 2 === 0
-                  : false"
-              vertical
-              inset
-              length="60"
-            />
+            <VDivider v-if="$vuetify.display.mdAndUp ? id !== widgetData.length - 1
+              : $vuetify.display.smAndUp ? id % 2 === 0
+                : false" vertical inset length="60" />
           </template>
         </VRow>
       </VCardText>
@@ -244,24 +220,16 @@ const deleteInvoice = async id => {
         <div class="d-flex gap-4 align-center flex-wrap">
           <div class="d-flex align-center gap-2">
             <span>Show</span>
-            <AppSelect
-              :model-value="itemsPerPage"
-              :items="[
-                { value: 10, title: '10' },
-                { value: 25, title: '25' },
-                { value: 50, title: '50' },
-                { value: 100, title: '100' },
-                { value: -1, title: 'All' },
-              ]"
-              style="inline-size: 5.5rem;"
-              @update:model-value="itemsPerPage = parseInt($event, 10)"
-            />
+            <AppSelect :model-value="itemsPerPage" :items="[
+              { value: 10, title: '10' },
+              { value: 25, title: '25' },
+              { value: 50, title: '50' },
+              { value: 100, title: '100' },
+              { value: -1, title: 'All' },
+            ]" style="inline-size: 5.5rem;" @update:model-value="itemsPerPage = parseInt($event, 10)" />
           </div>
           <!-- 👉 Create invoice -->
-          <VBtn
-            prepend-icon="tabler-plus"
-            :to="{ name: 'apps-invoice-add' }"
-          >
+          <VBtn prepend-icon="tabler-plus" :to="{ name: 'apps-invoice-add' }">
             Create invoice
           </VBtn>
         </div>
@@ -269,40 +237,22 @@ const deleteInvoice = async id => {
         <div class="d-flex align-center flex-wrap gap-4">
           <!-- 👉 Search  -->
           <div class="invoice-list-filter">
-            <AppTextField
-              v-model="searchQuery"
-              placeholder="Search Invoice"
-            />
+            <AppTextField v-model="searchQuery" placeholder="Search Invoice" />
           </div>
 
           <!-- 👉 Select status -->
           <div class="invoice-list-filter">
-            <AppSelect
-              v-model="selectedStatus"
-              placeholder="Invoice Status"
-              clearable
-              clear-icon="tabler-x"
-              single-line
-              :items="['Downloaded', 'Draft', 'Sent', 'Paid', 'Partial Payment', 'Past Due']"
-            />
+            <AppSelect v-model="selectedStatus" placeholder="Invoice Status" clearable clear-icon="tabler-x" single-line
+              :items="['Downloaded', 'Draft', 'Sent', 'Paid', 'Partial Payment', 'Past Due']" />
           </div>
         </div>
       </VCardText>
       <VDivider />
 
       <!-- SECTION Datatable -->
-      <VDataTableServer
-        v-model:model-value="selectedRows"
-        v-model:items-per-page="itemsPerPage"
-        v-model:page="page"
-        show-select
-        :items-length="totalInvoices"
-        :headers="headers"
-        :items="invoices"
-        item-value="id"
-        class="text-no-wrap"
-        @update:options="updateOptions"
-      >
+      <VDataTableServer v-model:model-value="selectedRows" v-model:items-per-page="itemsPerPage" v-model:page="page"
+        show-select :items-length="totalInvoices" :headers="headers" :items="invoices" item-value="id"
+        class="text-no-wrap" @update:options="updateOptions">
         <!-- id -->
         <template #item.id="{ item }">
           <RouterLink :to="{ name: 'apps-invoice-preview-id', params: { id: item.id } }">
@@ -314,16 +264,9 @@ const deleteInvoice = async id => {
         <template #item.status="{ item }">
           <VTooltip>
             <template #activator="{ props }">
-              <VAvatar
-                :size="28"
-                v-bind="props"
-                :color="resolveInvoiceStatusVariantAndIcon(item.invoiceStatus).variant"
-                variant="tonal"
-              >
-                <VIcon
-                  :size="16"
-                  :icon="resolveInvoiceStatusVariantAndIcon(item.invoiceStatus).icon"
-                />
+              <VAvatar :size="28" v-bind="props" :color="resolveInvoiceStatusVariantAndIcon(item.invoiceStatus).variant"
+                variant="tonal">
+                <VIcon :size="16" :icon="resolveInvoiceStatusVariantAndIcon(item.invoiceStatus).icon" />
               </VAvatar>
             </template>
             <p class="mb-0">
@@ -341,23 +284,15 @@ const deleteInvoice = async id => {
         <!-- client -->
         <template #item.client="{ item }">
           <div class="d-flex align-center">
-            <VAvatar
-              size="34"
+            <VAvatar size="34"
               :color="!item.avatar.length ? resolveInvoiceStatusVariantAndIcon(item.invoiceStatus).variant : undefined"
-              :variant="!item.avatar.length ? 'tonal' : undefined"
-              class="me-3"
-            >
-              <VImg
-                v-if="item.avatar.length"
-                :src="item.avatar"
-              />
+              :variant="!item.avatar.length ? 'tonal' : undefined" class="me-3">
+              <VImg v-if="item.avatar.length" :src="item.avatar" />
               <span v-else>{{ avatarText(item.client.name) }}</span>
             </VAvatar>
             <div class="d-flex flex-column">
-              <RouterLink
-                :to="{ name: 'pages-user-profile-tab', params: { tab: 'profile' } }"
-                class="text-link font-weight-medium"
-              >
+              <RouterLink :to="{ name: 'pages-user-profile-tab', params: { tab: 'profile' } }"
+                class="text-link font-weight-medium">
                 {{ item.client.name }}
               </RouterLink>
               <span class="text-sm text-medium-emphasis">{{ item.client.companyEmail }}</span>
@@ -377,18 +312,16 @@ const deleteInvoice = async id => {
 
         <!-- Balance -->
         <template #item.balance="{ item }">
-          <VChip
-            v-if="typeof ((resolveInvoiceBalanceVariant(item.balance, item.total)).status) === 'string'"
-            :color="resolveInvoiceBalanceVariant(item.balance, item.total).chip.color"
-            label
-            size="x-small"
-          >
+          <VChip v-if="typeof ((resolveInvoiceBalanceVariant(item.balance, item.total)).status) === 'string'"
+            :color="resolveInvoiceBalanceVariant(item.balance, item.total).chip.color" label size="x-small">
             {{ (resolveInvoiceBalanceVariant(item.balance, item.total)).status }}
           </VChip>
 
           <template v-else>
             <span class="text-base text-high-emphasis">
-              {{ Number((resolveInvoiceBalanceVariant(item.balance, item.total)).status) > 0 ? `$${(resolveInvoiceBalanceVariant(item.balance, item.total)).status}` : `-$${Math.abs(Number((resolveInvoiceBalanceVariant(item.balance, item.total)).status))}` }}
+              {{ Number((resolveInvoiceBalanceVariant(item.balance, item.total)).status) > 0 ?
+                `$${(resolveInvoiceBalanceVariant(item.balance, item.total)).status}` :
+                `-$${Math.abs(Number((resolveInvoiceBalanceVariant(item.balance, item.total)).status))}` }}
             </span>
           </template>
         </template>
@@ -403,23 +336,15 @@ const deleteInvoice = async id => {
             <VIcon icon="tabler-eye" />
           </IconBtn>
 
-          <MoreBtn
-            :menu-list="computedMoreList(item.id)"
-            item-props
-            color="undefined"
-          />
+          <MoreBtn :menu-list="computedMoreList(item.id)" item-props color="undefined" />
         </template>
 
         <!-- pagination -->
         <template #bottom>
-          <TablePagination
-            v-model:page="page"
-            :items-per-page="itemsPerPage"
-            :total-items="totalInvoices"
-          />
+          <TablePagination v-model:page="page" :items-per-page="itemsPerPage" :total-items="totalInvoices" />
         </template>
       </VDataTableServer>
-    <!-- !SECTION -->
+      <!-- !SECTION -->
     </VCard>
   </section>
   <section v-else>

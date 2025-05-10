@@ -15,9 +15,14 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            $table->string('user_name')->nullable();
+            $table->string('password')->nullable();
+            $table->text('avatar')->nullable();
+            $table->enum('status', ['Active', 'In-Active'])->default('Active')->comment('Active', 'In-Active');
             $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
+            $table->uuid('uuid')->unique();
             $table->rememberToken();
+            $table->softDeletes();
             $table->timestamps();
         });
 
